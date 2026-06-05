@@ -1,54 +1,46 @@
-# TMR Mixer — Instalacja PWA
+const CACHE = 'tmr-v2';
+const ASSETS = [
+  './',
+  './index.html',
+  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css',
+  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/fonts/tabler-icons.woff2'
+];
 
-## Struktura plików
-```
-tmr-pwa/
-├── index.html      ← główna aplikacja
-├── manifest.json   ← konfiguracja PWA
-├── sw.js           ← service worker (offline)
-└── icons/
-    ├── icon-192.png
-    └── icon-512.png
-```
+self.addEventListener('install', function(e) {
+  e.waitUntil(
+    caches.open(CACHE).then(function(cache) {
+      return cache.addAll(ASSETS).catch(function(err) {
+        console.warn('Cache partial fail:', err);
+      });
+    })
+  );
+  self.skipWaiting();
+});
 
-## Jak wrzucić na GitHub Pages (darmowy hosting)
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(k) { return k !== CACHE; })
+            .map(function(k) { return caches.delete(k); })
+      );
+    })
+  );
+  self.clients.claim();
+});
 
-### Krok 1 — Utwórz konto GitHub
-Wejdź na https://github.com i zarejestruj się (bezpłatnie).
-
-### Krok 2 — Utwórz nowe repozytorium
-1. Kliknij "+" → "New repository"
-2. Nazwa: `tmr-mixer` (lub dowolna)
-3. Ustaw jako **Public**
-4. Kliknij "Create repository"
-
-### Krok 3 — Wgraj pliki
-1. Kliknij "uploading an existing file"
-2. Przeciągnij WSZYSTKIE pliki z folderu `tmr-pwa` (index.html, manifest.json, sw.js)
-3. Przeciągnij folder `icons` z ikonami
-4. Kliknij "Commit changes"
-
-### Krok 4 — Włącz GitHub Pages
-1. Wejdź w Settings → Pages
-2. Source: "Deploy from branch"
-3. Branch: `main` → folder: `/ (root)`
-4. Kliknij Save
-
-### Krok 5 — Gotowe!
-Po chwili (1-2 min) aplikacja będzie dostępna pod adresem:
-`https://TWOJA-NAZWA.github.io/tmr-mixer/`
-
-## Instalacja na telefonie
-
-### Android (Chrome):
-1. Otwórz powyższy link w Chrome
-2. Pojawi się baner "Zainstaluj aplikację" — kliknij
-3. LUB: Menu (⋮) → "Dodaj do ekranu głównego"
-
-### iPhone (Safari):
-1. Otwórz powyższy link w Safari
-2. Kliknij ikonę Udostępnij (□↑)
-3. Wybierz "Dodaj do ekranu głównego"
-4. Potwierdź "Dodaj"
-
-Aplikacja działa w pełni offline po pierwszym otwarciu!
+self.addEventListener('fetch', function(e) {
+  e.respondWith(
+    caches.match(e.request).then(function(cached) {
+      if (cached) return cached;
+      return fetch(e.request).then(function(response) {
+        if (!response || response.status !== 200 || response.type === 'opaque') return response;
+        var clone = response.clone();
+        caches.open(CACHE).then(function(cache) { cache.put(e.request, clone); });
+        return response;
+      }).catch(function() {
+        return caches.match('./index.html');
+      });
+    })
+  );
+});
