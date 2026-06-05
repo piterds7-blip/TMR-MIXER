@@ -1,0 +1,32 @@
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+sizes = [192, 512]
+for size in sizes:
+    img = Image.new('RGB', (size, size), '#1D9E75')
+    draw = ImageDraw.Draw(img)
+    # rounded rect background
+    pad = size // 8
+    draw.rounded_rectangle([pad, pad, size-pad, size-pad], radius=size//6, fill='#085041')
+    # cow emoji text
+    font_size = size // 3
+    try:
+        font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', font_size)
+    except:
+        font = ImageFont.load_default()
+    text = 'TMR'
+    bbox = draw.textbbox((0,0), text, font=font)
+    tw = bbox[2] - bbox[0]
+    th = bbox[3] - bbox[1]
+    draw.text(((size-tw)//2, (size-th)//2 - size//12), text, fill='#ffffff', font=font)
+    small = size // 6
+    try:
+        sfont = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', small)
+    except:
+        sfont = font
+    stxt = 'Mixer'
+    sb = draw.textbbox((0,0), stxt, font=sfont)
+    sw = sb[2]-sb[0]
+    draw.text(((size-sw)//2, (size+th)//2 - size//12 + 4), stxt, fill='#9FE1CB', font=sfont)
+    img.save(f'/home/claude/tmr-pwa/icons/icon-{size}.png')
+    print(f'Generated icon-{size}.png')

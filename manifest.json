@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TMR Mixer">
+<meta name="theme-color" content="#1D9E75">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>TMR Mixer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --green:#1D9E75;--green-dark:#0F6E56;--green-darker:#085041;
+  --green-light:#E1F5EE;--green-mid:#9FE1CB;--green-text:#085041;
+  --bg:#ffffff;--bg2:#f5f5f5;--bg3:#ebebeb;
+  --text:#111111;--text2:#666666;--text3:#999999;
+  --border:#e0e0e0;--border2:#cccccc;--red:#E24B4A;
+  --radius:10px;--radius-sm:7px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a1a;--bg2:#252525;--bg3:#303030;
+    --text:#f0f0f0;--text2:#aaaaaa;--text3:#777777;
+    --border:#333333;--border2:#444444;
+    --green-light:#0a3028;--green-text:#9FE1CB;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding-bottom:32px}
+.screen.active{display:block}
+.topbar{display:flex;align-items:center;gap:8px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10}
+.topbar-title{flex:1;font-size:18px;font-weight:600;color:var(--text)}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--text2);padding:7px;border-radius:var(--radius-sm);font-size:22px;display:flex;align-items:center;justify-content:center}
+.icon-btn:active{background:var(--bg3)}
+.fab{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px;padding:15px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:16px;font-weight:600;width:calc(100% - 32px)}
+.fab:active{background:var(--green-dark)}
+.fab i{font-size:22px}
+.dose-card{margin:12px 16px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.dose-card-header{padding:14px 14px 10px}
+.dose-title{font-size:16px;font-weight:600;color:var(--text)}
+.dose-meta{font-size:13px;color:var(--text2);margin-top:3px}
+.dose-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
+.dose-stat{padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
+.dose-stat:last-child{border-right:none}
+.dose-stat-val{font-size:16px;font-weight:600;color:var(--text)}
+.dose-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.dose-woz-val{color:var(--green)!important}
+.dose-actions{display:flex;border-top:1px solid var(--border)}
+.dose-action{flex:1;padding:12px 4px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:4px;border-right:1px solid var(--border)}
+.dose-action:last-child{border-right:none}
+.dose-action:active{background:var(--bg2)}
+.dose-action.open{color:var(--green);font-weight:600}
+.spacer{height:16px}
+.divider{height:1px;background:var(--border);margin:8px 16px}
+.field-row{padding:0 16px;margin-bottom:10px}
+.field-label{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+input[type=text],input[type=number],select{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{outline:2px solid var(--green);border-color:var(--green)}
+.inline-row{display:flex;gap:8px;padding:0 16px;margin-bottom:10px}
+.inline-row .field-wrap{flex:1}
+.inline-row .field-wrap .field-label{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.summary-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-bottom:6px}
+.stat-box{background:var(--bg2);border-radius:var(--radius-sm);padding:11px 13px}
+.stat-val{font-size:24px;font-weight:600;color:var(--text)}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.woz-banner{margin:6px 16px 14px;background:var(--green-light);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:16px;border:1px solid var(--green)}
+.woz-banner-icon{font-size:32px;color:var(--green-dark)}
+.woz-banner-label{font-size:12px;color:var(--green-text);font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.woz-banner-val{font-size:40px;font-weight:700;color:var(--green);line-height:1}
+.woz-banner-unit{font-size:14px;color:var(--green-dark);margin-top:3px;font-weight:500}
+.ing-list{margin:0 16px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+.ing-row{display:flex;align-items:flex-start;padding:12px;border-bottom:1px solid var(--border);gap:8px;background:var(--bg)}
+.ing-row:last-child{border-bottom:none}
+.ing-num{font-size:13px;color:var(--text3);min-width:20px;margin-top:2px}
+.ing-body{flex:1;min-width:0}
+.ing-name{font-size:15px;font-weight:600;color:var(--text)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;margin-top:4px}
+.badge-t{background:#EAF3DE;color:#3B6D11}
+.badge-o{background:#E6F1FB;color:#185FA5}
+.ing-woz-chip{display:inline-flex;align-items:baseline;gap:4px;background:var(--green-light);border-radius:6px;padding:4px 10px;margin-top:6px;border:1px solid var(--green)}
+.ing-woz-chip-val{font-size:17px;font-weight:700;color:var(--green)}
+.ing-woz-chip-unit{font-size:12px;color:var(--green-dark);font-weight:500}
+.ing-cumul{font-size:12px;color:var(--text2);margin-top:4px}
+.ing-cumul strong{color:var(--green-dark);font-weight:600}
+.ing-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ing-arrows{display:flex;gap:4px}
+.arr-btn{background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text2);padding:5px 8px;font-size:14px;line-height:1}
+.arr-btn:active{background:var(--bg3)}
+.kg-input-wrap{display:flex;align-items:center;gap:4px}
+.kg-input-wrap input{width:72px;font-size:15px;padding:8px 9px;text-align:right}
+.kg-input-wrap span{font-size:12px;color:var(--text3)}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px;margin-top:2px}
+.del-btn:active{color:var(--red)}
+.add-ing-card{margin:0 16px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.add-ing-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:11px;text-transform:uppercase;letter-spacing:.04em}
+.add-row{display:flex;gap:8px;align-items:flex-end}
+.add-row select{flex:1;font-size:14px;padding:10px 11px}
+.add-row .kg-field{width:82px}
+.add-row .kg-field input{font-size:15px;padding:10px 9px;text-align:right}
+.add-btn{padding:10px 14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:22px;display:flex;align-items:center;flex-shrink:0}
+.add-btn:active{background:var(--green-dark)}
+.custom-fields{display:grid;grid-template-columns:1fr 100px 70px;gap:8px;margin-top:10px}
+.custom-fields input,.custom-fields select{font-size:14px;padding:9px 10px}
+.btn-row{display:flex;gap:8px;padding:0 16px;margin-bottom:12px}
+.btn-sec{flex:1;padding:13px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500}
+.btn-sec:active{background:var(--bg2)}
+.btn-pri{flex:1;padding:13px;background:var(--green);border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:#fff;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-pri:active{background:var(--green-dark)}
+.btn-del{padding:13px;background:var(--bg);border:1px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:var(--red);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500;width:calc(100% - 32px);margin:0 16px 12px}
+.btn-del:active{background:#fff0f0}
+.empty-state{padding:48px 24px;text-align:center;color:var(--text2)}
+.empty-icon{font-size:44px;color:var(--green-mid);margin-bottom:12px}
+.empty-title{font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
+.empty-sub{font-size:14px;line-height:1.5}
+.woz-screen{background:var(--bg)}
+.woz-header{background:var(--green-dark);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.woz-header-title{flex:1;font-size:18px;font-weight:600}
+.woz-back{background:none;border:none;cursor:pointer;color:#fff;font-size:24px;padding:4px;display:flex}
+.woz-total-bar{background:var(--green-darker);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.woz-total-left{color:var(--green-mid)}
+.woz-total-left-lbl{font-size:12px;margin-bottom:2px}
+.woz-total-left-val{font-size:15px;font-weight:600;color:#fff}
+.woz-total-right{text-align:right}
+.woz-total-right-lbl{font-size:12px;color:var(--green-mid);margin-bottom:3px}
+.woz-total-right-val{font-size:32px;font-weight:700;color:#fff;line-height:1}
+.woz-total-right-unit{font-size:13px;color:var(--green-mid);margin-top:2px}
+.woz-item{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
+.woz-item-num{width:32px;height:32px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green-dark);flex-shrink:0}
+.woz-item-name{flex:1;font-size:17px;font-weight:600;color:var(--text)}
+.woz-item-right{text-align:right}
+.woz-item-kg{font-size:28px;font-weight:700;color:var(--text)}
+.woz-item-unit{font-size:12px;color:var(--text2)}
+.woz-item-cumul{font-size:13px;color:var(--green);font-weight:600;margin-top:2px}
+.woz-footer{padding:16px;display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border-top:1px solid var(--border)}
+.woz-footer-lbl{font-size:13px;color:var(--text2)}
+.woz-footer-val{font-size:20px;font-weight:600;color:var(--text)}
+.section-top{padding:16px 16px 4px;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.install-bar{display:none;background:var(--green-light);border:1px solid var(--green);border-radius:var(--radius);margin:12px 16px 0;padding:12px 14px;align-items:center;gap:10px}
+.install-bar.show{display:flex}
+.install-bar-text{flex:1;font-size:13px;color:var(--green-text);font-weight:500}
+.install-bar-btn{padding:8px 14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- ===== LISTA DAWEK ===== -->
+<div id="screen-list" class="screen active">
+  <div class="topbar">
+    <div class="topbar-title">🐄 TMR Mixer</div>
+    <button class="icon-btn" onclick="openExportAll()" aria-label="Eksportuj wszystkie"><i class="ti ti-download"></i></button>
+  </div>
+  <div class="install-bar" id="install-bar">
+    <div class="install-bar-text">📲 Zainstaluj aplikację na telefonie</div>
+    <button class="install-bar-btn" onclick="installPWA()">Zainstaluj</button>
+  </div>
+  <div id="dose-list-container"></div>
+  <button class="fab" onclick="newDose()"><i class="ti ti-plus"></i> Nowa dawka</button>
+</div>
+
+<!-- ===== EDYTOR ===== -->
+<div id="screen-editor" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goBack()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button>
+    <div class="topbar-title" id="editor-topbar-title">Nowa dawka</div>
+    <button class="icon-btn" onclick="openWoz()" aria-label="Tryb wozu"><i class="ti ti-truck"></i></button>
+    <button class="icon-btn" onclick="exportPDF()" aria-label="PDF"><i class="ti ti-download"></i></button>
+  </div>
+  <div class="section-top">Informacje o dawce</div>
+  <div class="spacer"></div>
+  <div class="field-row">
+    <div class="field-label">Tytuł dawki *</div>
+    <input type="text" id="dose-title-input" placeholder="np. Krowy laktujące — szczyt">
+  </div>
+  <div class="field-row">
+    <div class="field-label">Notatka</div>
+    <input type="text" id="dose-note-input" placeholder="np. po 100 dniu laktacji">
+  </div>
+  <div class="inline-row">
+    <div class="field-wrap">
+      <div class="field-label">Liczba sztuk</div>
+      <input type="number" id="sztuki-input" value="40" min="1" inputmode="numeric" oninput="renderEditor()">
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Data</div>
+      <input type="text" id="dose-date-input" placeholder="np. 06.2025">
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-top">Mieszanka</div>
+  <div class="spacer"></div>
+  <div class="summary-strip">
+    <div class="stat-box"><div class="stat-val" id="ed-per-head">0.00</div><div class="stat-lbl">kg / sztukę</div></div>
+    <div class="stat-box"><div class="stat-val" id="ed-count">0</div><div class="stat-lbl">surowców</div></div>
+  </div>
+  <div class="woz-banner">
+    <div class="woz-banner-icon"><i class="ti ti-truck"></i></div>
+    <div>
+      <div class="woz-banner-label">Łącznie w wozie</div>
+      <div class="woz-banner-val" id="ed-woz">0</div>
+      <div class="woz-banner-unit">kg</div>
+    </div>
+  </div>
+  <div id="ing-list-wrap"></div>
+  <div class="add-ing-card">
+    <div class="add-ing-title"><i class="ti ti-plus"></i> Dodaj surowiec</div>
+    <div class="add-row">
+      <select id="ing-select" onchange="onIngSelectChange()">
+        <optgroup label="Kiszonki i pasze soczyste">
+          <option value="Kiszonka z kukurydzy|obj|30">Kiszonka z kukurydzy</option>
+          <option value="Kiszonka z trawy|obj|25">Kiszonka z trawy</option>
+          <option value="Kiszonka z lucerny|obj|28">Kiszonka z lucerny</option>
+          <option value="Kiszonka z GPS|obj|32">Kiszonka z GPS</option>
+          <option value="Kiszonka z żyta|obj|28">Kiszonka z żyta</option>
+          <option value="Trawa mokry balot|obj|25">Trawa mokry balot</option>
+          <option value="Wysłodki kiszone|obj|22">Wysłodki kiszone</option>
+          <option value="Wywarka ziemniaczana|obj|8">Wywarka ziemniaczana</option>
+          <option value="Buraki pastewne|obj|12">Buraki pastewne</option>
+          <option value="Pulpa buraczana mokra|obj|10">Pulpa buraczana (mokra)</option>
+          <option value="Młóto browarniane|obj|22">Młóto browarniane (mokre)</option>
+        </optgroup>
+        <optgroup label="Pasze suche objętościowe">
+          <option value="Siano łąkowe|obj|85">Siano łąkowe</option>
+          <option value="Siano z lucerny|obj|86">Siano z lucerny</option>
+          <option value="Słoma pszenna|obj|87">Słoma pszenna</option>
+          <option value="Słoma kukurydziana|obj|86">Słoma kukurydziana</option>
+          <option value="Wysłodki suszone|obj|88">Wysłodki suszone</option>
+          <option value="Pulpa buraczana suszona|obj|88">Pulpa buraczana (suszona)</option>
+        </optgroup>
+        <optgroup label="Pasze treściwe — zboża">
+          <option value="Śruta kukurydziana|tresciwa|88">Śruta kukurydziana</option>
+          <option value="Kukurydza ziarno|tresciwa|88">Kukurydza (ziarno)</option>
+          <option value="Śruta zbożowa|tresciwa|87">Śruta zbożowa</option>
+          <option value="Śruta pszenna|tresciwa|87">Śruta pszenna</option>
+          <option value="Śruta jęczmienna|tresciwa|87">Śruta jęczmienna</option>
+          <option value="Otręby pszenne|tresciwa|87">Otręby pszenne</option>
+          <option value="Otręby kukurydziane|tresciwa|88">Otręby kukurydziane</option>
+          <option value="Młóto suszone|tresciwa|90">Młóto suszone</option>
+        </optgroup>
+        <optgroup label="Pasze treściwe — białkowe">
+          <option value="Śruta sojowa|tresciwa|89">Śruta sojowa</option>
+          <option value="Śruta rzepakowa|tresciwa|88">Śruta rzepakowa</option>
+          <option value="Rzepak nasiona|tresciwa|88">Rzepak (nasiona)</option>
+          <option value="Makuch rzepakowy|tresciwa|88">Makuch rzepakowy</option>
+          <option value="Śruta słonecznikowa|tresciwa|88">Śruta słonecznikowa</option>
+          <option value="Śruta lniana|tresciwa|88">Śruta lniana</option>
+          <option value="Mączka rybna|tresciwa|90">Mączka rybna</option>
+          <option value="Drożdże piwne|tresciwa|92">Drożdże piwne</option>
+        </optgroup>
+        <optgroup label="Dodatki i minerały">
+          <option value="Premiks mineralny|tresciwa|97">Premiks mineralny</option>
+          <option value="Witaminy / premiks|tresciwa|97">Witaminy / premiks</option>
+          <option value="Soda oczyszczona|tresciwa|99">Soda oczyszczona</option>
+          <option value="Magnezyt MgO|tresciwa|99">Magnezyt (MgO)</option>
+          <option value="Sól NaCl|tresciwa|99">Sól (NaCl)</option>
+          <option value="Kreda pastewna|tresciwa|99">Kreda pastewna</option>
+          <option value="Fosforan dwuwapniowy|tresciwa|99">Fosforan dwuwapniowy</option>
+          <option value="Tłuszcz chroniony|tresciwa|97">Tłuszcz chroniony</option>
+          <option value="Gliceryna techniczna|tresciwa|80">Gliceryna techniczna</option>
+          <option value="Bufor KHCO3|tresciwa|99">Bufor KHCO3</option>
+        </optgroup>
+        <option value="__custom__">✏️ Własny surowiec...</option>
+      </select>
+      <div class="kg-field">
+        <input type="number" id="ing-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal">
+      </div>
+      <button class="add-btn" onclick="addIng()" aria-label="Dodaj"><i class="ti ti-plus"></i></button>
+    </div>
+    <div id="custom-ing-fields" style="display:none" class="custom-fields">
+      <input type="text" id="custom-ing-name" placeholder="Nazwa surowca">
+      <select id="custom-ing-cat">
+        <option value="obj">Objętościowa</option>
+        <option value="tresciwa">Treściwa</option>
+      </select>
+      <input type="number" id="custom-ing-sm" placeholder="SM%" min="1" max="100" step="0.1">
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-sec" onclick="duplicateDose()"><i class="ti ti-copy"></i> Duplikuj</button>
+    <button class="btn-pri" id="save-btn" onclick="saveDose()"><i class="ti ti-device-floppy"></i> Zapisz</button>
+  </div>
+  <button class="btn-del" id="delete-btn" style="display:none" onclick="deleteDose()"><i class="ti ti-trash"></i> Usuń tę dawkę</button>
+  <div class="spacer"></div>
+</div>
+
+<!-- ===== TRYB WOZU ===== -->
+<div id="screen-woz" class="screen woz-screen">
+  <div class="woz-header">
+    <button class="woz-back" onclick="showScreen('screen-editor')" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button>
+    <div class="woz-header-title" id="woz-title">Tryb wozu</div>
+    <button class="woz-back" onclick="exportPDF()" aria-label="PDF"><i class="ti ti-download"></i></button>
+  </div>
+  <div class="woz-total-bar">
+    <div class="woz-total-left">
+      <div class="woz-total-left-lbl">Sztuk:</div>
+      <div class="woz-total-left-val" id="woz-sztuki-lbl">—</div>
+      <div class="woz-total-left-lbl" style="margin-top:6px">kg / sztukę:</div>
+      <div class="woz-total-left-val" id="woz-per-head-lbl">—</div>
+    </div>
+    <div class="woz-total-right">
+      <div class="woz-total-right-lbl">Łącznie w wozie</div>
+      <div class="woz-total-right-val" id="woz-total-val">0</div>
+      <div class="woz-total-right-unit">kg</div>
+    </div>
+  </div>
+  <div id="woz-items"></div>
+  <div class="woz-footer">
+    <div class="woz-footer-lbl">Liczba surowców</div>
+    <div class="woz-footer-val" id="woz-count">0</div>
+  </div>
+</div>
+
+<script>
+var doses=[];
+var currentDoseId=null;
+var currentIngs=[];
+var deferredInstall=null;
+try{doses=JSON.parse(localStorage.getItem('tmr_v4')||'[]');}catch(e){}
+
+// PWA install prompt
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredInstall=e;
+  document.getElementById('install-bar').classList.add('show');
+});
+window.addEventListener('appinstalled',function(){
+  document.getElementById('install-bar').classList.remove('show');
+  deferredInstall=null;
+});
+function installPWA(){
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(function(){deferredInstall=null;});
+}
+
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW:',e);});
+}
+
+function save(){try{localStorage.setItem('tmr_v4',JSON.stringify(doses));}catch(e){}}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goBack(){showScreen('screen-list');renderList();}
+
+function newDose(){
+  currentDoseId=null;currentIngs=[];
+  document.getElementById('dose-title-input').value='';
+  document.getElementById('dose-note-input').value='';
+  document.getElementById('sztuki-input').value='40';
+  document.getElementById('dose-date-input').value=new Date().toLocaleDateString('pl');
+  document.getElementById('editor-topbar-title').textContent='Nowa dawka';
+  document.getElementById('delete-btn').style.display='none';
+  renderEditor();showScreen('screen-editor');
+}
+
+function openDose(id){
+  var d=doses.find(function(x){return x.id===id;});
+  if(!d)return;
+  currentDoseId=id;currentIngs=JSON.parse(JSON.stringify(d.ings));
+  document.getElementById('dose-title-input').value=d.title||'';
+  document.getElementById('dose-note-input').value=d.note||'';
+  document.getElementById('sztuki-input').value=d.sztuki||40;
+  document.getElementById('dose-date-input').value=d.date||'';
+  document.getElementById('editor-topbar-title').textContent=d.title||'Dawka';
+  document.getElementById('delete-btn').style.display='flex';
+  renderEditor();showScreen('screen-editor');
+}
+
+function duplicateDose(){
+  var title=document.getElementById('dose-title-input').value||'Dawka';
+  currentDoseId=null;
+  document.getElementById('dose-title-input').value=title+' (kopia)';
+  document.getElementById('editor-topbar-title').textContent=title+' (kopia)';
+  document.getElementById('delete-btn').style.display='none';
+  alert('Dawka zduplikowana — kliknij Zapisz aby zachować kopię');
+}
+
+function saveDose(){
+  var title=document.getElementById('dose-title-input').value.trim()||'Bez nazwy';
+  var note=document.getElementById('dose-note-input').value.trim();
+  var sztuki=parseInt(document.getElementById('sztuki-input').value)||40;
+  var date=document.getElementById('dose-date-input').value.trim();
+  if(currentDoseId){
+    var d=doses.find(function(x){return x.id===currentDoseId;});
+    if(d){d.title=title;d.note=note;d.sztuki=sztuki;d.date=date;d.ings=JSON.parse(JSON.stringify(currentIngs));}
+  } else {
+    var id='d'+Date.now();
+    doses.push({id:id,title:title,note:note,sztuki:sztuki,date:date,ings:JSON.parse(JSON.stringify(currentIngs))});
+    currentDoseId=id;
+    document.getElementById('delete-btn').style.display='flex';
+  }
+  save();
+  document.getElementById('editor-topbar-title').textContent=title;
+  var btn=document.getElementById('save-btn');
+  var orig=btn.innerHTML;
+  btn.innerHTML='<i class="ti ti-check"></i> Zapisano!';
+  btn.style.background='#085041';
+  setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},1600);
+}
+
+function deleteDose(){
+  if(!confirm('Usunąć dawkę "'+( document.getElementById('dose-title-input').value||'Bez nazwy')+'"?'))return;
+  doses=doses.filter(function(x){return x.id!==currentDoseId;});
+  save();goBack();
+}
+
+function onIngSelectChange(){
+  var v=document.getElementById('ing-select').value;
+  document.getElementById('custom-ing-fields').style.display=v==='__custom__'?'grid':'none';
+}
+
+function addIng(){
+  var v=document.getElementById('ing-select').value;
+  var kg=parseFloat(document.getElementById('ing-kg').value);
+  if(!kg||kg<=0){alert('Podaj ilość kg / sztukę');return;}
+  var name,cat,sm;
+  if(v==='__custom__'){
+    name=document.getElementById('custom-ing-name').value.trim();
+    cat=document.getElementById('custom-ing-cat').value;
+    sm=parseFloat(document.getElementById('custom-ing-sm').value)||88;
+    if(!name){alert('Podaj nazwę surowca');return;}
+  } else {
+    var p=v.split('|');name=p[0];cat=p[1];sm=parseFloat(p[2]);
+  }
+  currentIngs.push({name:name,cat:cat,sm:sm,kg:kg});
+  document.getElementById('ing-kg').value='';
+  renderEditor();
+}
+
+function removeIng(i){currentIngs.splice(i,1);renderEditor();}
+function moveIng(i,d){
+  var j=i+d;if(j<0||j>=currentIngs.length)return;
+  var t=currentIngs[i];currentIngs[i]=currentIngs[j];currentIngs[j]=t;
+  renderEditor();
+}
+function updateKg(i,val){currentIngs[i].kg=parseFloat(val)||0;renderEditor();}
+
+function renderEditor(){
+  var sztuki=parseInt(document.getElementById('sztuki-input').value)||0;
+  var total=currentIngs.reduce(function(a,s){return a+s.kg;},0);
+  document.getElementById('ed-per-head').textContent=total.toFixed(2);
+  document.getElementById('ed-woz').textContent=(total*sztuki).toFixed(0);
+  document.getElementById('ed-count').textContent=currentIngs.length;
+  var wrap=document.getElementById('ing-list-wrap');
+  if(!currentIngs.length){
+    wrap.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="ti ti-plant"></i></div><div class="empty-title">Brak surowców</div><div class="empty-sub">Wybierz surowiec i podaj kg/sztukę</div></div>';
+    return;
+  }
+  var cumul=0;
+  wrap.innerHTML='<div class="ing-list">'+currentIngs.map(function(s,i){
+    var kgWoz=s.kg*sztuki;cumul+=kgWoz;
+    var badge=s.cat==='tresciwa'?'<span class="badge badge-t">treściwa</span>':'<span class="badge badge-o">objętościowa</span>';
+    return '<div class="ing-row">'
+      +'<div class="ing-num">'+(i+1)+'</div>'
+      +'<div class="ing-body">'
+        +'<div class="ing-name">'+s.name+'</div>'+badge
+        +'<div class="ing-woz-chip"><span class="ing-woz-chip-val">'+kgWoz.toFixed(1)+'</span><span class="ing-woz-chip-unit">kg na wóz</span></div>'
+        +'<div class="ing-cumul">w wozie po dodaniu: <strong>'+cumul.toFixed(1)+' kg</strong></div>'
+      +'</div>'
+      +'<div class="ing-right">'
+        +'<div class="ing-arrows">'
+          +'<button class="arr-btn" onclick="moveIng('+i+',-1)"><i class="ti ti-chevron-up"></i></button>'
+          +'<button class="arr-btn" onclick="moveIng('+i+',1)"><i class="ti ti-chevron-down"></i></button>'
+        +'</div>'
+        +'<div class="kg-input-wrap"><input type="number" value="'+s.kg+'" min="0" step="0.01" inputmode="decimal" onchange="updateKg('+i+',this.value)"><span>kg/szt</span></div>'
+        +'<button class="del-btn" onclick="removeIng('+i+')"><i class="ti ti-x"></i></button>'
+      +'</div>'
+    +'</div>';
+  }).join('')+'</div>';
+}
+
+function openWoz(){
+  var title=document.getElementById('dose-title-input').value||'Dawka';
+  var sztuki=parseInt(document.getElementById('sztuki-input').value)||0;
+  var total=currentIngs.reduce(function(a,s){return a+s.kg;},0);
+  document.getElementById('woz-title').textContent=title;
+  document.getElementById('woz-sztuki-lbl').textContent=sztuki+' szt';
+  document.getElementById('woz-per-head-lbl').textContent=total.toFixed(2)+' kg';
+  document.getElementById('woz-total-val').textContent=(total*sztuki).toFixed(0);
+  document.getElementById('woz-count').textContent=currentIngs.length;
+  var cumul=0;
+  document.getElementById('woz-items').innerHTML=currentIngs.map(function(s,i){
+    var kgWoz=s.kg*sztuki;cumul+=kgWoz;
+    return '<div class="woz-item">'
+      +'<div class="woz-item-num">'+(i+1)+'</div>'
+      +'<div class="woz-item-name">'+s.name+'</div>'
+      +'<div class="woz-item-right">'
+        +'<div class="woz-item-kg">'+kgWoz.toFixed(1)+'</div>'
+        +'<div class="woz-item-unit">kg na wóz</div>'
+        +'<div class="woz-item-cumul">→ '+cumul.toFixed(1)+' kg</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  showScreen('screen-woz');
+}
+
+function openDoseWoz(id){openDose(id);setTimeout(openWoz,60);}
+
+function renderList(){
+  var el=document.getElementById('dose-list-container');
+  if(!doses.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="ti ti-clipboard-list"></i></div><div class="empty-title">Brak dawek</div><div class="empty-sub">Utwórz pierwszą dawkę TMR dla swojej grupy</div></div>';
+    return;
+  }
+  el.innerHTML=doses.map(function(d){
+    var total=d.ings?d.ings.reduce(function(a,s){return a+s.kg;},0):0;
+    var woz=total*(d.sztuki||0);
+    return '<div class="dose-card">'
+      +'<div class="dose-card-header"><div class="dose-title">'+d.title+'</div><div class="dose-meta">'+(d.note||'')+(d.note&&d.date?' · ':'')+(d.date||'')+'</div></div>'
+      +'<div class="dose-stats">'
+        +'<div class="dose-stat"><div class="dose-stat-val">'+(d.sztuki||0)+'</div><div class="dose-stat-lbl">sztuk</div></div>'
+        +'<div class="dose-stat"><div class="dose-stat-val">'+total.toFixed(1)+'</div><div class="dose-stat-lbl">kg / szt</div></div>'
+        +'<div class="dose-stat"><div class="dose-stat-val dose-woz-val">'+woz.toFixed(0)+'</div><div class="dose-stat-lbl">kg w wozie</div></div>'
+      +'</div>'
+      +'<div class="dose-actions">'
+        +'<button class="dose-action open" onclick="openDose(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button>'
+        +'<button class="dose-action" onclick="openDoseWoz(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button>'
+        +'<button class="dose-action" onclick="exportDosePDF(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function buildPDF(title,note,sztuki,ings){
+  var total=ings.reduce(function(a,s){return a+s.kg;},0);
+  var woz=total*sztuki;
+  var n=ings.length;
+  var scale=n<=5?1:n<=7?0.88:n<=9?0.78:n<=12?0.68:0.58;
+  var hdrPad=Math.round(18*scale),h1=Math.round(26*scale),subF=Math.round(13*scale);
+  var totalValF=Math.round(48*scale),totalLeftF=Math.round(16*scale),rowPad=Math.round(13*scale);
+  var numSz=Math.round(34*scale),numF=Math.round(15*scale),nameF=Math.round(20*scale);
+  var kgF=Math.round(36*scale),kgUnitF=Math.round(12*scale),cumulF=Math.round(15*scale);
+  var footF=Math.round(16*scale),footLblF=Math.round(13*scale);
+  var cumul=0;
+  var rows=ings.map(function(s,i){
+    var kgW=s.kg*sztuki;cumul+=kgW;
+    return '<div class="row"><div class="row-left"><div class="num" style="width:'+numSz+'px;height:'+numSz+'px;font-size:'+numF+'px">'+(i+1)+'</div><div class="name" style="font-size:'+nameF+'px">'+s.name+'</div></div><div class="row-right"><div class="kg-big" style="font-size:'+kgF+'px">'+kgW.toFixed(1)+'</div><div class="kg-unit" style="font-size:'+kgUnitF+'px">kg na wóz</div><div class="cumul" style="font-size:'+cumulF+'px">→ '+cumul.toFixed(1)+' kg</div></div></div>';
+  }).join('');
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;background:#fff;font-family:-apple-system,Arial,sans-serif;color:#111}.wrap{display:flex;flex-direction:column;min-height:100vh}.header{background:#085041;color:#fff;padding:'+hdrPad+'px 20px}.header h1{font-size:'+h1+'px;font-weight:700;margin:0 0 3px}.header .sub{font-size:'+subF+'px;color:#9FE1CB}.total-bar{background:#0F6E56;color:#fff;padding:'+hdrPad+'px 20px;display:flex;justify-content:space-between;align-items:center}.total-left{font-size:'+totalLeftF+'px;color:#9FE1CB;line-height:1.8}.total-left strong{color:#fff;font-size:'+Math.round(totalLeftF*1.1)+'px}.total-right{text-align:right}.total-lbl{font-size:'+kgUnitF+'px;color:#9FE1CB;margin-bottom:2px}.total-val{font-size:'+totalValF+'px;font-weight:700;line-height:1;color:#fff}.total-unit{font-size:'+totalLeftF+'px;color:#9FE1CB}.list{flex:1}.row{display:flex;justify-content:space-between;align-items:center;padding:'+rowPad+'px 20px;border-bottom:1px solid #ececec}.row:last-child{border-bottom:none}.row-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}.num{border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0F6E56;flex-shrink:0}.name{font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-right{text-align:right;flex-shrink:0;margin-left:12px}.kg-big{font-weight:700;color:#111;line-height:1}.kg-unit{color:#999;margin-top:1px}.cumul{color:#1D9E75;font-weight:600;margin-top:2px}.footer{background:#f5f5f5;padding:'+rowPad+'px 20px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid #ddd}.footer-lbl{font-size:'+footLblF+'px;color:#666}.footer-val{font-size:'+footF+'px;font-weight:700;color:#111}@media print{html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="wrap"><div class="header"><h1>'+title+'</h1><div class="sub">'+(note?note+' · ':'')+new Date().toLocaleDateString('pl')+'</div></div><div class="total-bar"><div class="total-left">Sztuk: <strong>'+sztuki+'</strong><br>kg / sztukę: <strong>'+total.toFixed(2)+'</strong></div><div class="total-right"><div class="total-lbl">Łącznie w wozie</div><div class="total-val">'+woz.toFixed(0)+'</div><div class="total-unit">kg</div></div></div><div class="list">'+rows+'</div><div class="footer"><div><div class="footer-lbl">Liczba surowców</div><div class="footer-val">'+n+'</div></div><div style="text-align:right"><div class="footer-lbl">Razem kg / sztukę</div><div class="footer-val">'+total.toFixed(2)+' kg</div></div></div></div></body></html>';
+}
+
+function exportPDF(){
+  openPrint(buildPDF(document.getElementById('dose-title-input').value||'Dawka',document.getElementById('dose-note-input').value,parseInt(document.getElementById('sztuki-input').value)||0,currentIngs));
+}
+function exportDosePDF(id){
+  var d=doses.find(function(x){return x.id===id;});
+  if(d)openPrint(buildPDF(d.title,d.note,d.sztuki,d.ings));
+}
+function openExportAll(){
+  if(!doses.length){alert('Brak dawek');return;}
+  var body=doses.map(function(d){var t=d.ings.reduce(function(a,s){return a+s.kg;},0);return '<h2>'+d.title+'</h2><p>'+(d.note||'')+(d.date?' | '+d.date:'')+' | '+d.sztuki+' szt | '+t.toFixed(2)+' kg/szt | '+(t*d.sztuki).toFixed(0)+' kg w wozie</p>';}).join('');
+  openPrint('<!DOCTYPE html><html><head><meta charset="utf-8"><title>TMR — wszystkie dawki</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:24px}h1{font-size:18px}h2{font-size:14px;margin-top:18px;border-bottom:1px solid #eee;padding-bottom:4px}p{color:#444}</style></head><body><h1>TMR Mixer — wszystkie dawki</h1><p>'+new Date().toLocaleString('pl')+'</p>'+body+'</body></html>');
+}
+function openPrint(html){
+  var w=window.open('','_blank');
+  if(!w){alert('Zezwól na wyskakujące okna aby wyeksportować PDF');return;}
+  w.document.write(html);w.document.close();setTimeout(function(){w.print();},500);
+}
+
+renderList();
+</script>
+</body>
+</html>
