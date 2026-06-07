@@ -8,593 +8,211 @@
 <meta name="apple-mobile-web-app-title" content="TMR Mixer">
 <meta name="theme-color" content="#1D9E75">
 <link rel="manifest" id="manifest-link">
-<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>TMR Mixer</title>
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TH6XRB2SHV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-TH6XRB2SHV');
-</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-TH6XRB2SHV');</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
-:root{
-  --green:#1D9E75;--green-dark:#0F6E56;--green-darker:#085041;
-  --green-light:#E1F5EE;--green-mid:#9FE1CB;--green-text:#085041;
-  --bg:#ffffff;--bg2:#f5f5f5;--bg3:#ebebeb;
-  --text:#111111;--text2:#666666;--text3:#999999;
-  --border:#e0e0e0;--border2:#cccccc;--red:#E24B4A;
-  --radius:10px;--radius-sm:7px;
-}
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#1a1a1a;--bg2:#252525;--bg3:#303030;
-    --text:#f0f0f0;--text2:#aaaaaa;--text3:#777777;
-    --border:#333333;--border2:#444444;
-    --green-light:#0a3028;--green-text:#9FE1CB;
-  }
-}
+:root{--g:#1D9E75;--gd:#0F6E56;--gk:#085041;--gl:#E1F5EE;--gm:#9FE1CB;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--bg:#fff;--bg2:#f5f5f5;--bg3:#eee;--tx:#111;--tx2:#666;--tx3:#999;--bd:#e0e0e0;--bd2:#ccc;--red:#E24B4A;--r:10px;--rs:7px}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--tx:#f0f0f0;--tx2:#aaa;--tx3:#777;--bd:#333;--bd2:#444;--gl:#0a3028;--pl:#1a1540}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden}
-.screen{display:none;min-height:100vh;padding-bottom:32px}
-.screen.active{display:block}
-.topbar{display:flex;align-items:center;gap:8px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10}
-.topbar-title{flex:1;font-size:18px;font-weight:600;color:var(--text)}
-.icon-btn{background:none;border:none;cursor:pointer;color:var(--text2);padding:7px;border-radius:var(--radius-sm);font-size:22px;display:flex;align-items:center;justify-content:center}
-.icon-btn:active{background:var(--bg3)}
-.fab{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px;padding:15px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:16px;font-weight:600;width:calc(100% - 32px)}
-.fab:active{background:var(--green-dark)}
-.fab i{font-size:22px}
-.dose-card{margin:12px 16px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.dose-card-header{padding:14px 14px 10px}
-.dose-title{font-size:16px;font-weight:600;color:var(--text)}
-.dose-meta{font-size:13px;color:var(--text2);margin-top:3px}
-.dose-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
-.dose-stat{padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
-.dose-stat:last-child{border-right:none}
-.dose-stat-val{font-size:16px;font-weight:600;color:var(--text)}
-.dose-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
-.dose-woz-val{color:var(--green)!important}
-.dose-actions{display:flex;border-top:1px solid var(--border)}
-.dose-action{flex:1;padding:12px 4px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:4px;border-right:1px solid var(--border)}
-.dose-action:last-child{border-right:none}
-.dose-action:active{background:var(--bg2)}
-.dose-action.open{color:var(--green);font-weight:600}
-.spacer{height:16px}
-.divider{height:1px;background:var(--border);margin:8px 16px}
-.field-row{padding:0 16px;margin-bottom:10px}
-.field-label{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
-input[type=text],input[type=number],select{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none}
-input:focus,select:focus{outline:2px solid var(--green);border-color:var(--green)}
-.inline-row{display:flex;gap:8px;padding:0 16px;margin-bottom:10px}
-.inline-row .field-wrap{flex:1}
-.inline-row .field-wrap .field-label{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
-.summary-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-bottom:6px}
-.stat-box{background:var(--bg2);border-radius:var(--radius-sm);padding:11px 13px}
-.stat-val{font-size:24px;font-weight:600;color:var(--text)}
-.stat-lbl{font-size:11px;color:var(--text3);margin-top:2px}
-.woz-banner{margin:6px 16px 14px;background:var(--green-light);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:16px;border:1px solid var(--green)}
-.woz-banner-icon{font-size:32px;color:var(--green-dark)}
-.woz-banner-label{font-size:12px;color:var(--green-text);font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
-.woz-banner-val{font-size:40px;font-weight:700;color:var(--green);line-height:1}
-.woz-banner-unit{font-size:14px;color:var(--green-dark);margin-top:3px;font-weight:500}
-.ing-list{margin:0 16px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
-.ing-row{display:flex;align-items:flex-start;padding:12px;border-bottom:1px solid var(--border);gap:8px;background:var(--bg)}
-.ing-row:last-child{border-bottom:none}
-.ing-num{font-size:13px;color:var(--text3);min-width:20px;margin-top:2px}
-.ing-body{flex:1;min-width:0}
-.ing-name{font-size:15px;font-weight:600;color:var(--text)}
-.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;margin-top:4px}
-.badge-t{background:#EAF3DE;color:#3B6D11}
-.badge-o{background:#E6F1FB;color:#185FA5}
-.ing-woz-chip{display:inline-flex;align-items:baseline;gap:4px;background:var(--green-light);border-radius:6px;padding:4px 10px;margin-top:6px;border:1px solid var(--green)}
-.ing-woz-chip-val{font-size:17px;font-weight:700;color:var(--green)}
-.ing-woz-chip-unit{font-size:12px;color:var(--green-dark);font-weight:500}
-.ing-cumul{font-size:12px;color:var(--text2);margin-top:4px}
-.ing-cumul strong{color:var(--green-dark);font-weight:600}
-.ing-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.ing-arrows{display:flex;gap:4px}
-.arr-btn{background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text2);padding:5px 8px;font-size:14px;line-height:1}
-.arr-btn:active{background:var(--bg3)}
-.kg-input-wrap{display:flex;align-items:center;gap:4px}
-.kg-input-wrap input{width:72px;font-size:15px;padding:8px 9px;text-align:right}
-.kg-input-wrap span{font-size:12px;color:var(--text3)}
-.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px;margin-top:2px}
-.del-btn:active{color:var(--red)}
-.add-ing-card{margin:0 16px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
-.add-ing-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:11px;text-transform:uppercase;letter-spacing:.04em}
-.add-row{display:flex;gap:8px;align-items:flex-end}
-.add-row select{flex:1;font-size:14px;padding:10px 11px}
-.add-row .kg-field{width:82px}
-.add-row .kg-field input{font-size:15px;padding:10px 9px;text-align:right}
-.add-btn{padding:10px 14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:22px;display:flex;align-items:center;flex-shrink:0}
-.add-btn:active{background:var(--green-dark)}
-.custom-fields{display:grid;grid-template-columns:1fr 100px 70px;gap:8px;margin-top:10px}
-.custom-fields input,.custom-fields select{font-size:14px;padding:9px 10px}
-.btn-row{display:flex;gap:8px;padding:0 16px;margin-bottom:12px}
-.btn-sec{flex:1;padding:13px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500}
-.btn-sec:active{background:var(--bg2)}
-.btn-pri{flex:1;padding:13px;background:var(--green);border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:#fff;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-pri:active{background:var(--green-dark)}
-.btn-del{padding:13px;background:var(--bg);border:1px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;color:var(--red);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500;width:calc(100% - 32px);margin:0 16px 12px}
-.btn-del:active{background:#fff0f0}
-.empty-state{padding:48px 24px;text-align:center;color:var(--text2)}
-.empty-icon{font-size:44px;color:var(--green-mid);margin-bottom:12px}
-.empty-title{font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
-.empty-sub{font-size:14px;line-height:1.5}
-.woz-screen{background:var(--bg)}
-.woz-header{background:var(--green-dark);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-.woz-header-title{flex:1;font-size:18px;font-weight:600}
-.woz-back{background:none;border:none;cursor:pointer;color:#fff;font-size:24px;padding:4px;display:flex}
-.woz-total-bar{background:var(--green-darker);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.woz-total-left{color:var(--green-mid)}
-.woz-total-left-lbl{font-size:12px;margin-bottom:2px}
-.woz-total-left-val{font-size:15px;font-weight:600;color:#fff}
-.woz-total-right{text-align:right}
-.woz-total-right-lbl{font-size:12px;color:var(--green-mid);margin-bottom:3px}
-.woz-total-right-val{font-size:32px;font-weight:700;color:#fff;line-height:1}
-.woz-total-right-unit{font-size:13px;color:var(--green-mid);margin-top:2px}
-.woz-item{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
-.woz-item-num{width:32px;height:32px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green-dark);flex-shrink:0}
-.woz-item-name{flex:1;font-size:17px;font-weight:600;color:var(--text)}
-.woz-item-right{text-align:right}
-.woz-item-kg{font-size:28px;font-weight:700;color:var(--text)}
-.woz-item-unit{font-size:12px;color:var(--text2)}
-.woz-item-cumul{font-size:13px;color:var(--green);font-weight:600;margin-top:2px}
-.woz-footer{padding:16px;display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border-top:1px solid var(--border)}
-.woz-footer-lbl{font-size:13px;color:var(--text2)}
-.woz-footer-val{font-size:20px;font-weight:600;color:var(--text)}
-.section-top{padding:16px 16px 4px;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
-.install-bar{display:none;background:var(--green-light);border:1px solid var(--green);border-radius:var(--radius);margin:12px 16px 0;padding:12px 14px;align-items:center;gap:10px}
-.install-bar.show{display:flex}
-.install-bar-text{flex:1;font-size:13px;color:var(--green-text);font-weight:500}
-.install-bar-btn{padding:8px 14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding-bottom:24px}.screen.active{display:block}
+.topbar{display:flex;align-items:center;gap:6px;padding:12px 16px 10px;border-bottom:1px solid var(--bd);background:var(--bg);position:sticky;top:0;z-index:10}
+.topbar-t{flex:1;font-size:17px;font-weight:600;color:var(--tx)}
+.ib{background:none;border:none;cursor:pointer;color:var(--tx2);padding:6px;border-radius:var(--rs);font-size:20px;display:flex;align-items:center}.ib:active{background:var(--bg3)}
+.tabs{display:flex;gap:6px;padding:10px 16px 0}
+.tab{flex:1;padding:10px 6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}
+.tab i{font-size:18px}.tab-sub{font-size:9px;opacity:.8;font-weight:400}
+.fl{padding:0 16px;margin-bottom:8px}.fl-l{font-size:12px;color:var(--tx2);margin-bottom:4px;font-weight:500}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:15px;font-family:inherit}input:focus,select:focus{outline:2px solid var(--g);border-color:var(--g)}
+input[type=number]{text-align:right}
+.ir{display:flex;gap:8px;padding:0 16px;margin-bottom:8px}.fw{flex:1}
+.s2{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 16px;margin-bottom:6px}
+.sb{background:var(--bg2);border-radius:var(--rs);padding:9px 11px}.sv{font-size:20px;font-weight:600;color:var(--tx)}.sl{font-size:10px;color:var(--tx3);margin-top:1px}
+.bn2{margin:4px 16px 10px;border-radius:var(--r);padding:13px 16px;display:flex;align-items:center;gap:12px}
+.bw{background:var(--gl);border:1px solid var(--g)}.bdd2{background:var(--pl);border:1px solid var(--p)}
+.bi{font-size:26px}.bw .bi{color:var(--gd)}.bdd2 .bi{color:var(--p)}
+.bl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}.bw .bl{color:var(--gk)}.bdd2 .bl{color:var(--pd)}
+.bvl{font-size:32px;font-weight:600;line-height:1}.bw .bvl{color:var(--gd)}.bdd2 .bvl{color:var(--p)}
+.bu{font-size:11px}.bw .bu{color:var(--gd)}.bdd2 .bu{color:var(--p)}
+.ac{margin:0 16px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:12px}
+.at2{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.ar{display:flex;gap:6px;align-items:flex-end}.ar select{flex:1;font-size:13px;padding:9px 10px}.ar input{width:76px;font-size:14px;padding:9px 8px}
+.addb{padding:9px 13px;color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-size:18px;display:flex;align-items:center;flex-shrink:0}.addb:active{opacity:.8}
+.cf{margin-top:7px}.cf input,.cf select{font-size:13px;padding:8px 10px;margin-bottom:4px}
+.ls{margin:0 16px;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
+.rw{display:flex;align-items:flex-start;padding:10px 11px;border-bottom:1px solid var(--bd);gap:6px}.rw:last-child{border-bottom:none}
+.rn{font-size:11px;color:var(--tx3);min-width:16px;margin-top:2px}
+.rname{font-size:14px;font-weight:600;color:var(--tx)}
+.badge{display:inline-block;padding:1px 6px;border-radius:99px;font-size:9px;font-weight:600;margin-top:2px}
+.bt{background:#EAF3DE;color:#3B6D11}.bo{background:#E6F1FB;color:#185FA5}
+.rr{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ra{display:flex;gap:3px}.arb{background:var(--bg2);border:1px solid var(--bd);border-radius:4px;cursor:pointer;color:var(--tx2);padding:3px 6px;font-size:12px;line-height:1}.arb:active{background:var(--bg3)}
+.kw{display:flex;align-items:center;gap:3px}.kw input{width:64px;font-size:13px;padding:6px 7px;text-align:right}.kw span{font-size:10px;color:var(--tx3)}
+.cp{font-size:11px;margin-top:2px;font-weight:500}.cg{color:var(--gd)}.cv{color:var(--p)}
+.dl{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:16px;padding:3px}.dl:active{color:var(--red)}
+.br{display:flex;gap:6px;padding:0 16px;margin-bottom:8px}
+.btn{flex:1;padding:11px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx)}.btn:active{background:var(--bg2)}
+.bp{color:#fff;border:none}.bpg{background:var(--g)}.bpp{background:var(--p)}
+.bdd{border-color:var(--red);color:var(--red)}
+.em{padding:36px 20px;text-align:center;color:var(--tx2)}.em-i{font-size:32px;margin-bottom:8px}.em-t{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:4px}.em-s{font-size:12px;line-height:1.4}
+.hn{font-size:11px;color:var(--tx2);background:var(--bg2);border-radius:var(--rs);padding:8px 12px;margin:0 16px 10px;line-height:1.4}
+.dc{margin:0 16px 8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.dch{padding:11px 12px 8px}.dct{font-size:15px;font-weight:600;color:var(--tx)}.dcm{font-size:11px;color:var(--tx2);margin-top:2px}
+.dcs{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--bd)}
+.dss{padding:8px 6px;text-align:center;border-right:1px solid var(--bd)}.dss:last-child{border-right:none}
+.dsv{font-size:15px;font-weight:600;color:var(--tx)}.dsl{font-size:9px;color:var(--tx3);margin-top:1px}
+.dca{display:flex;border-top:1px solid var(--bd)}.dab{flex:1;padding:10px 4px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--tx2);display:flex;align-items:center;justify-content:center;gap:3px;border-right:1px solid var(--bd)}.dab:last-child{border-right:none}.dab:active{background:var(--bg2)}.dab.op{color:var(--gd);font-weight:600}.dab.opv{color:var(--p);font-weight:600}
+.fab{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 16px;padding:14px;border:none;border-radius:var(--r);cursor:pointer;font-size:15px;font-weight:600;width:calc(100% - 32px);color:#fff}.fab:active{opacity:.85}
+.divider{height:1px;background:var(--bd);margin:4px 16px}.spacer{height:10px}
+.sec-top{padding:10px 16px 4px;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em}
+.woz-hdr{background:var(--gd);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.woz-hdr-t{flex:1;font-size:18px;font-weight:600}
+.woz-hdr button{background:none;border:none;cursor:pointer;color:#fff;font-size:22px;padding:4px;display:flex}
+.woz-tot{background:var(--gk);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;color:var(--gm)}
+.woz-tot-l{font-size:13px;line-height:1.8}.woz-tot-l strong{color:#fff;font-size:14px}
+.woz-tot-rv{font-size:30px;font-weight:600;color:#fff;line-height:1}
+.wi{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.win{width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gd);flex-shrink:0}
+.winm{flex:1;font-size:16px;font-weight:600;color:var(--tx)}
+.wirk{font-size:24px;font-weight:600;color:var(--tx)}.wiru{font-size:11px;color:var(--tx2)}.wirc{font-size:12px;color:var(--g);font-weight:600;margin-top:1px}
+.woz-ft{padding:12px 16px;display:flex;justify-content:space-between;background:var(--bg2);border-top:1px solid var(--bd)}
+.woz-ft-l{font-size:12px;color:var(--tx2)}.woz-ft-v{font-size:17px;font-weight:600;color:var(--tx)}
+.install-bar{display:none;background:var(--gl);border:1px solid var(--g);border-radius:var(--r);margin:10px 16px 0;padding:10px 12px;align-items:center;gap:8px}
+.install-bar.show{display:flex}.install-txt{flex:1;font-size:12px;color:var(--gk);font-weight:500}
+.install-btn{padding:7px 12px;background:var(--g);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
 
-<!-- ===== LISTA DAWEK ===== -->
-<div id="screen-list" class="screen active">
-  <div class="topbar">
-    <div class="topbar-title">🐄 TMR Mixer</div>
-    <button class="icon-btn" onclick="openExportAll()" aria-label="Eksportuj wszystkie"><i class="ti ti-download"></i></button>
+<div id="scr-main" class="screen active">
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div></div>
+  <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
+  <div class="tabs">
+    <button class="tab tp" id="t-d" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → na sztukę</span></button>
+    <button class="tab" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span></button>
   </div>
-  <div class="install-bar" id="install-bar">
-    <div class="install-bar-text">📲 Zainstaluj aplikację na telefonie</div>
-    <button class="install-bar-btn" onclick="installPWA()">Zainstaluj</button>
-  </div>
-  <div id="dose-list-container"></div>
-  <button class="fab" onclick="newDose()"><i class="ti ti-plus"></i> Nowa dawka</button>
+  <div id="tab-d" style="padding:10px 0"></div>
+  <div id="tab-w" style="display:none;padding:10px 0"></div>
 </div>
 
-<!-- ===== EDYTOR ===== -->
-<div id="screen-editor" class="screen">
-  <div class="topbar">
-    <button class="icon-btn" onclick="goBack()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button>
-    <div class="topbar-title" id="editor-topbar-title">Nowa dawka</div>
-    <button class="icon-btn" onclick="openWoz()" aria-label="Tryb wozu"><i class="ti ti-truck"></i></button>
-    <button class="icon-btn" onclick="exportPDF()" aria-label="PDF"><i class="ti ti-download"></i></button>
-  </div>
-  <div class="section-top">Informacje o dawce</div>
-  <div class="spacer"></div>
-  <div class="field-row">
-    <div class="field-label">Tytuł dawki *</div>
-    <input type="text" id="dose-title-input" placeholder="np. Krowy laktujące — szczyt">
-  </div>
-  <div class="field-row">
-    <div class="field-label">Notatka</div>
-    <input type="text" id="dose-note-input" placeholder="np. po 100 dniu laktacji">
-  </div>
-  <div class="inline-row">
-    <div class="field-wrap">
-      <div class="field-label">Liczba sztuk</div>
-      <input type="number" id="sztuki-input" value="40" min="1" inputmode="numeric" oninput="renderEditor()">
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Data</div>
-      <input type="text" id="dose-date-input" placeholder="np. 06.2025">
-    </div>
-  </div>
-  <div class="divider"></div>
-  <div class="section-top">Mieszanka</div>
-  <div class="spacer"></div>
-  <div class="summary-strip">
-    <div class="stat-box"><div class="stat-val" id="ed-per-head">0.00</div><div class="stat-lbl">kg / sztukę</div></div>
-    <div class="stat-box"><div class="stat-val" id="ed-count">0</div><div class="stat-lbl">surowców</div></div>
-  </div>
-  <div class="woz-banner">
-    <div class="woz-banner-icon"><i class="ti ti-truck"></i></div>
-    <div>
-      <div class="woz-banner-label">Łącznie w wozie</div>
-      <div class="woz-banner-val" id="ed-woz">0</div>
-      <div class="woz-banner-unit">kg</div>
-    </div>
-  </div>
-  <div id="ing-list-wrap"></div>
-  <div class="add-ing-card">
-    <div class="add-ing-title"><i class="ti ti-plus"></i> Dodaj surowiec</div>
-    <div class="add-row">
-      <select id="ing-select" onchange="onIngSelectChange()">
-        <optgroup label="Kiszonki i pasze soczyste">
-          <option value="Kiszonka z kukurydzy|obj|30">Kiszonka z kukurydzy</option>
-          <option value="Kiszonka z trawy|obj|25">Kiszonka z trawy</option>
-          <option value="Kiszonka z lucerny|obj|28">Kiszonka z lucerny</option>
-          <option value="Kiszonka z GPS|obj|32">Kiszonka z GPS</option>
-          <option value="Kiszonka z żyta|obj|28">Kiszonka z żyta</option>
-          <option value="Trawa mokry balot|obj|25">Trawa mokry balot</option>
-          <option value="Wysłodki kiszone|obj|22">Wysłodki kiszone</option>
-          <option value="Wywarka ziemniaczana|obj|8">Wywarka ziemniaczana</option>
-          <option value="Buraki pastewne|obj|12">Buraki pastewne</option>
-          <option value="Pulpa buraczana mokra|obj|10">Pulpa buraczana (mokra)</option>
-          <option value="Młóto browarniane|obj|22">Młóto browarniane (mokre)</option>
-        </optgroup>
-        <optgroup label="Pasze suche objętościowe">
-          <option value="Siano łąkowe|obj|85">Siano łąkowe</option>
-          <option value="Siano z lucerny|obj|86">Siano z lucerny</option>
-          <option value="Słoma pszenna|obj|87">Słoma pszenna</option>
-          <option value="Słoma kukurydziana|obj|86">Słoma kukurydziana</option>
-          <option value="Wysłodki suszone|obj|88">Wysłodki suszone</option>
-          <option value="Pulpa buraczana suszona|obj|88">Pulpa buraczana (suszona)</option>
-        </optgroup>
-        <optgroup label="Pasze treściwe — zboża">
-          <option value="Śruta kukurydziana|tresciwa|88">Śruta kukurydziana</option>
-          <option value="Kukurydza ziarno|tresciwa|88">Kukurydza (ziarno)</option>
-          <option value="Śruta zbożowa|tresciwa|87">Śruta zbożowa</option>
-          <option value="Śruta pszenna|tresciwa|87">Śruta pszenna</option>
-          <option value="Śruta jęczmienna|tresciwa|87">Śruta jęczmienna</option>
-          <option value="Otręby pszenne|tresciwa|87">Otręby pszenne</option>
-          <option value="Otręby kukurydziane|tresciwa|88">Otręby kukurydziane</option>
-          <option value="Młóto suszone|tresciwa|90">Młóto suszone</option>
-        </optgroup>
-        <optgroup label="Pasze treściwe — białkowe">
-          <option value="Śruta sojowa|tresciwa|89">Śruta sojowa</option>
-          <option value="Śruta rzepakowa|tresciwa|88">Śruta rzepakowa</option>
-          <option value="Rzepak nasiona|tresciwa|88">Rzepak (nasiona)</option>
-          <option value="Makuch rzepakowy|tresciwa|88">Makuch rzepakowy</option>
-          <option value="Śruta słonecznikowa|tresciwa|88">Śruta słonecznikowa</option>
-          <option value="Śruta lniana|tresciwa|88">Śruta lniana</option>
-          <option value="Mączka rybna|tresciwa|90">Mączka rybna</option>
-          <option value="Drożdże piwne|tresciwa|92">Drożdże piwne</option>
-        </optgroup>
-        <optgroup label="Dodatki i minerały">
-          <option value="Premiks mineralny|tresciwa|97">Premiks mineralny</option>
-          <option value="Witaminy / premiks|tresciwa|97">Witaminy / premiks</option>
-          <option value="Soda oczyszczona|tresciwa|99">Soda oczyszczona</option>
-          <option value="Magnezyt MgO|tresciwa|99">Magnezyt (MgO)</option>
-          <option value="Sól NaCl|tresciwa|99">Sól (NaCl)</option>
-          <option value="Kreda pastewna|tresciwa|99">Kreda pastewna</option>
-          <option value="Fosforan dwuwapniowy|tresciwa|99">Fosforan dwuwapniowy</option>
-          <option value="Tłuszcz chroniony|tresciwa|97">Tłuszcz chroniony</option>
-          <option value="Gliceryna techniczna|tresciwa|80">Gliceryna techniczna</option>
-          <option value="Bufor KHCO3|tresciwa|99">Bufor KHCO3</option>
-        </optgroup>
-        <option value="__custom__">✏️ Własny surowiec...</option>
-      </select>
-      <div class="kg-field">
-        <input type="number" id="ing-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal">
-      </div>
-      <button class="add-btn" onclick="addIng()" aria-label="Dodaj"><i class="ti ti-plus"></i></button>
-    </div>
-    <div id="custom-ing-fields" style="display:none" class="custom-fields">
-      <input type="text" id="custom-ing-name" placeholder="Nazwa surowca">
-      <select id="custom-ing-cat">
-        <option value="obj">Objętościowa</option>
-        <option value="tresciwa">Treściwa</option>
-      </select>
-      <input type="number" id="custom-ing-sm" placeholder="SM%" min="1" max="100" step="0.1">
-    </div>
-  </div>
-  <div class="btn-row">
-    <button class="btn-sec" onclick="duplicateDose()"><i class="ti ti-copy"></i> Duplikuj</button>
-    <button class="btn-pri" id="save-btn" onclick="saveDose()"><i class="ti ti-device-floppy"></i> Zapisz</button>
-  </div>
-  <button class="btn-del" id="delete-btn" style="display:none" onclick="deleteDose()"><i class="ti ti-trash"></i> Usuń tę dawkę</button>
-  <div class="spacer"></div>
+<div id="scr-d-edit" class="screen">
+  <div class="topbar"><button class="ib" onclick="backD()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="d-topbar">Nowa dawka</div><button class="ib" onclick="pdfD()"><i class="ti ti-download"></i></button></div>
+  <div class="sec-top">Informacje</div><div class="spacer"></div>
+  <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="d-title" placeholder="np. Krowy — nowy klient"></div>
+  <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="d-szt" value="50" min="1" inputmode="numeric" oninput="renderD()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="d-note" placeholder="np. stado A"></div></div>
+  <div class="divider"></div><div class="sec-top">Mieszanka</div><div class="spacer"></div>
+  <div class="s2"><div class="sb"><div class="sv" id="d-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="d-cnt">0</div><div class="sl">surowców</div></div></div>
+  <div class="bn2 bdd2"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="d-woz">0</div><div class="bu">kg</div></div></div>
+  <div id="d-ing-list"></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="d-sel"></select><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><div id="d-cf" style="display:none" class="cf"><input type="text" id="d-cn" placeholder="Nazwa surowca"><select id="d-cc"><option value="obj">Objętościowa</option><option value="t">Treściwa</option></select></div></div>
+  <div class="br"><button class="btn" onclick="dupD()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpp" id="d-save-btn" onclick="saveD()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
+  <div class="br"><button class="btn bp bpg" onclick="migrateD()"><i class="ti ti-arrow-right"></i> Przenieś do Obliczania wozu</button></div>
+  <button class="btn bdd" id="d-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delD()"><i class="ti ti-trash"></i> Usuń dawkę</button>
 </div>
 
-<!-- ===== TRYB WOZU ===== -->
-<div id="screen-woz" class="screen woz-screen">
-  <div class="woz-header">
-    <button class="woz-back" onclick="showScreen('screen-editor')" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button>
-    <div class="woz-header-title" id="woz-title">Tryb wozu</div>
-    <button class="woz-back" onclick="exportPDF()" aria-label="PDF"><i class="ti ti-download"></i></button>
-  </div>
-  <div class="woz-total-bar">
-    <div class="woz-total-left">
-      <div class="woz-total-left-lbl">Sztuk:</div>
-      <div class="woz-total-left-val" id="woz-sztuki-lbl">—</div>
-      <div class="woz-total-left-lbl" style="margin-top:6px">kg / sztukę:</div>
-      <div class="woz-total-left-val" id="woz-per-head-lbl">—</div>
-    </div>
-    <div class="woz-total-right">
-      <div class="woz-total-right-lbl">Łącznie w wozie</div>
-      <div class="woz-total-right-val" id="woz-total-val">0</div>
-      <div class="woz-total-right-unit">kg</div>
-    </div>
-  </div>
+<div id="scr-w-edit" class="screen">
+  <div class="topbar"><button class="ib" onclick="backW()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="w-topbar">Nowa dawka</div><button class="ib" onclick="wozView()"><i class="ti ti-truck"></i></button><button class="ib" onclick="pdfW()"><i class="ti ti-download"></i></button></div>
+  <div class="sec-top">Informacje</div><div class="spacer"></div>
+  <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="w-title" placeholder="np. Krowy laktujące — szczyt"></div>
+  <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="w-szt" value="40" min="1" inputmode="numeric" oninput="renderW()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="w-note" placeholder="np. po 100 dniu"></div></div>
+  <div class="divider"></div><div class="sec-top">Mieszanka</div><div class="spacer"></div>
+  <div class="s2"><div class="sb"><div class="sv" id="w-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="w-cnt">0</div><div class="sl">surowców</div></div></div>
+  <div class="bn2 bw"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="w-woz">0</div><div class="bu">kg</div></div></div>
+  <div id="w-ing-list"></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="w-sel"></select><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><div id="w-cf" style="display:none" class="cf"><input type="text" id="w-cn" placeholder="Nazwa surowca"><select id="w-cc"><option value="obj">Objętościowa</option><option value="t">Treściwa</option></select></div></div>
+  <div class="br"><button class="btn" onclick="dupW()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpg" id="w-save-btn" onclick="saveW()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
+  <button class="btn bdd" id="w-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delW()"><i class="ti ti-trash"></i> Usuń dawkę</button>
+</div>
+
+<div id="scr-woz" class="screen">
+  <div class="woz-hdr"><button onclick="show('scr-w-edit')"><i class="ti ti-arrow-left"></i></button><div class="woz-hdr-t" id="woz-t">Tryb wozu</div><button onclick="pdfW()"><i class="ti ti-download"></i></button></div>
+  <div class="woz-tot"><div class="woz-tot-l">Sztuk: <strong id="wz-szt">—</strong><br>kg/szt: <strong id="wz-ph">—</strong></div><div style="text-align:right"><div style="font-size:11px">Łącznie w wozie</div><div class="woz-tot-rv" id="wz-tot">0</div><div style="font-size:12px">kg</div></div></div>
   <div id="woz-items"></div>
-  <div class="woz-footer">
-    <div class="woz-footer-lbl">Liczba surowców</div>
-    <div class="woz-footer-val" id="woz-count">0</div>
-  </div>
+  <div class="woz-ft"><div><div class="woz-ft-l">Surowców</div><div class="woz-ft-v" id="wz-cnt">0</div></div><div style="text-align:right"><div class="woz-ft-l">Razem kg/szt</div><div class="woz-ft-v" id="wz-ph2">0</div></div></div>
 </div>
 
 <script>
-var doses=[];
-var currentDoseId=null;
-var currentIngs=[];
-var deferredInstall=null;
-try{doses=JSON.parse(localStorage.getItem('tmr_v4')||'[]');}catch(e){}
+var BASE=[
+{g:'Kiszonki i pasze soczyste',items:[['Kiszonka z kukurydzy','obj'],['Kiszonka z trawy','obj'],['Kiszonka z koniczyny','obj'],['Kiszonka z lucerny','obj'],['Kiszonka z GPS','obj'],['Kiszonka z żyta','obj'],['Trawa mokry balot','obj'],['Wysłodki kiszone','obj'],['Wywarka ziemniaczana','obj'],['Buraki pastewne','obj'],['Pulpa buraczana mokra','obj'],['Młóto browarniane','obj']]},
+{g:'Pasze suche objętościowe',items:[['Siano łąkowe','obj'],['Siano z lucerny','obj'],['Słoma pszenna','obj'],['Słoma kukurydziana','obj'],['Wysłodki suszone','obj'],['Pulpa buraczana suszona','obj']]},
+{g:'Pasze treściwe — zboża',items:[['Śruta kukurydziana','t'],['Kukurydza ziarno','t'],['Śruta zbożowa','t'],['Mieszanka zbożowa','t'],['Śruta pszenna','t'],['Śruta jęczmienna','t'],['Otręby pszenne','t'],['Otręby kukurydziane','t'],['Młóto suszone','t']]},
+{g:'Pasze treściwe — białkowe',items:[['Śruta sojowa','t'],['Śruta rzepakowa','t'],['Rzepak nasiona','t'],['Makuch rzepakowy','t'],['Śruta słonecznikowa','t'],['Śruta lniana','t'],['Mączka rybna','t'],['Drożdże piwne','t'],['Pasza 22','t']]},
+{g:'Dodatki i minerały',items:[['Premiks mineralny','t'],['Witaminy / premiks','t'],['Soda oczyszczona','t'],['Magnezyt MgO','t'],['Sól NaCl','t'],['Kreda pastewna','t'],['Fosforan dwuwapniowy','t'],['Tłuszcz chroniony','t'],['Gliceryna techniczna','t'],['Bufor KHCO3','t']]}
+];
+var customIngs=[];try{customIngs=JSON.parse(localStorage.getItem('tmr_custom')||'[]')}catch(e){}
+var dDoses=[];try{dDoses=JSON.parse(localStorage.getItem('tmr_dd')||'[]')}catch(e){}
+var wDoses=[];try{wDoses=JSON.parse(localStorage.getItem('tmr_wd')||'[]')}catch(e){}
+var dId=null,dIngs=[],wId=null,wIngs=[],deferredInstall=null;
 
-// PWA install prompt
-window.addEventListener('beforeinstallprompt',function(e){
-  e.preventDefault();
-  deferredInstall=e;
-  document.getElementById('install-bar').classList.add('show');
-});
-window.addEventListener('appinstalled',function(){
-  document.getElementById('install-bar').classList.remove('show');
-  deferredInstall=null;
-});
-function installPWA(){
-  if(!deferredInstall)return;
-  deferredInstall.prompt();
-  deferredInstall.userChoice.then(function(){deferredInstall=null;});
-}
+// Migrate old v4 data
+(function(){try{var old=JSON.parse(localStorage.getItem('tmr_v4')||'[]');if(old.length&&!wDoses.length){wDoses=old.map(function(d){return{id:d.id||'wd'+Date.now()+Math.random(),title:d.title||'Dawka',note:d.note||'',szt:d.sztuki||d.szt||40,ings:d.ings||[]}});saveAll();localStorage.removeItem('tmr_v4')}}catch(e){}})();
 
-// Service Worker
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(function(e){console.warn('SW:',e);});
-}
+function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs))}catch(e){}}
 
-function save(){try{localStorage.setItem('tmr_v4',JSON.stringify(doses));}catch(e){}}
+// PWA
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;document.getElementById('install-bar').classList.add('show')});
+window.addEventListener('appinstalled',function(){document.getElementById('install-bar').classList.remove('show')});
+function installPWA(){if(!deferredInstall)return;deferredInstall.prompt();deferredInstall.userChoice.then(function(){deferredInstall=null})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){})}
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-function goBack(){showScreen('screen-list');renderList();}
+// Navigation
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function showTab(t){document.getElementById('t-d').className=t==='d'?'tab tp':'tab';document.getElementById('t-w').className=t==='w'?'tab tg':'tab';document.getElementById('tab-d').style.display=t==='d'?'block':'none';document.getElementById('tab-w').style.display=t==='w'?'block':'none';if(t==='d')renderDList();else renderWList()}
 
-function newDose(){
-  currentDoseId=null;currentIngs=[];
-  document.getElementById('dose-title-input').value='';
-  document.getElementById('dose-note-input').value='';
-  document.getElementById('sztuki-input').value='40';
-  document.getElementById('dose-date-input').value=new Date().toLocaleDateString('pl');
-  document.getElementById('editor-topbar-title').textContent='Nowa dawka';
-  document.getElementById('delete-btn').style.display='none';
-  renderEditor();showScreen('screen-editor');
-}
+// Shared ingredients
+function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1];o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var cf=id==='d-sel'?'d-cf':'w-cf';document.getElementById(cf).style.display=s.value==='__c__'?'block':'none'}})}
+function addCustom(n,c){if(!customIngs.find(function(x){return x[0]===n})){customIngs.push([n,c]);rebuildSelects();saveAll()}}
+function badge(c){return c==='t'?'<span class="badge bt">treściwa</span>':'<span class="badge bo">objętościowa</span>'}
+function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
 
-function openDose(id){
-  var d=doses.find(function(x){return x.id===id;});
-  if(!d)return;
-  currentDoseId=id;currentIngs=JSON.parse(JSON.stringify(d.ings));
-  document.getElementById('dose-title-input').value=d.title||'';
-  document.getElementById('dose-note-input').value=d.note||'';
-  document.getElementById('sztuki-input').value=d.sztuki||40;
-  document.getElementById('dose-date-input').value=d.date||'';
-  document.getElementById('editor-topbar-title').textContent=d.title||'Dawka';
-  document.getElementById('delete-btn').style.display='flex';
-  renderEditor();showScreen('screen-editor');
-}
+// ====== DAWKA (Ustalanie) ======
+function newD(){dId=null;dIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';renderD();show('scr-d-edit')}
+function openD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;dId=id;dIngs=JSON.parse(JSON.stringify(d.ings));document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='block';renderD();show('scr-d-edit')}
+function backD(){show('scr-main');renderDList()}
+function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(dIngs))}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs))});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();flash('d-save-btn')}
+function delD(){if(!confirm('Usunąć tę dawkę?'))return;dDoses=dDoses.filter(function(x){return x.id!==dId});saveAll();backD()}
+function dupD(){dId=null;document.getElementById('d-title').value=(document.getElementById('d-title').value||'Dawka')+' (kopia)';document.getElementById('d-del-btn').style.display='none'}
+function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){alert('Podaj kg na wóz');return}var nm,ct;if(v==='__c__'){nm=document.getElementById('d-cn').value.trim();ct=document.getElementById('d-cc').value;if(!nm){alert('Podaj nazwę');return}addCustom(nm,ct)}else{var p=v.split('|');nm=p[0];ct=p[1]}dIngs.push({name:nm,cat:ct,kgWoz:kg});document.getElementById('d-kg').value='';renderD()}
+function rmD(i){dIngs.splice(i,1);renderD()}
+function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;renderD()}
+function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;renderD()}
+function renderD(){var szt=parseInt(document.getElementById('d-szt').value)||0,tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;var el=document.getElementById('d-ing-list');if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Podaj ile kg każdego surowca trafia do wozu</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div><div class="cp cg" style="font-weight:400;font-size:10px">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
+function migrateD(){var szt=parseInt(document.getElementById('d-szt').value)||1,title=document.getElementById('d-title').value.trim()||'Dawka',note=document.getElementById('d-note').value.trim();var ings=dIngs.map(function(s){return{name:s.name,cat:s.cat,kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:title,note:(note?note+' | ':'')+'z ustalania dawki',szt:szt,ings:ings});saveAll();alert('"'+title+'" przeniesiona do Obliczania wozu!');showTab('w')}
+function migrateFromList(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,kg:d.szt>0?Math.round(s.kgWoz/d.szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:d.title,note:(d.note?d.note+' | ':'')+'z ustalania dawki',szt:d.szt,ings:ings});saveAll();alert('"'+d.title+'" przeniesiona!');showTab('w')}
+function renderDList(){var el=document.getElementById('tab-d');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj ile kg surowca trafia do wozu i liczbę sztuk \u2014 apka wyliczy dawkę na sztukę.</div>';if(!dDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Ustal ile paszy przypada na sztukę</div></div><button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+dDoses.map(function(d){var tw=d.ings.reduce(function(a,s){return a+s.kgWoz},0),ph=d.szt>0?(tw/d.szt).toFixed(1):'—';return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+d.szt+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+tw.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div><div class="dss"><div class="dsv" style="color:var(--p)">'+ph+'</div><div class="dsl">kg/szt</div></div></div><div class="dca"><button class="dab opv" onclick="openD(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfDoseD(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="migrateFromList(\''+d.id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button></div></div>'}).join('')+'<button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
 
-function duplicateDose(){
-  var title=document.getElementById('dose-title-input').value||'Dawka';
-  currentDoseId=null;
-  document.getElementById('dose-title-input').value=title+' (kopia)';
-  document.getElementById('editor-topbar-title').textContent=title+' (kopia)';
-  document.getElementById('delete-btn').style.display='none';
-  alert('Dawka zduplikowana — kliknij Zapisz aby zachować kopię');
-}
+// ====== WÓZ (Obliczanie) ======
+function newW(){wId=null;wIngs=[];document.getElementById('w-title').value='';document.getElementById('w-note').value='';document.getElementById('w-szt').value='40';document.getElementById('w-topbar').textContent='Nowa dawka';document.getElementById('w-del-btn').style.display='none';renderW();show('scr-w-edit')}
+function openW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)return;wId=id;wIngs=JSON.parse(JSON.stringify(d.ings));document.getElementById('w-title').value=d.title;document.getElementById('w-note').value=d.note||'';document.getElementById('w-szt').value=d.szt;document.getElementById('w-topbar').textContent=d.title;document.getElementById('w-del-btn').style.display='block';renderW();show('scr-w-edit')}
+function backW(){show('scr-main');renderWList()}
+function saveW(){var t=document.getElementById('w-title').value.trim()||'Bez nazwy',n=document.getElementById('w-note').value.trim(),s=parseInt(document.getElementById('w-szt').value)||40;if(wId){var d=wDoses.find(function(x){return x.id===wId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(wIngs))}}else{wId='wd'+Date.now();wDoses.push({id:wId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(wIngs))});document.getElementById('w-del-btn').style.display='block'}document.getElementById('w-topbar').textContent=t;saveAll();flash('w-save-btn')}
+function delW(){if(!confirm('Usunąć?'))return;wDoses=wDoses.filter(function(x){return x.id!==wId});saveAll();backW()}
+function dupW(){wId=null;document.getElementById('w-title').value=(document.getElementById('w-title').value||'Dawka')+' (kopia)';document.getElementById('w-del-btn').style.display='none'}
+function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){alert('Podaj kg/szt');return}var nm,ct;if(v==='__c__'){nm=document.getElementById('w-cn').value.trim();ct=document.getElementById('w-cc').value;if(!nm){alert('Podaj nazwę');return}addCustom(nm,ct)}else{var p=v.split('|');nm=p[0];ct=p[1]}wIngs.push({name:nm,cat:ct,kg:kg});document.getElementById('w-kg').value='';renderW()}
+function rmW(i){wIngs.splice(i,1);renderW()}
+function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;renderW()}
+function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;renderW()}
+function renderW(){var szt=parseInt(document.getElementById('w-szt').value)||0,total=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('w-ph').textContent=total.toFixed(2);document.getElementById('w-woz').textContent=(total*szt).toFixed(0);document.getElementById('w-cnt').textContent=wIngs.length;var el=document.getElementById('w-ing-list');if(!wIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-plant"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj surowce z dawką na sztukę</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cg">'+kw.toFixed(1)+' kg na wóz \u2192 w wozie '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvW('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvW('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kg+'" min="0" step="0.01" inputmode="decimal" onchange="ukW('+i+',this.value)"><span>kg/szt</span></div><button class="dl" onclick="rmW('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
+function renderWList(){var el=document.getElementById('tab-w');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj dawkę na sztukę i liczbę sztuk \u2014 apka wyliczy ile kg załadować do wozu.</div>';if(!wDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Utwórz dawkę lub przenieś z Ustalania</div></div><button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+wDoses.map(function(d){var t=d.ings?d.ings.reduce(function(a,s){return a+s.kg},0):0,w=t*(d.szt||0);return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+(d.szt||0)+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+t.toFixed(1)+'</div><div class="dsl">kg/szt</div></div><div class="dss"><div class="dsv" style="color:var(--gd)">'+w.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div></div><div class="dca"><button class="dab op" onclick="openW(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="pdfDoseW(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button></div></div>'}).join('')+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
 
-function saveDose(){
-  var title=document.getElementById('dose-title-input').value.trim()||'Bez nazwy';
-  var note=document.getElementById('dose-note-input').value.trim();
-  var sztuki=parseInt(document.getElementById('sztuki-input').value)||40;
-  var date=document.getElementById('dose-date-input').value.trim();
-  if(currentDoseId){
-    var d=doses.find(function(x){return x.id===currentDoseId;});
-    if(d){d.title=title;d.note=note;d.sztuki=sztuki;d.date=date;d.ings=JSON.parse(JSON.stringify(currentIngs));}
-  } else {
-    var id='d'+Date.now();
-    doses.push({id:id,title:title,note:note,sztuki:sztuki,date:date,ings:JSON.parse(JSON.stringify(currentIngs))});
-    currentDoseId=id;
-    document.getElementById('delete-btn').style.display='flex';
-  }
-  save();
-  document.getElementById('editor-topbar-title').textContent=title;
-  var btn=document.getElementById('save-btn');
-  var orig=btn.innerHTML;
-  btn.innerHTML='<i class="ti ti-check"></i> Zapisano!';
-  btn.style.background='#085041';
-  setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},1600);
-}
+// Tryb wozu
+function wozView(){var t=document.getElementById('w-title').value||'Dawka',szt=parseInt(document.getElementById('w-szt').value)||0,tot=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('woz-t').textContent=t;document.getElementById('wz-szt').textContent=szt+' szt';document.getElementById('wz-ph').textContent=tot.toFixed(2)+' kg';document.getElementById('wz-tot').textContent=(tot*szt).toFixed(0);document.getElementById('wz-cnt').textContent=wIngs.length;document.getElementById('wz-ph2').textContent=tot.toFixed(2);var cum=0;document.getElementById('woz-items').innerHTML=wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="wi"><div class="win">'+(i+1)+'</div><div class="winm">'+s.name+'</div><div style="text-align:right"><div class="wirk">'+kw.toFixed(1)+'</div><div class="wiru">kg na wóz</div><div class="wirc">\u2192 '+cum.toFixed(0)+' kg</div></div></div>'}).join('');show('scr-woz')}
+function wozDose(id){openW(id);setTimeout(wozView,60)}
 
-function deleteDose(){
-  if(!confirm('Usunąć dawkę "'+( document.getElementById('dose-title-input').value||'Bez nazwy')+'"?'))return;
-  doses=doses.filter(function(x){return x.id!==currentDoseId;});
-  save();goBack();
-}
+// PDF
+function buildPDF(title,note,szt,ings,mode){var n=ings.length,sc=n<=5?1:n<=7?.85:n<=9?.72:n<=12?.62:.52;var hP=Math.round(14*sc),h1F=Math.round(22*sc),subF=Math.round(11*sc),tvF=Math.round(40*sc),tlF=Math.round(14*sc),rP=Math.round(10*sc),nS=Math.round(28*sc),nF=Math.round(12*sc),nmF=Math.round(16*sc),kF=Math.round(28*sc),kuF=Math.round(9*sc),cuF=Math.round(11*sc),fF=Math.round(13*sc),flF=Math.round(10*sc);var hdrBg,barBg,cumBg,cumClr;if(mode==='d'){hdrBg='#3C3489';barBg='#534AB7';cumBg='#EEEDFE';cumClr='#534AB7'}else{hdrBg='#085041';barBg='#0F6E56';cumBg='#E1F5EE';cumClr='#1D9E75'}var cum=0,rows='';if(mode==='d'){var tw=ings.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;ings.forEach(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';rows+='<div class="row"><div class="row-l"><div class="num" style="width:'+nS+'px;height:'+nS+'px;font-size:'+nF+'px">'+(i+1)+'</div><div class="nm" style="font-size:'+nmF+'px">'+s.name+'</div></div><div class="row-r"><div class="kb" style="font-size:'+kF+'px">'+s.kgWoz.toFixed(0)+' <span style="font-size:'+kuF+'px;color:#999">kg/wóz</span> <span style="font-size:'+Math.round(kuF*1.1)+'px;color:'+cumClr+';font-weight:600">\u2192 '+p+' kg/szt</span></div><div class="cu" style="font-size:'+cuF+'px">w wozie: '+cum.toFixed(0)+' kg</div></div></div>'});return pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,ph.toFixed(2),tw.toFixed(0),'Suma kg/szt',ph.toFixed(2),rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF)}else{var total=ings.reduce(function(a,s){return a+s.kg},0),woz=total*szt;ings.forEach(function(s,i){var kw=s.kg*szt;cum+=kw;rows+='<div class="row"><div class="row-l"><div class="num" style="width:'+nS+'px;height:'+nS+'px;font-size:'+nF+'px">'+(i+1)+'</div><div class="nm" style="font-size:'+nmF+'px">'+s.name+'</div></div><div class="row-r"><div class="kb" style="font-size:'+kF+'px">'+kw.toFixed(1)+'</div><div class="ku" style="font-size:'+kuF+'px">kg na wóz</div><div class="cu" style="font-size:'+cuF+'px">\u2192 '+cum.toFixed(0)+' kg</div></div></div>'});return pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,total.toFixed(2),woz.toFixed(0),'Razem kg/szt',total.toFixed(2),rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF)}}
+function pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,phTxt,wozTxt,ftLbl,ftVal,rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF){return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;background:#fff;font-family:-apple-system,Arial,sans-serif;color:#111}.wrap{display:flex;flex-direction:column;min-height:100vh}.hdr{background:'+hdrBg+';color:#fff;padding:'+hP+'px 16px}.hdr h1{font-size:'+h1F+'px;font-weight:700}.hdr .sub{font-size:'+subF+'px;color:rgba(255,255,255,.7)}.tb{background:'+barBg+';color:#fff;padding:'+hP+'px 16px;display:flex;justify-content:space-between;align-items:center}.tl{font-size:'+tlF+'px;color:rgba(255,255,255,.7);line-height:1.8}.tl strong{color:#fff}.tr{text-align:right}.trl{font-size:'+Math.round(9*1)+'px;color:rgba(255,255,255,.7)}.trv{font-size:'+tvF+'px;font-weight:700;line-height:1}.list{flex:1}.row{display:flex;justify-content:space-between;align-items:center;padding:'+rP+'px 16px;border-bottom:1px solid #eee}.row:last-child{border-bottom:none}.row-l{display:flex;align-items:center;gap:10px;flex:1;min-width:0}.num{border-radius:50%;background:'+cumBg+';display:flex;align-items:center;justify-content:center;font-weight:700;color:'+cumClr+';flex-shrink:0}.nm{font-weight:600;color:#111}.row-r{text-align:right;flex-shrink:0;margin-left:10px}.kb{font-weight:700;color:#111;line-height:1.2}.ku{color:#999}.cu{color:'+cumClr+';font-weight:500;margin-top:1px}.ft{background:#f5f5f5;padding:'+rP+'px 16px;display:flex;justify-content:space-between;border-top:2px solid #ddd}.fl{font-size:'+flF+'px;color:#666}.fv{font-size:'+fF+'px;font-weight:700}@media print{html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="wrap"><div class="hdr"><h1>'+title+'</h1><div class="sub">'+(note?note+' \xB7 ':'')+new Date().toLocaleDateString('pl')+'</div></div><div class="tb"><div class="tl">Sztuk: <strong>'+szt+'</strong><br>kg/szt: <strong>'+phTxt+'</strong></div><div class="tr"><div class="trl">\u0141\u0105cznie w wozie</div><div class="trv">'+wozTxt+'</div><div style="font-size:'+Math.round(tlF*.7)+'px;color:rgba(255,255,255,.7)">kg</div></div></div><div class="list">'+rows+'</div><div class="ft"><div><div class="fl">Surowc\u00F3w</div><div class="fv">'+n+'</div></div><div style="text-align:right"><div class="fl">'+ftLbl+'</div><div class="fv">'+ftVal+' kg</div></div></div></div></body></html>'}
+function openPrint(h){var w=window.open('','_blank');if(!w){alert('Zezwól na wyskakujące okna');return}w.document.write(h);w.document.close();setTimeout(function(){w.print()},500)}
+function pdfD(){openPrint(buildPDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,dIngs,'d'))}
+function pdfW(){openPrint(buildPDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,wIngs,'w'))}
+function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'d'))}
+function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'w'))}
 
-function onIngSelectChange(){
-  var v=document.getElementById('ing-select').value;
-  document.getElementById('custom-ing-fields').style.display=v==='__custom__'?'grid':'none';
-}
-
-function addIng(){
-  var v=document.getElementById('ing-select').value;
-  var kg=parseFloat(document.getElementById('ing-kg').value);
-  if(!kg||kg<=0){alert('Podaj ilość kg / sztukę');return;}
-  var name,cat,sm;
-  if(v==='__custom__'){
-    name=document.getElementById('custom-ing-name').value.trim();
-    cat=document.getElementById('custom-ing-cat').value;
-    sm=parseFloat(document.getElementById('custom-ing-sm').value)||88;
-    if(!name){alert('Podaj nazwę surowca');return;}
-  } else {
-    var p=v.split('|');name=p[0];cat=p[1];sm=parseFloat(p[2]);
-  }
-  currentIngs.push({name:name,cat:cat,sm:sm,kg:kg});
-  document.getElementById('ing-kg').value='';
-  renderEditor();
-}
-
-function removeIng(i){currentIngs.splice(i,1);renderEditor();}
-function moveIng(i,d){
-  var j=i+d;if(j<0||j>=currentIngs.length)return;
-  var t=currentIngs[i];currentIngs[i]=currentIngs[j];currentIngs[j]=t;
-  renderEditor();
-}
-function updateKg(i,val){currentIngs[i].kg=parseFloat(val)||0;renderEditor();}
-
-function renderEditor(){
-  var sztuki=parseInt(document.getElementById('sztuki-input').value)||0;
-  var total=currentIngs.reduce(function(a,s){return a+s.kg;},0);
-  document.getElementById('ed-per-head').textContent=total.toFixed(2);
-  document.getElementById('ed-woz').textContent=(total*sztuki).toFixed(0);
-  document.getElementById('ed-count').textContent=currentIngs.length;
-  var wrap=document.getElementById('ing-list-wrap');
-  if(!currentIngs.length){
-    wrap.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="ti ti-plant"></i></div><div class="empty-title">Brak surowców</div><div class="empty-sub">Wybierz surowiec i podaj kg/sztukę</div></div>';
-    return;
-  }
-  var cumul=0;
-  wrap.innerHTML='<div class="ing-list">'+currentIngs.map(function(s,i){
-    var kgWoz=s.kg*sztuki;cumul+=kgWoz;
-    var badge=s.cat==='tresciwa'?'<span class="badge badge-t">treściwa</span>':'<span class="badge badge-o">objętościowa</span>';
-    return '<div class="ing-row">'
-      +'<div class="ing-num">'+(i+1)+'</div>'
-      +'<div class="ing-body">'
-        +'<div class="ing-name">'+s.name+'</div>'+badge
-        +'<div class="ing-woz-chip"><span class="ing-woz-chip-val">'+kgWoz.toFixed(1)+'</span><span class="ing-woz-chip-unit">kg na wóz</span></div>'
-        +'<div class="ing-cumul">w wozie po dodaniu: <strong>'+cumul.toFixed(1)+' kg</strong></div>'
-      +'</div>'
-      +'<div class="ing-right">'
-        +'<div class="ing-arrows">'
-          +'<button class="arr-btn" onclick="moveIng('+i+',-1)"><i class="ti ti-chevron-up"></i></button>'
-          +'<button class="arr-btn" onclick="moveIng('+i+',1)"><i class="ti ti-chevron-down"></i></button>'
-        +'</div>'
-        +'<div class="kg-input-wrap"><input type="number" value="'+s.kg+'" min="0" step="0.01" inputmode="decimal" onchange="updateKg('+i+',this.value)"><span>kg/szt</span></div>'
-        +'<button class="del-btn" onclick="removeIng('+i+')"><i class="ti ti-x"></i></button>'
-      +'</div>'
-    +'</div>';
-  }).join('')+'</div>';
-}
-
-function openWoz(){
-  var title=document.getElementById('dose-title-input').value||'Dawka';
-  var sztuki=parseInt(document.getElementById('sztuki-input').value)||0;
-  var total=currentIngs.reduce(function(a,s){return a+s.kg;},0);
-  document.getElementById('woz-title').textContent=title;
-  document.getElementById('woz-sztuki-lbl').textContent=sztuki+' szt';
-  document.getElementById('woz-per-head-lbl').textContent=total.toFixed(2)+' kg';
-  document.getElementById('woz-total-val').textContent=(total*sztuki).toFixed(0);
-  document.getElementById('woz-count').textContent=currentIngs.length;
-  var cumul=0;
-  document.getElementById('woz-items').innerHTML=currentIngs.map(function(s,i){
-    var kgWoz=s.kg*sztuki;cumul+=kgWoz;
-    return '<div class="woz-item">'
-      +'<div class="woz-item-num">'+(i+1)+'</div>'
-      +'<div class="woz-item-name">'+s.name+'</div>'
-      +'<div class="woz-item-right">'
-        +'<div class="woz-item-kg">'+kgWoz.toFixed(1)+'</div>'
-        +'<div class="woz-item-unit">kg na wóz</div>'
-        +'<div class="woz-item-cumul">→ '+cumul.toFixed(1)+' kg</div>'
-      +'</div>'
-    +'</div>';
-  }).join('');
-  showScreen('screen-woz');
-}
-
-function openDoseWoz(id){openDose(id);setTimeout(openWoz,60);}
-
-function renderList(){
-  var el=document.getElementById('dose-list-container');
-  if(!doses.length){
-    el.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="ti ti-clipboard-list"></i></div><div class="empty-title">Brak dawek</div><div class="empty-sub">Utwórz pierwszą dawkę TMR dla swojej grupy</div></div>';
-    return;
-  }
-  el.innerHTML=doses.map(function(d){
-    var total=d.ings?d.ings.reduce(function(a,s){return a+s.kg;},0):0;
-    var woz=total*(d.sztuki||0);
-    return '<div class="dose-card">'
-      +'<div class="dose-card-header"><div class="dose-title">'+d.title+'</div><div class="dose-meta">'+(d.note||'')+(d.note&&d.date?' · ':'')+(d.date||'')+'</div></div>'
-      +'<div class="dose-stats">'
-        +'<div class="dose-stat"><div class="dose-stat-val">'+(d.sztuki||0)+'</div><div class="dose-stat-lbl">sztuk</div></div>'
-        +'<div class="dose-stat"><div class="dose-stat-val">'+total.toFixed(1)+'</div><div class="dose-stat-lbl">kg / szt</div></div>'
-        +'<div class="dose-stat"><div class="dose-stat-val dose-woz-val">'+woz.toFixed(0)+'</div><div class="dose-stat-lbl">kg w wozie</div></div>'
-      +'</div>'
-      +'<div class="dose-actions">'
-        +'<button class="dose-action open" onclick="openDose(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button>'
-        +'<button class="dose-action" onclick="openDoseWoz(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button>'
-        +'<button class="dose-action" onclick="exportDosePDF(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button>'
-      +'</div>'
-    +'</div>';
-  }).join('');
-}
-
-function buildPDF(title,note,sztuki,ings){
-  var total=ings.reduce(function(a,s){return a+s.kg;},0);
-  var woz=total*sztuki;
-  var n=ings.length;
-  var scale=n<=5?1:n<=7?0.88:n<=9?0.78:n<=12?0.68:0.58;
-  var hdrPad=Math.round(18*scale),h1=Math.round(26*scale),subF=Math.round(13*scale);
-  var totalValF=Math.round(48*scale),totalLeftF=Math.round(16*scale),rowPad=Math.round(13*scale);
-  var numSz=Math.round(34*scale),numF=Math.round(15*scale),nameF=Math.round(20*scale);
-  var kgF=Math.round(36*scale),kgUnitF=Math.round(12*scale),cumulF=Math.round(15*scale);
-  var footF=Math.round(16*scale),footLblF=Math.round(13*scale);
-  var cumul=0;
-  var rows=ings.map(function(s,i){
-    var kgW=s.kg*sztuki;cumul+=kgW;
-    return '<div class="row"><div class="row-left"><div class="num" style="width:'+numSz+'px;height:'+numSz+'px;font-size:'+numF+'px">'+(i+1)+'</div><div class="name" style="font-size:'+nameF+'px">'+s.name+'</div></div><div class="row-right"><div class="kg-big" style="font-size:'+kgF+'px">'+kgW.toFixed(1)+'</div><div class="kg-unit" style="font-size:'+kgUnitF+'px">kg na wóz</div><div class="cumul" style="font-size:'+cumulF+'px">→ '+cumul.toFixed(1)+' kg</div></div></div>';
-  }).join('');
-  return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;background:#fff;font-family:-apple-system,Arial,sans-serif;color:#111}.wrap{display:flex;flex-direction:column;min-height:100vh}.header{background:#085041;color:#fff;padding:'+hdrPad+'px 20px}.header h1{font-size:'+h1+'px;font-weight:700;margin:0 0 3px}.header .sub{font-size:'+subF+'px;color:#9FE1CB}.total-bar{background:#0F6E56;color:#fff;padding:'+hdrPad+'px 20px;display:flex;justify-content:space-between;align-items:center}.total-left{font-size:'+totalLeftF+'px;color:#9FE1CB;line-height:1.8}.total-left strong{color:#fff;font-size:'+Math.round(totalLeftF*1.1)+'px}.total-right{text-align:right}.total-lbl{font-size:'+kgUnitF+'px;color:#9FE1CB;margin-bottom:2px}.total-val{font-size:'+totalValF+'px;font-weight:700;line-height:1;color:#fff}.total-unit{font-size:'+totalLeftF+'px;color:#9FE1CB}.list{flex:1}.row{display:flex;justify-content:space-between;align-items:center;padding:'+rowPad+'px 20px;border-bottom:1px solid #ececec}.row:last-child{border-bottom:none}.row-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}.num{border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0F6E56;flex-shrink:0}.name{font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-right{text-align:right;flex-shrink:0;margin-left:12px}.kg-big{font-weight:700;color:#111;line-height:1}.kg-unit{color:#999;margin-top:1px}.cumul{color:#1D9E75;font-weight:600;margin-top:2px}.footer{background:#f5f5f5;padding:'+rowPad+'px 20px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid #ddd}.footer-lbl{font-size:'+footLblF+'px;color:#666}.footer-val{font-size:'+footF+'px;font-weight:700;color:#111}@media print{html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="wrap"><div class="header"><h1>'+title+'</h1><div class="sub">'+(note?note+' · ':'')+new Date().toLocaleDateString('pl')+'</div></div><div class="total-bar"><div class="total-left">Sztuk: <strong>'+sztuki+'</strong><br>kg / sztukę: <strong>'+total.toFixed(2)+'</strong></div><div class="total-right"><div class="total-lbl">Łącznie w wozie</div><div class="total-val">'+woz.toFixed(0)+'</div><div class="total-unit">kg</div></div></div><div class="list">'+rows+'</div><div class="footer"><div><div class="footer-lbl">Liczba surowców</div><div class="footer-val">'+n+'</div></div><div style="text-align:right"><div class="footer-lbl">Razem kg / sztukę</div><div class="footer-val">'+total.toFixed(2)+' kg</div></div></div></div></body></html>';
-}
-
-function exportPDF(){
-  openPrint(buildPDF(document.getElementById('dose-title-input').value||'Dawka',document.getElementById('dose-note-input').value,parseInt(document.getElementById('sztuki-input').value)||0,currentIngs));
-}
-function exportDosePDF(id){
-  var d=doses.find(function(x){return x.id===id;});
-  if(d)openPrint(buildPDF(d.title,d.note,d.sztuki,d.ings));
-}
-function openExportAll(){
-  if(!doses.length){alert('Brak dawek');return;}
-  var body=doses.map(function(d){var t=d.ings.reduce(function(a,s){return a+s.kg;},0);return '<h2>'+d.title+'</h2><p>'+(d.note||'')+(d.date?' | '+d.date:'')+' | '+d.sztuki+' szt | '+t.toFixed(2)+' kg/szt | '+(t*d.sztuki).toFixed(0)+' kg w wozie</p>';}).join('');
-  openPrint('<!DOCTYPE html><html><head><meta charset="utf-8"><title>TMR — wszystkie dawki</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:24px}h1{font-size:18px}h2{font-size:14px;margin-top:18px;border-bottom:1px solid #eee;padding-bottom:4px}p{color:#444}</style></head><body><h1>TMR Mixer — wszystkie dawki</h1><p>'+new Date().toLocaleString('pl')+'</p>'+body+'</body></html>');
-}
-function openPrint(html){
-  var w=window.open('','_blank');
-  if(!w){alert('Zezwól na wyskakujące okna aby wyeksportować PDF');return;}
-  w.document.write(html);w.document.close();setTimeout(function(){w.print();},500);
-}
-
-renderList();
-
-// Inline manifest
-var manifestData = {
-  "name": "TMR Mixer",
-  "short_name": "TMR Mixer",
-  "description": "Aplikacja do tworzenia i zarządzania dawkami TMR dla bydła mlecznego",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#1D9E75",
-  "theme_color": "#1D9E75",
-  "orientation": "portrait",
-  "lang": "pl",
-  "icons": [
-    {"src": "data:image/png;base64,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", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-    {"src": "data:image/png;base64,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", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-  ]
-};
-var blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
-var manifestURL = URL.createObjectURL(blob);
-document.getElementById('manifest-link').setAttribute('href', manifestURL);
-
+rebuildSelects();renderDList();renderWList();
 </script>
 </body>
 </html>
