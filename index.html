@@ -22,10 +22,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar{display:flex;align-items:center;gap:6px;padding:12px 16px 10px;border-bottom:1px solid var(--bd);background:var(--bg);position:sticky;top:0;z-index:10}
 .topbar-t{flex:1;font-size:17px;font-weight:600;color:var(--tx)}
 .ib{background:none;border:none;cursor:pointer;color:var(--tx2);padding:6px;border-radius:var(--rs);font-size:20px;display:flex;align-items:center}.ib:active{background:var(--bg3)}
-.tabs{display:flex;gap:6px;padding:10px 16px 0}
-.tab{flex:1;padding:10px 6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}
-.tab i{font-size:18px}.tab-sub{font-size:9px;opacity:.8;font-weight:400}
+.tabs{display:flex;gap:4px;padding:10px 10px 0}
+.tab{flex:1;padding:8px 3px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}.tab.ta{background:#185FA5;color:#fff;border-color:#185FA5}
+.tab i{font-size:16px}.tab-sub{font-size:8px;opacity:.8;font-weight:400;line-height:1.15}
 .tab-cnt{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.15);color:inherit;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center}
 .tab.tp .tab-cnt,.tab.tg .tab-cnt{background:rgba(255,255,255,.25);color:#fff}
 .tab{position:relative}
@@ -98,15 +98,19 @@ input[type=number]{text-align:right}
   <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
-    <button class="tab tp" id="t-d" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → na sztukę</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
-    <button class="tab" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
+    <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
+    <button class="tab" id="t-d" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → na sztukę</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
+    <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">w przygotowaniu</span></button>
+    <button class="tab" id="t-a" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub">koszty i wydajność</span></button>
   </div>
-  <div id="tab-d" style="padding:10px 0"></div>
-  <div id="tab-w" style="display:none;padding:10px 0"></div>
+  <div id="tab-w" style="padding:10px 0"></div>
+  <div id="tab-d" style="display:none;padding:10px 0"></div>
+  <div id="tab-m" style="display:none;padding:10px 0"></div>
+  <div id="tab-a" style="display:none;padding:10px 0"></div>
 </div>
 
 <div id="scr-d-edit" class="screen">
-  <div class="topbar"><button class="ib" onclick="backD()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="d-topbar">Nowa dawka</div><button class="ib" onclick="pdfD()"><i class="ti ti-download"></i></button></div>
+  <div class="topbar"><button class="ib" onclick="backD()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="d-topbar">Nowa dawka</div><button class="ib" onclick="exportToAnaliza('d')" title="Do analizy efektywności"><i class="ti ti-chart-line"></i></button><button class="ib" onclick="pdfD()"><i class="ti ti-download"></i></button></div>
   <div class="sec-top">Informacje</div><div class="spacer"></div>
   <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="d-title" placeholder="np. Krowy — nowy klient" oninput="markDirtyD()"></div>
   <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="d-szt" value="50" min="1" inputmode="numeric" oninput="renderD();markDirtyD()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="d-note" placeholder="np. stado A" oninput="markDirtyD()"></div></div>
@@ -121,7 +125,7 @@ input[type=number]{text-align:right}
 </div>
 
 <div id="scr-w-edit" class="screen">
-  <div class="topbar"><button class="ib" onclick="backW()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="w-topbar">Nowa dawka</div><button class="ib" onclick="wozView()"><i class="ti ti-truck"></i></button><button class="ib" onclick="pdfW()"><i class="ti ti-download"></i></button></div>
+  <div class="topbar"><button class="ib" onclick="backW()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="w-topbar">Nowa dawka</div><button class="ib" onclick="exportToAnaliza('w')" title="Do analizy efektywności"><i class="ti ti-chart-line"></i></button><button class="ib" onclick="wozView()"><i class="ti ti-truck"></i></button><button class="ib" onclick="pdfW()"><i class="ti ti-download"></i></button></div>
   <div class="sec-top">Informacje</div><div class="spacer"></div>
   <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="w-title" placeholder="np. Krowy laktujące — szczyt" oninput="markDirtyW()"></div>
   <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="w-szt" value="40" min="1" inputmode="numeric" oninput="renderW();markDirtyW()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="w-note" placeholder="np. po 100 dniu" oninput="markDirtyW()"></div></div>
@@ -143,11 +147,11 @@ input[type=number]{text-align:right}
 
 <script>
 var BASE=[
-{g:'Kiszonki',items:[['Kiszonka z kukurydzy','obj',30],['Kiszonka z trawy','obj',25],['Kiszonka z koniczyny','obj',28],['Kiszonka z lucerny','obj',28],['Kiszonka z GPS','obj',32],['Kiszonka z żyta','obj',28],['Trawa mokry balot','obj',25],['Buraki pastewne','obj',12],['Pulpa buraczana mokra','obj',10]]},
-{g:'Pasze treściwe — mokre',items:[['Wysłodki kiszone','tm',22],['Młóto browarniane','tm',22],['Wywar gorzelniany','tm',8],['Wywar zbożowy DDGS mokry','tm',30],['Pulpa ziemniaczana','tm',12],['Melasa','tm',75],['CCM (kiszonka z kolb kukurydzy)','tm',65],['LKS (kiszonka z wilgotnego ziarna)','tm',62]]},
-{g:'Pasze suche objętościowe',items:[['Siano łąkowe','obj',85],['Siano z lucerny','obj',86],['Słoma pszenna','obj',87]]},
-{g:'Pasze treściwe — suche',items:[['Śruta kukurydziana','t',88],['Kukurydza ziarno','t',88],['Śruta zbożowa','t',87],['Mieszanka zbożowa','t',87],['Śruta pszenna','t',87],['Śruta jęczmienna','t',87],['Otręby pszenne','t',87],['Otręby kukurydziane','t',88],['Młóto suszone','t',90],['Wysłodki suszone','t',88],['Śruta sojowa','t',89],['Śruta rzepakowa','t',88],['Rzepak nasiona','t',92],['Makuch rzepakowy','t',88],['Śruta słonecznikowa','t',88],['Śruta lniana','t',88],['Mączka rybna','t',90],['Drożdże piwne','t',92],['Pasza 22','t',88]]},
-{g:'Dodatki i minerały',items:[['Premiks mineralny','t',97],['Witaminy / premiks','t',97],['Soda oczyszczona','t',99],['Magnezyt MgO','t',99],['Sól NaCl','t',99],['Kreda pastewna','t',99],['Fosforan dwuwapniowy','t',99],['Tłuszcz chroniony','t',97],['Gliceryna techniczna','t',80],['Bufor KHCO3','t',99]]}
+{g:'Kiszonki',items:[['Kiszonka z kukurydzy','obj',30,205,0,0],['Kiszonka z trawy','obj',25,175,0,0],['Kiszonka z koniczyny','obj',28,185,0,0],['Kiszonka z lucerny','obj',28,205,0,0],['Kiszonka z GPS','obj',32,180,0,0],['Kiszonka z żyta','obj',28,170,0,0],['Trawa mokry balot','obj',25,160,0,0],['Buraki pastewne','obj',12,150,0,0],['Pulpa buraczana mokra','obj',10,105,0,0]]},
+{g:'Pasze treściwe — mokre',items:[['Wysłodki kiszone','tm',22,130,0,0],['Młóto browarniane','tm',22,110,0,0],['Wywar gorzelniany','tm',8,65,0,0],['Wywar zbożowy DDGS mokry','tm',30,200,0,0],['Pulpa ziemniaczana','tm',12,85,0,0],['Melasa','tm',75,825,0,0],['CCM (kiszonka z kolb kukurydzy)','tm',65,575,0,0],['LKS (kiszonka z wilgotnego ziarna)','tm',62,625,0,0]]},
+{g:'Pasze suche objętościowe',items:[['Siano łąkowe','obj',85,500,0,0],['Siano z lucerny','obj',86,625,0,0],['Słoma pszenna','obj',87,275,0,0]]},
+{g:'Pasze treściwe — suche',items:[['Śruta kukurydziana','t',88,875,9,70],['Kukurydza ziarno','t',88,875,9,72],['Śruta zbożowa','t',87,725,12,60],['Mieszanka zbożowa','t',87,725,12,58],['Śruta pszenna','t',87,700,13,64],['Śruta jęczmienna','t',87,660,12,58],['Otręby pszenne','t',87,625,16,22],['Młóto suszone','t',90,1000,25,5],['Wysłodki suszone','t',88,950,10,2],['Śruta sojowa','t',89,1450,45,6],['Śruta rzepakowa','t',88,950,33,2],['Rzepak nasiona','t',92,2285,21,5],['Makuch rzepakowy','t',88,1250,33,4],['Śruta słonecznikowa','t',88,1025,34,2],['Śruta lniana','t',88,1750,36,3],['Mączka rybna','t',90,5000,65,0],['Drożdże piwne','t',92,3250,45,2],['Pasza 22','t',88,1900,22,25]]},
+{g:'Dodatki i minerały',items:[['Premiks mineralny','t',97,4500,0,0],['Witaminy / premiks','t',97,6000,0,0],['Soda oczyszczona','t',99,2000,0,0],['Magnezyt MgO','t',99,1600,0,0],['Sól NaCl','t',99,600,0,0],['Kreda pastewna','t',99,450,0,0],['Fosforan dwuwapniowy','t',99,3000,0,0],['Tłuszcz chroniony','t',97,7500,0,0],['Gliceryna techniczna','t',80,2000,0,0],['Bufor KHCO3','t',99,3250,0,0]]}
 ];
 var customIngs=[];try{customIngs=JSON.parse(localStorage.getItem('tmr_custom')||'[]')}catch(e){}
 var dDoses=[];try{dDoses=JSON.parse(localStorage.getItem('tmr_dd')||'[]')}catch(e){}
@@ -174,9 +178,15 @@ function updateCounters(){var dc=document.getElementById('tab-d-cnt'),wc=documen
 // Migrate old v4 data
 (function(){try{var old=JSON.parse(localStorage.getItem('tmr_v4')||'[]');if(old.length&&!wDoses.length){wDoses=old.map(function(d){return{id:d.id||'wd'+Date.now()+Math.random(),title:d.title||'Dawka',note:d.note||'',szt:d.sztuki||d.szt||40,ings:d.ings||[]}});saveAll();localStorage.removeItem('tmr_v4')}}catch(e){}})();
 
-function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs))}catch(e){}}
+function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses))}catch(e){}}
 // Pomocnicza — zwraca SM% składnika (z danych lub z bazy), używana w zakładce 3
 function getSM(ing){if(ing.sm)return ing.sm;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===ing.name)found=it[2]})});return found||88;}
+var customPrices={};try{customPrices=JSON.parse(localStorage.getItem('tmr_prices')||'{}')}catch(e){}
+function getBasePrice(name){var found=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[3]||0})});return found}
+function getProtein(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[4]||0})});return f}
+function getStarch(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[5]||0})});return f}
+function getPrice(name){if(customPrices[name]!==undefined)return customPrices[name];return getBasePrice(name)}
+function saveprices(){try{localStorage.setItem('tmr_prices',JSON.stringify(customPrices))}catch(e){}}
 
 // PWA
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;document.getElementById('install-bar').classList.add('show')});
@@ -186,7 +196,17 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').cat
 
 // Navigation
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
-function showTab(t){document.getElementById('t-d').className=t==='d'?'tab tp':'tab';document.getElementById('t-w').className=t==='w'?'tab tg':'tab';document.getElementById('tab-d').style.display=t==='d'?'block':'none';document.getElementById('tab-w').style.display=t==='w'?'block':'none';if(t==='d')renderDList();else renderWList()}
+function showTab(t){
+  document.getElementById('t-w').className=t==='w'?'tab tg':'tab';
+  document.getElementById('t-d').className=t==='d'?'tab tp':'tab';
+  document.getElementById('t-m').className=t==='m'?'tab ta':'tab';
+  document.getElementById('t-a').className=t==='a'?'tab ta':'tab';
+  document.getElementById('tab-w').style.display=t==='w'?'block':'none';
+  document.getElementById('tab-d').style.display=t==='d'?'block':'none';
+  document.getElementById('tab-m').style.display=t==='m'?'block':'none';
+  document.getElementById('tab-a').style.display=t==='a'?'block':'none';
+  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='a')renderAnaliza();else if(t==='m')renderMieszanka();
+}
 
 // Shared ingredients
 function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var cf=id==='d-sel'?'d-cf':'w-cf';document.getElementById(cf).style.display=s.value==='__c__'?'block':'none'}})}
@@ -209,7 +229,7 @@ function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
 function renderD(){var szt=parseInt(document.getElementById('d-szt').value)||0,tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;var el=document.getElementById('d-ing-list');if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Podaj ile kg każdego surowca trafia do wozu</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div><div class="cp cg" style="font-weight:400;font-size:10px">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
 function migrateD(){if(!dIngs.length){toast('Brak surowców do przeniesienia',true);return}var szt=parseInt(document.getElementById('d-szt').value)||1,title=document.getElementById('d-title').value.trim()||'Dawka',note=document.getElementById('d-note').value.trim();if(!confirm('Przenieść dawkę "'+title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,title,null);var ings=dIngs.map(function(s){return{name:s.name,cat:s.cat,kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(note?note+' | ':'')+'z ustalania dawki',szt:szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
 function migrateFromList(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;if(!confirm('Przenieść dawkę "'+d.title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,d.title,null);var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,kg:d.szt>0?Math.round(s.kgWoz/d.szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(d.note?d.note+' | ':'')+'z ustalania dawki',szt:d.szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
-function renderDList(){updateCounters();var el=document.getElementById('tab-d');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj ile kg surowca trafia do wozu i liczbę sztuk \u2014 apka wyliczy dawkę na sztukę.</div>';if(!dDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Ustal ile paszy przypada na sztukę</div></div><button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+dDoses.map(function(d){var tw=d.ings.reduce(function(a,s){return a+s.kgWoz},0),ph=d.szt>0?(tw/d.szt).toFixed(1):'—';return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+d.szt+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+tw.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div><div class="dss"><div class="dsv" style="color:var(--p)">'+ph+'</div><div class="dsl">kg/szt</div></div></div><div class="dca"><button class="dab opv" onclick="openD(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfDoseD(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="migrateFromList(\''+d.id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button></div></div>'}).join('')+'<button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
+function renderDList(){updateCounters();var el=document.getElementById('tab-d');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj ile kg surowca trafia do wozu i liczbę sztuk \u2014 apka wyliczy dawkę na sztukę.</div>';if(!dDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Ustal ile paszy przypada na sztukę</div></div><button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+dDoses.map(function(d){var tw=d.ings.reduce(function(a,s){return a+s.kgWoz},0),ph=d.szt>0?(tw/d.szt).toFixed(1):'—';return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+d.szt+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+tw.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div><div class="dss"><div class="dsv" style="color:var(--p)">'+ph+'</div><div class="dsl">kg/szt</div></div></div><div class="dca"><button class="dab opv" onclick="openD(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfDoseD(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="migrateFromList(\''+d.id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button><button class="dab" onclick="exportDoseD(\''+d.id+'\')"><i class="ti ti-chart-line"></i> Analiza</button></div></div>'}).join('')+'<button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
 
 // ====== WÓZ (Obliczanie) ======
 function newW(){wId=null;wIngs=[];document.getElementById('w-title').value='';document.getElementById('w-note').value='';document.getElementById('w-szt').value='40';document.getElementById('w-topbar').textContent='Nowa dawka';document.getElementById('w-del-btn').style.display='none';renderW();wOrig=snapshotW();wIsDirty=false;show('scr-w-edit')}
@@ -223,7 +243,7 @@ function rmW(i){wIngs.splice(i,1);markDirtyW();renderW()}
 function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;markDirtyW();renderW()}
 function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;markDirtyW();renderW()}
 function renderW(){var szt=parseInt(document.getElementById('w-szt').value)||0,total=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('w-ph').textContent=total.toFixed(2);document.getElementById('w-woz').textContent=(total*szt).toFixed(0);document.getElementById('w-cnt').textContent=wIngs.length;var el=document.getElementById('w-ing-list');if(!wIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-plant"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj surowce z dawką na sztukę</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cg">'+kw.toFixed(1)+' kg na wóz \u2192 w wozie '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvW('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvW('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kg+'" min="0" step="0.01" inputmode="decimal" onchange="ukW('+i+',this.value)"><span>kg/szt</span></div><button class="dl" onclick="rmW('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
-function renderWList(){updateCounters();var el=document.getElementById('tab-w');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj dawkę na sztukę i liczbę sztuk \u2014 apka wyliczy ile kg załadować do wozu.</div>';if(!wDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Utwórz dawkę lub przenieś z Ustalania</div></div><button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+wDoses.map(function(d){var t=d.ings?d.ings.reduce(function(a,s){return a+s.kg},0):0,w=t*(d.szt||0);return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+(d.szt||0)+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+t.toFixed(1)+'</div><div class="dsl">kg/szt</div></div><div class="dss"><div class="dsv" style="color:var(--gd)">'+w.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div></div><div class="dca"><button class="dab op" onclick="openW(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="pdfDoseW(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button></div></div>'}).join('')+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
+function renderWList(){updateCounters();var el=document.getElementById('tab-w');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj dawkę na sztukę i liczbę sztuk \u2014 apka wyliczy ile kg załadować do wozu.</div>';if(!wDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Utwórz dawkę lub przenieś z Ustalania</div></div><button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+wDoses.map(function(d){var t=d.ings?d.ings.reduce(function(a,s){return a+s.kg},0):0,w=t*(d.szt||0);return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+(d.szt||0)+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+t.toFixed(1)+'</div><div class="dsl">kg/szt</div></div><div class="dss"><div class="dsv" style="color:var(--gd)">'+w.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div></div><div class="dca"><button class="dab op" onclick="openW(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="pdfDoseW(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="exportDoseW(\''+d.id+'\')"><i class="ti ti-chart-line"></i> Analiza</button></div></div>'}).join('')+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
 
 // Tryb wozu
 function wozView(){var t=document.getElementById('w-title').value||'Dawka',szt=parseInt(document.getElementById('w-szt').value)||0,tot=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('woz-t').textContent=t;document.getElementById('wz-szt').textContent=szt+' szt';document.getElementById('wz-ph').textContent=tot.toFixed(2)+' kg';document.getElementById('wz-tot').textContent=(tot*szt).toFixed(0);document.getElementById('wz-cnt').textContent=wIngs.length;document.getElementById('wz-ph2').textContent=tot.toFixed(2);var cum=0;document.getElementById('woz-items').innerHTML=wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="wi"><div class="win">'+(i+1)+'</div><div class="winm">'+s.name+'</div><div style="text-align:right"><div class="wirk">'+kw.toFixed(1)+'</div><div class="wiru">kg na wóz</div><div class="wirc">'+cum.toFixed(0)+'</div><div class="wircu">kg na wadze</div></div></div>'}).join('');show('scr-woz')}
@@ -252,6 +272,143 @@ function pdfD(){openPrint(buildPDF(document.getElementById('d-title').value||'Da
 function pdfW(){openPrint(buildPDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,wIngs,'w'))}
 function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'d'))}
 function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'w'))}
+
+var analizaUnlocked=false;
+try{if(sessionStorage.getItem('tmr_unlock')==='1')analizaUnlocked=true}catch(e){}
+var aDoseId=null,aMilk=32,aPrice=1.80;
+var aDoses=[];try{aDoses=JSON.parse(localStorage.getItem('tmr_ad')||'[]')}catch(e){}
+
+function renderAnaliza(){
+  var el=document.getElementById('tab-a');
+  if(!analizaUnlocked){
+    el.innerHTML='<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja w przygotowaniu</div>'
+      +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-flask"></i></div><div class="em-t">Analiza dawki</div><div class="em-s">Ta funkcja jest w przygotowaniu.<br>Aby testować, wpisz hasło dostępu.</div></div>'
+      +'<div style="padding:0 16px"><input type="password" id="a-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')checkPass()"><button class="btn bp" style="width:100%;background:#185FA5" onclick="checkPass()"><i class="ti ti-key"></i> Odblokuj</button></div>';
+    return;
+  }
+  el.innerHTML=analizaContent();
+}
+function checkPass(){
+  var v=document.getElementById('a-pass').value;
+  if(v==='BIOFEED'){analizaUnlocked=true;try{sessionStorage.setItem('tmr_unlock','1')}catch(e){}toast('Dostęp odblokowany');renderAnaliza()}
+  else{toast('Nieprawidłowe hasło',true)}
+}
+var mieszankaUnlocked=false;
+try{if(sessionStorage.getItem('tmr_unlock_m')==='1')mieszankaUnlocked=true}catch(e){}
+function renderMieszanka(){
+  var el=document.getElementById('tab-m');
+  if(!mieszankaUnlocked){
+    el.innerHTML='<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja w przygotowaniu</div>'
+      +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Mieszanka treściwa</div><div class="em-s">Ta funkcja jest w przygotowaniu.<br>Aby testować, wpisz hasło dostępu.</div></div>'
+      +'<div style="padding:0 16px"><input type="password" id="m-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')checkPassM()"><button class="btn bp" style="width:100%;background:#185FA5" onclick="checkPassM()"><i class="ti ti-key"></i> Odblokuj</button></div>';
+    return;
+  }
+  el.innerHTML='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Mieszanka treściwa</div><div class="em-s">Tu powstanie kalkulator mieszanki treściwej.</div></div>';
+}
+function checkPassM(){
+  var v=document.getElementById('m-pass').value;
+  if(v==='BIOFEED'){mieszankaUnlocked=true;try{sessionStorage.setItem('tmr_unlock_m','1')}catch(e){}toast('Dostęp odblokowany');renderMieszanka()}
+  else{toast('Nieprawidłowe hasło',true)}
+}
+
+function analizaContent(){
+  if(!aDoses.length){
+    return '<div class="hn"><i class="ti ti-info-circle"></i> Wyeksportuj recepturę z zakładki Obliczanie wozu lub Ustalanie dawki (ikona wykresu), a tutaj policzysz efektywność i koszty pasz treściwych.</div>'
+      +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak receptur</div><div class="em-s">Użyj ikony <i class="ti ti-chart-line"></i> w pozostałych zakładkach, aby przenieść tu dawkę</div></div>';
+  }
+  if(!aDoseId||!aDoses.find(function(d){return d.id===aDoseId}))aDoseId=aDoses[0].id;
+  var opts=aDoses.map(function(d){return '<option value="'+d.id+'"'+(d.id===aDoseId?' selected':'')+'>'+d.title+'</option>'}).join('');
+  var h='<div class="fl"><div class="fl-l">Wybierz recepturę</div><div style="display:flex;gap:6px"><select id="a-sel" style="flex:1" onchange="aDoseId=this.value;renderAnaliza()">'+opts+'</select><button class="ib" onclick="delAnalizaDose()" title="Usuń recepturę"><i class="ti ti-trash"></i></button></div></div>';
+  h+='<div class="ir"><div class="fw"><div class="fl-l">Mleko (l/szt/dzień)</div><input type="number" id="a-milk" value="'+aMilk+'" min="0" step="0.1" inputmode="decimal" oninput="aMilk=parseFloat(this.value)||0;calcAnaliza()"></div><div class="fw"><div class="fl-l">Cena mleka (zł/l)</div><input type="number" id="a-price" value="'+aPrice+'" min="0" step="0.01" inputmode="decimal" oninput="aPrice=parseFloat(this.value)||0;calcAnaliza()"></div></div>';
+  h+='<div id="a-results"></div>';
+  h+='<div class="br" style="margin-top:10px"><button class="btn" onclick="editPrices()"><i class="ti ti-coin"></i> Edytuj ceny</button><button class="btn" onclick="pdfAnaliza()"><i class="ti ti-download"></i> PDF</button></div>';
+  setTimeout(calcAnaliza,10);
+  return h;
+}
+function delAnalizaDose(){if(!aDoseId)return;if(!confirm('Usunąć tę recepturę z Analizy?'))return;aDoses=aDoses.filter(function(x){return x.id!==aDoseId});aDoseId=null;saveAll();toast('Receptura usunięta');renderAnaliza()}
+function exportToAnaliza(src){
+  var ings,title,szt;
+  if(src==='w'){title=document.getElementById('w-title').value.trim()||'Dawka';szt=parseInt(document.getElementById('w-szt').value)||0;ings=wIngs.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:s.kg}})}
+  else{title=document.getElementById('d-title').value.trim()||'Dawka';szt=parseInt(document.getElementById('d-szt').value)||1;ings=dIngs.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}})}
+  if(!ings.length){toast('Brak surowców do analizy',true);return}
+  pushAnaliza(title,szt,ings);
+}
+function exportDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)return;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:s.kg}});pushAnaliza(d.title,d.szt,ings)}
+function exportDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;var szt=d.szt||1;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});pushAnaliza(d.title,szt,ings)}
+function pushAnaliza(title,szt,ings){var ft=uniqueTitle(aDoses,title,null);var id='ad'+Date.now();aDoses.push({id:id,title:ft,szt:szt,ings:ings});aDoseId=id;saveAll();toast('Receptura w Analizie efektywności');showTab('a')}
+
+function calcData(){
+  var d=aDoses.find(function(x){return x.id===aDoseId});if(!d)return null;
+  var szt=d.szt||0,kgT=0,costT=0,costTotal=0;
+  d.ings.forEach(function(s){
+    var price=getPrice(s.name);
+    costTotal+=s.kg*price/1000;
+    if(s.cat==='t'||s.cat==='tm'){
+      var kgEq=s.kg;
+      if(s.cat==='tm'){var sm=getSM(s);kgEq=s.kg*sm/88}
+      kgT+=kgEq;costT+=s.kg*price/1000;
+    }
+  });
+  return {dose:d,szt:szt,kgT:kgT,costT:costT,costTotal:costTotal};
+}
+function calcAnaliza(){
+  var c=calcData();if(!c)return;
+  var effT=aMilk>0?c.kgT/aMilk:0;
+  var costPerL=aMilk>0?c.costT/aMilk:0;
+  var costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
+  var el=document.getElementById('a-results');if(!el)return;
+  var missing=c.dose.ings.filter(function(s){return getPrice(s.name)<=0});
+  var priceWarn='';
+  if(missing.length){
+    priceWarn='<div style="background:#FAEEDA;border:1px solid #EF9F27;border-radius:8px;padding:11px 13px;margin-top:10px"><div style="font-size:12px;color:#633806;line-height:1.5"><i class="ti ti-alert-triangle"></i> Dawka z nowym surowcem bez podanej ceny — kliknij <strong>Edytuj ceny</strong>, aby dodać dane do kalkulacji.</div></div>';
+  }
+  el.innerHTML='<div class="s2" style="padding:0;margin-bottom:8px">'
+    +sb('#0F6E56',effT.toFixed(3),'kg treściwej / litr mleka')
+    +sb('#993C1D',costPerL.toFixed(2),'koszt treściwej / litr (zł)')
+    +'</div><div class="s2" style="padding:0;margin-bottom:8px">'
+    +sb('#185FA5',c.kgT.toFixed(2),'kg treściwej / szt (ekwiw. 88%)')
+    +sb('var(--tx)',c.costT.toFixed(2),'koszt treściwych (zł/szt)')
+    +'</div><div class="s2" style="padding:0">'
+    +sb('var(--tx)',c.costTotal.toFixed(2),'koszt całej dawki (zł/szt)')
+    +sb('var(--tx)',costTotalPerL.toFixed(2),'koszt na litr — cała dawka (zł)')
+    +'</div>'+priceWarn;
+}
+function sb(color,val,lbl){return '<div class="sb"><div class="sv" style="color:'+color+'">'+val+'</div><div class="sl">'+lbl+'</div></div>'}
+
+function editPrices(){
+  var c=calcData();if(!c)return;
+  var rows=c.dose.ings.map(function(s){
+    var p=getPrice(s.name);var nm=s.name.replace(/'/g,"\\'");
+    var warn=p<=0?' style="border-color:#EF9F27"':'';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd)"><div style="flex:1;font-size:13px">'+s.name+(p<=0?' <span style="color:#BA7517;font-size:11px">(brak ceny)</span>':'')+'</div><input type="number" value="'+(p>0?p:'')+'" placeholder="0" min="0" step="1" inputmode="numeric"'+warn+' style="width:90px;text-align:right" onchange="setPrice(\''+nm+'\',this.value)"><span style="font-size:11px;color:var(--tx3)">zł/t</span></div>';
+  }).join('');
+  var ov=document.createElement('div');ov.id='price-modal';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:flex-end';
+  ov.innerHTML='<div style="background:var(--bg);width:100%;max-width:480px;margin:0 auto;border-radius:16px 16px 0 0;max-height:80vh;overflow-y:auto;padding:16px"><div style="display:flex;align-items:center;margin-bottom:12px"><div style="flex:1;font-size:16px;font-weight:600">Ceny surowców (zł/t netto)</div><button class="ib" onclick="closePrices()"><i class="ti ti-x"></i></button></div>'+rows+'<button class="btn bp" style="width:100%;background:#185FA5;margin-top:12px" onclick="closePrices()"><i class="ti ti-check"></i> Gotowe</button></div>';
+  document.body.appendChild(ov);
+}
+function setPrice(name,val){
+  var p=parseFloat(val)||0;
+  customPrices[name]=p;saveprices();
+  var inBase=false;
+  BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name){it[3]=p;inBase=true}})});
+  if(!inBase){var ci=customIngs.find(function(x){return x[0]===name});if(ci)ci[3]=p;saveAll()}
+}
+function closePrices(){var m=document.getElementById('price-modal');if(m)m.remove();calcAnaliza()}
+
+function pdfAnaliza(){
+  var c=calcData();if(!c)return;
+  var effT=aMilk>0?c.kgT/aMilk:0,costPerL=aMilk>0?c.costT/aMilk:0,costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
+  var rows=c.dose.ings.map(function(s,i){
+    var pr=getPrice(s.name),cost=(s.kg*pr/1000).toFixed(2);
+    var tag=s.cat==='tm'?'treściwa mokra':(s.cat==='t'?'treściwa':'objętościowa');
+    var kgEq='—';
+    if(s.cat==='t')kgEq=s.kg.toFixed(2);
+    else if(s.cat==='tm'){var sm=getSM(s);kgEq=(s.kg*sm/88).toFixed(2)}
+    return '<tr><td>'+(i+1)+'. '+s.name+'</td><td style="text-align:right">'+s.kg+'</td><td>'+tag+'</td><td style="text-align:right">'+kgEq+'</td><td style="text-align:right">'+pr+'</td><td style="text-align:right">'+cost+'</td></tr>';
+  }).join('');
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.dose.title+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111;padding:0}.hdr{background:#0C447C;color:#fff;padding:16px}.hdr h1{font-size:20px}.hdr .s{font-size:12px;color:#B5D4F4}.kpi{display:flex;flex-wrap:wrap;padding:12px 16px;gap:10px;border-bottom:2px solid #ddd}.k{flex:1;min-width:110px}.kv{font-size:20px;font-weight:700}.kl{font-size:10px;color:#666}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th,td{padding:6px 16px;border-bottom:1px solid #eee;text-align:left}th{background:#f5f5f5;font-size:10px;text-transform:uppercase}.foot{padding:12px 16px;font-size:12px;color:#444}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="hdr"><h1>Analiza efektywności — '+c.dose.title+'</h1><div class="s">'+c.szt+' szt · '+aMilk+' l/szt · cena mleka '+aPrice+' zł/l · '+new Date().toLocaleDateString('pl')+'</div></div><div class="kpi"><div class="k"><div class="kv" style="color:#0F6E56">'+effT.toFixed(3)+'</div><div class="kl">kg treściwej / litr mleka</div></div><div class="k"><div class="kv" style="color:#993C1D">'+costPerL.toFixed(2)+'</div><div class="kl">koszt treściwej / litr (zł)</div></div><div class="k"><div class="kv">'+c.kgT.toFixed(2)+'</div><div class="kl">kg treściwej / szt (ekwiw. 88%)</div></div></div><table><thead><tr><th>Surowiec</th><th style="text-align:right">kg/szt</th><th>Typ</th><th style="text-align:right">kg ekwiw.88%</th><th style="text-align:right">zł/t</th><th style="text-align:right">zł/szt</th></tr></thead><tbody>'+rows+'</tbody></table><div class="foot">Koszt treściwych: <b>'+c.costT.toFixed(2)+' zł/szt</b> · Koszt całej dawki: <b>'+c.costTotal.toFixed(2)+' zł/szt</b> ('+costTotalPerL.toFixed(2)+' zł/l)</div></body></html>';
+  openPrint(html);
+}
 
 rebuildSelects();renderDList();renderWList();
 </script>
