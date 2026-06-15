@@ -180,7 +180,7 @@ function updateCounters(){var dc=document.getElementById('tab-d-cnt'),wc=documen
 
 function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses))}catch(e){}}
 // Pomocnicza — zwraca SM% składnika (z danych lub z bazy), używana w zakładce 3
-function getSM(ing){if(ing.sm)return ing.sm;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===ing.name)found=it[2]})});return found||88;}
+function getSM(ing){var name=typeof ing==='string'?ing:ing.name;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[2]})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[2])return ci[2];if(ing.sm)return ing.sm;return 88;}
 var customPrices={};try{customPrices=JSON.parse(localStorage.getItem('tmr_prices')||'{}')}catch(e){}
 function getBasePrice(name){var found=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[3]||0})});return found}
 function getProtein(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[4]||0})});return f}
@@ -337,15 +337,17 @@ function exportDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)
 function exportDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;var szt=d.szt||1;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});pushAnaliza(d.title,szt,ings)}
 function pushAnaliza(title,szt,ings){var ft=uniqueTitle(aDoses,title,null);var id='ad'+Date.now();aDoses.push({id:id,title:ft,szt:szt,ings:ings});aDoseId=id;saveAll();toast('Receptura w Analizie efektywności');showTab('a')}
 
+function getCat(name,fallback){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[1]})});if(f)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci)return ci[1];return fallback||'obj'}
 function calcData(){
   var d=aDoses.find(function(x){return x.id===aDoseId});if(!d)return null;
   var szt=d.szt||0,kgT=0,costT=0,costTotal=0;
   d.ings.forEach(function(s){
     var price=getPrice(s.name);
+    var cat=getCat(s.name,s.cat);
     costTotal+=s.kg*price/1000;
-    if(s.cat==='t'||s.cat==='tm'){
+    if(cat==='t'||cat==='tm'){
       var kgEq=s.kg;
-      if(s.cat==='tm'){var sm=getSM(s);kgEq=s.kg*sm/88}
+      if(cat==='tm'){var sm=getSM(s);kgEq=s.kg*sm/88}
       kgT+=kgEq;costT+=s.kg*price/1000;
     }
   });
@@ -356,6 +358,8 @@ function calcAnaliza(){
   var effT=aMilk>0?c.kgT/aMilk:0;
   var costPerL=aMilk>0?c.costT/aMilk:0;
   var costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
+  var przychod=aMilk*aPrice;
+  var iofc=przychod-c.costTotal;
   var el=document.getElementById('a-results');if(!el)return;
   var missing=c.dose.ings.filter(function(s){return getPrice(s.name)<=0});
   var priceWarn='';
@@ -368,9 +372,12 @@ function calcAnaliza(){
     +'</div><div class="s2" style="padding:0;margin-bottom:8px">'
     +sb('#185FA5',c.kgT.toFixed(2),'kg treściwej / szt (ekwiw. 88%)')
     +sb('var(--tx)',c.costT.toFixed(2),'koszt treściwych (zł/szt)')
-    +'</div><div class="s2" style="padding:0">'
+    +'</div><div class="s2" style="padding:0;margin-bottom:8px">'
     +sb('var(--tx)',c.costTotal.toFixed(2),'koszt całej dawki (zł/szt)')
     +sb('var(--tx)',costTotalPerL.toFixed(2),'koszt na litr — cała dawka (zł)')
+    +'</div><div class="s2" style="padding:0">'
+    +sb('#185FA5',przychod.toFixed(2),'przychód z mleka (zł/szt)')
+    +sb(iofc>=0?'#0F6E56':'#A32D2D',iofc.toFixed(2),'przychód − koszt dawki (zł/szt)')
     +'</div>'+priceWarn;
 }
 function sb(color,val,lbl){return '<div class="sb"><div class="sv" style="color:'+color+'">'+val+'</div><div class="sl">'+lbl+'</div></div>'}
@@ -398,15 +405,17 @@ function closePrices(){var m=document.getElementById('price-modal');if(m)m.remov
 function pdfAnaliza(){
   var c=calcData();if(!c)return;
   var effT=aMilk>0?c.kgT/aMilk:0,costPerL=aMilk>0?c.costT/aMilk:0,costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
+  var przychod=aMilk*aPrice,iofc=przychod-c.costTotal;
   var rows=c.dose.ings.map(function(s,i){
     var pr=getPrice(s.name),cost=(s.kg*pr/1000).toFixed(2);
-    var tag=s.cat==='tm'?'treściwa mokra':(s.cat==='t'?'treściwa':'objętościowa');
+    var cat=getCat(s.name,s.cat);
+    var tag=cat==='tm'?'treściwa mokra':(cat==='t'?'treściwa':'objętościowa');
     var kgEq='—';
-    if(s.cat==='t')kgEq=s.kg.toFixed(2);
-    else if(s.cat==='tm'){var sm=getSM(s);kgEq=(s.kg*sm/88).toFixed(2)}
+    if(cat==='t')kgEq=s.kg.toFixed(2);
+    else if(cat==='tm'){var sm=getSM(s);kgEq=(s.kg*sm/88).toFixed(2)}
     return '<tr><td>'+(i+1)+'. '+s.name+'</td><td style="text-align:right">'+s.kg+'</td><td>'+tag+'</td><td style="text-align:right">'+kgEq+'</td><td style="text-align:right">'+pr+'</td><td style="text-align:right">'+cost+'</td></tr>';
   }).join('');
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.dose.title+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111;padding:0}.hdr{background:#0C447C;color:#fff;padding:16px}.hdr h1{font-size:20px}.hdr .s{font-size:12px;color:#B5D4F4}.kpi{display:flex;flex-wrap:wrap;padding:12px 16px;gap:10px;border-bottom:2px solid #ddd}.k{flex:1;min-width:110px}.kv{font-size:20px;font-weight:700}.kl{font-size:10px;color:#666}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th,td{padding:6px 16px;border-bottom:1px solid #eee;text-align:left}th{background:#f5f5f5;font-size:10px;text-transform:uppercase}.foot{padding:12px 16px;font-size:12px;color:#444}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="hdr"><h1>Analiza efektywności — '+c.dose.title+'</h1><div class="s">'+c.szt+' szt · '+aMilk+' l/szt · cena mleka '+aPrice+' zł/l · '+new Date().toLocaleDateString('pl')+'</div></div><div class="kpi"><div class="k"><div class="kv" style="color:#0F6E56">'+effT.toFixed(3)+'</div><div class="kl">kg treściwej / litr mleka</div></div><div class="k"><div class="kv" style="color:#993C1D">'+costPerL.toFixed(2)+'</div><div class="kl">koszt treściwej / litr (zł)</div></div><div class="k"><div class="kv">'+c.kgT.toFixed(2)+'</div><div class="kl">kg treściwej / szt (ekwiw. 88%)</div></div></div><table><thead><tr><th>Surowiec</th><th style="text-align:right">kg/szt</th><th>Typ</th><th style="text-align:right">kg ekwiw.88%</th><th style="text-align:right">zł/t</th><th style="text-align:right">zł/szt</th></tr></thead><tbody>'+rows+'</tbody></table><div class="foot">Koszt treściwych: <b>'+c.costT.toFixed(2)+' zł/szt</b> · Koszt całej dawki: <b>'+c.costTotal.toFixed(2)+' zł/szt</b> ('+costTotalPerL.toFixed(2)+' zł/l)</div></body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.dose.title+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111;padding:0}.hdr{background:#0C447C;color:#fff;padding:16px}.hdr h1{font-size:20px}.hdr .s{font-size:12px;color:#B5D4F4}.kpi{display:flex;flex-wrap:wrap;padding:12px 16px;gap:10px;border-bottom:2px solid #ddd}.k{flex:1;min-width:100px}.kv{font-size:19px;font-weight:700}.kl{font-size:10px;color:#666}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th,td{padding:6px 16px;border-bottom:1px solid #eee;text-align:left}th{background:#f5f5f5;font-size:10px;text-transform:uppercase}.foot{padding:12px 16px;font-size:12px;color:#444}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="hdr"><h1>Analiza dawki — '+c.dose.title+'</h1><div class="s">'+c.szt+' szt · '+aMilk+' l/szt · cena mleka '+aPrice+' zł/l · '+new Date().toLocaleDateString('pl')+'</div></div><div class="kpi"><div class="k"><div class="kv" style="color:#0F6E56">'+effT.toFixed(3)+'</div><div class="kl">kg treściwej / litr mleka</div></div><div class="k"><div class="kv" style="color:#993C1D">'+costPerL.toFixed(2)+'</div><div class="kl">koszt treściwej / litr (zł)</div></div><div class="k"><div class="kv">'+c.kgT.toFixed(2)+'</div><div class="kl">kg treściwej / szt (ekwiw. 88%)</div></div><div class="k"><div class="kv" style="color:#185FA5">'+przychod.toFixed(2)+'</div><div class="kl">przychód z mleka (zł/szt)</div></div><div class="k"><div class="kv" style="color:'+(iofc>=0?'#0F6E56':'#A32D2D')+'">'+iofc.toFixed(2)+'</div><div class="kl">przychód − koszt dawki (zł/szt)</div></div></div><table><thead><tr><th>Surowiec</th><th style="text-align:right">kg/szt</th><th>Typ</th><th style="text-align:right">kg ekwiw.88%</th><th style="text-align:right">zł/t</th><th style="text-align:right">zł/szt</th></tr></thead><tbody>'+rows+'</tbody></table><div class="foot">Koszt treściwych: <b>'+c.costT.toFixed(2)+' zł/szt</b> · Koszt całej dawki: <b>'+c.costTotal.toFixed(2)+' zł/szt</b> ('+costTotalPerL.toFixed(2)+' zł/l) · Przychód z mleka: <b>'+przychod.toFixed(2)+' zł/szt</b> · Zysk nad paszą: <b>'+iofc.toFixed(2)+' zł/szt</b></div></body></html>';
   openPrint(html);
 }
 
