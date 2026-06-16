@@ -100,12 +100,12 @@ input[type=number]{text-align:right}
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openNotes()" title="Notatki klientów"><i class="ti ti-notebook"></i></button></div>
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
     <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-d" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → na sztukę</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
-    <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">w przygotowaniu</span></button>
+    <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">własne mieszanki</span></button>
     <button class="tab" id="t-a" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub">koszty i wydajność</span></button>
   </div>
   <div id="tab-w" style="padding:10px 0"></div>
@@ -123,7 +123,7 @@ input[type=number]{text-align:right}
   <div class="s2"><div class="sb"><div class="sv" id="d-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="d-cnt">0</div><div class="sl">surowców</div></div></div>
   <div class="bn2 bdd2"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="d-woz">0</div><div class="bu">kg</div></div></div>
   <div id="d-ing-list"></div>
-  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="d-sel"></select><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><div id="d-cf" style="display:none" class="cf"><input type="text" id="d-cn" placeholder="Nazwa surowca"><select id="d-cc" onchange="document.getElementById('d-csm-wrap').style.display=this.value==='tm'?'flex':'none'"><option value="obj">Objętościowa</option><option value="t">Treściwa</option><option value="tm">Treściwa mokra</option></select><div id="d-csm-wrap" style="display:none;align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="d-csm" min="1" max="100" step="0.1" value="30" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div></div></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="d-sel"></select><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><div id="d-cf" style="display:none" class="cf"><input type="text" id="d-cn" placeholder="Nazwa surowca"><select id="d-cc" onchange="toggleCustomFields('d')"><option value="obj">Objętościowa</option><option value="t">Treściwa sucha</option><option value="tm">Treściwa mokra</option></select><div id="d-csm-wrap" style="align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="d-csm" min="1" max="100" step="0.1" value="88" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div><div id="d-ctres" style="display:none;margin-top:6px"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="d-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="d-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Cena zł/t</div><input type="number" id="d-cprice" min="0" placeholder="0"></div></div></div></div>
   <div class="br"><button class="btn" onclick="dupD()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpp" id="d-save-btn" onclick="saveD()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
   <div class="br"><button class="btn bp bpg" onclick="migrateD()"><i class="ti ti-arrow-right"></i> Przenieś do Obliczania wozu</button></div>
   <button class="btn bdd" id="d-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delD()"><i class="ti ti-trash"></i> Usuń dawkę</button>
@@ -138,7 +138,7 @@ input[type=number]{text-align:right}
   <div class="s2"><div class="sb"><div class="sv" id="w-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="w-cnt">0</div><div class="sl">surowców</div></div></div>
   <div class="bn2 bw"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="w-woz">0</div><div class="bu">kg</div></div></div>
   <div id="w-ing-list"></div>
-  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="w-sel"></select><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><div id="w-cf" style="display:none" class="cf"><input type="text" id="w-cn" placeholder="Nazwa surowca"><select id="w-cc" onchange="document.getElementById('w-csm-wrap').style.display=this.value==='tm'?'flex':'none'"><option value="obj">Objętościowa</option><option value="t">Treściwa</option><option value="tm">Treściwa mokra</option></select><div id="w-csm-wrap" style="display:none;align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="w-csm" min="1" max="100" step="0.1" value="30" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div></div></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="w-sel"></select><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><div id="w-cf" style="display:none" class="cf"><input type="text" id="w-cn" placeholder="Nazwa surowca"><select id="w-cc" onchange="toggleCustomFields('w')"><option value="obj">Objętościowa</option><option value="t">Treściwa sucha</option><option value="tm">Treściwa mokra</option></select><div id="w-csm-wrap" style="align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="w-csm" min="1" max="100" step="0.1" value="88" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div><div id="w-ctres" style="display:none;margin-top:6px"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="w-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="w-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Cena zł/t</div><input type="number" id="w-cprice" min="0" placeholder="0"></div></div></div></div>
   <div class="br"><button class="btn" onclick="dupW()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpg" id="w-save-btn" onclick="saveW()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
   <button class="btn bdd" id="w-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delW()"><i class="ti ti-trash"></i> Usuń dawkę</button>
 </div>
@@ -151,6 +151,7 @@ input[type=number]{text-align:right}
 </div>
 
 <div id="scr-m-edit" class="screen"></div>
+<div id="scr-ingmgr" class="screen"></div>
 <div id="scr-notes" class="screen"></div>
 <div id="scr-note-client" class="screen"></div>
 
@@ -163,6 +164,8 @@ var BASE=[
 {g:'Dodatki i minerały',items:[['Premiks mineralny','t',97,4500,0,0],['Witaminy / premiks','t',97,6000,0,0],['Soda oczyszczona','t',99,2000,0,0],['Magnezyt MgO','t',99,1600,0,0],['Sól NaCl','t',99,600,0,0],['Kreda pastewna','t',99,450,0,0],['Fosforan dwuwapniowy','t',99,3000,0,0],['Tłuszcz chroniony','t',97,7500,0,0],['Gliceryna techniczna','t',80,2000,0,0],['Bufor KHCO3','t',99,3250,0,0]]}
 ];
 var customIngs=[];try{customIngs=JSON.parse(localStorage.getItem('tmr_custom')||'[]')}catch(e){}
+// Migracja: uzupełnij brakujące pola [nazwa,kat,sm,cena,bialko,skrobia]
+customIngs.forEach(function(c){if(c.length<6){if(c[3]===undefined)c[3]=0;if(c[4]===undefined)c[4]=0;if(c[5]===undefined)c[5]=0}});
 var dDoses=[];try{dDoses=JSON.parse(localStorage.getItem('tmr_dd')||'[]')}catch(e){}
 var wDoses=[];try{wDoses=JSON.parse(localStorage.getItem('tmr_wd')||'[]')}catch(e){}
 var dId=null,dIngs=[],wId=null,wIngs=[],deferredInstall=null;
@@ -223,8 +226,35 @@ function showTab(t){
 }
 
 // Shared ingredients
-function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var cf=id==='d-sel'?'d-cf':'w-cf';document.getElementById(cf).style.display=s.value==='__c__'?'block':'none'}})}
+function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var t=id==='d-sel'?'d':'w';var cf=t+'-cf';var show=s.value==='__c__';document.getElementById(cf).style.display=show?'block':'none';if(show)toggleCustomFields(t)}})}
 function addCustom(n,c,sm){if(!customIngs.find(function(x){return x[0]===n})){customIngs.push([n,c,sm||88,0,0,0]);rebuildSelects();saveAll()}}
+function toggleCustomFields(t){
+  var cat=document.getElementById(t+'-cc').value;
+  var isObj=cat==='obj';
+  document.getElementById(t+'-csm-wrap').style.display='flex';
+  document.getElementById(t+'-ctres').style.display=isObj?'none':'block';
+  // dla objętościowej domyślne SM ~30, dla treściwej ~88
+  var smField=document.getElementById(t+'-csm');
+  if(isObj&&smField.value=='88')smField.value=30;
+  else if(!isObj&&smField.value=='30')smField.value=88;
+}
+function addCustomFull(t){
+  var nm=document.getElementById(t+'-cn').value.trim();
+  var ct=document.getElementById(t+'-cc').value;
+  var sm=parseFloat(document.getElementById(t+'-csm').value)||88;
+  if(!nm)return null;
+  var prot=0,starch=0,price=0;
+  if(ct!=='obj'){
+    prot=parseFloat(document.getElementById(t+'-cprot').value)||0;
+    starch=parseFloat(document.getElementById(t+'-cstarch').value)||0;
+    price=parseFloat(document.getElementById(t+'-cprice').value)||0;
+  }
+  var ex=customIngs.find(function(x){return x[0]===nm});
+  if(ex){ex[1]=ct;ex[2]=sm;ex[3]=price;ex[4]=prot;ex[5]=starch}
+  else customIngs.push([nm,ct,sm,price,prot,starch]);
+  rebuildSelects();saveAll();
+  return {name:nm,cat:ct,sm:sm};
+}
 function badge(c){if(c==='t')return '<span class="badge bt">treściwa</span>';if(c==='tm')return '<span class="badge btm">treściwa mokra</span>';return '<span class="badge bo">objętościowa</span>'}
 function isTresciwa(c){return c==='t'||c==='tm'}
 function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
@@ -236,7 +266,7 @@ function backD(){markDirtyD();if(dIsDirty&&!confirm('Masz niezapisane zmiany. Wy
 function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;var dup=findDuplicateTitle(dDoses,t,dId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(dDoses,t,dId)+'"?'))return;t=uniqueTitle(dDoses,t,dId);document.getElementById('d-title').value=t}if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(dIngs))}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs))});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę')}
 function delD(){if(!confirm('Usunąć tę dawkę?'))return;dDoses=dDoses.filter(function(x){return x.id!==dId});saveAll();toast('Dawka usunięta');backD()}
 function dupD(){dId=null;document.getElementById('d-title').value=(document.getElementById('d-title').value||'Dawka')+' (kopia)';document.getElementById('d-del-btn').style.display='none'}
-function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var nm,ct,sm;if(v==='__c__'){nm=document.getElementById('d-cn').value.trim();ct=document.getElementById('d-cc').value;sm=parseFloat(document.getElementById('d-csm').value)||88;if(!nm){toast('Podaj nazwę',true);return}addCustom(nm,ct,sm)}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg});document.getElementById('d-kg').value='';markDirtyD();renderD()}
+function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('d');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg});document.getElementById('d-kg').value='';markDirtyD();renderD()}
 function rmD(i){dIngs.splice(i,1);markDirtyD();renderD()}
 function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;markDirtyD();renderD()}
 function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
@@ -252,7 +282,7 @@ function backW(){markDirtyW();if(wIsDirty&&!confirm('Masz niezapisane zmiany. Wy
 function saveW(){var t=document.getElementById('w-title').value.trim()||'Bez nazwy',n=document.getElementById('w-note').value.trim(),s=parseInt(document.getElementById('w-szt').value)||40;var dup=findDuplicateTitle(wDoses,t,wId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(wDoses,t,wId)+'"?'))return;t=uniqueTitle(wDoses,t,wId);document.getElementById('w-title').value=t}if(wId){var d=wDoses.find(function(x){return x.id===wId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(wIngs))}}else{wId='wd'+Date.now();wDoses.push({id:wId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(wIngs))});document.getElementById('w-del-btn').style.display='block'}document.getElementById('w-topbar').textContent=t;saveAll();wOrig=snapshotW();wIsDirty=false;flash('w-save-btn');toast('Zapisano dawkę')}
 function delW(){if(!confirm('Usunąć?'))return;wDoses=wDoses.filter(function(x){return x.id!==wId});saveAll();toast('Dawka usunięta');backW()}
 function dupW(){wId=null;document.getElementById('w-title').value=(document.getElementById('w-title').value||'Dawka')+' (kopia)';document.getElementById('w-del-btn').style.display='none'}
-function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast('Podaj kg/szt',true);return}var nm,ct,sm;if(v==='__c__'){nm=document.getElementById('w-cn').value.trim();ct=document.getElementById('w-cc').value;sm=parseFloat(document.getElementById('w-csm').value)||88;if(!nm){toast('Podaj nazwę',true);return}addCustom(nm,ct,sm)}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}wIngs.push({name:nm,cat:ct,sm:sm,kg:kg});document.getElementById('w-kg').value='';markDirtyW();renderW()}
+function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast('Podaj kg/szt',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('w');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}wIngs.push({name:nm,cat:ct,sm:sm,kg:kg});document.getElementById('w-kg').value='';markDirtyW();renderW()}
 function rmW(i){wIngs.splice(i,1);markDirtyW();renderW()}
 function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;markDirtyW();renderW()}
 function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;markDirtyW();renderW()}
@@ -346,45 +376,34 @@ function pdfW(){genDosePDF(document.getElementById('w-title').value||'Dawka',doc
 function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'d')}
 function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'w')}
 
-var analizaUnlocked=false;
-try{if(sessionStorage.getItem('tmr_unlock')==='1')analizaUnlocked=true}catch(e){}
+// Jedno wspólne odblokowanie, zapamiętane na stałe (localStorage)
+var appUnlocked=false;
+try{if(localStorage.getItem('tmr_unlocked')==='1')appUnlocked=true}catch(e){}
 var aDoseId=null,aMilk=32,aPrice=1.80;
 var aDoses=[];try{aDoses=JSON.parse(localStorage.getItem('tmr_ad')||'[]')}catch(e){}
 
-function renderAnaliza(){
-  var el=document.getElementById('tab-a');
-  if(!analizaUnlocked){
-    el.innerHTML='<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja w przygotowaniu</div>'
-      +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-flask"></i></div><div class="em-t">Analiza dawki</div><div class="em-s">Ta funkcja jest w przygotowaniu.<br>Aby testować, wpisz hasło dostępu.</div></div>'
-      +'<div style="padding:0 16px"><input type="password" id="a-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')checkPass()"><button class="btn bp" style="width:100%;background:#185FA5" onclick="checkPass()"><i class="ti ti-key"></i> Odblokuj</button></div>';
-    return;
-  }
-  el.innerHTML=analizaContent();
-}
-function checkPass(){
-  var v=document.getElementById('a-pass').value;
-  if(v==='BIOFEED'){analizaUnlocked=true;try{sessionStorage.setItem('tmr_unlock','1')}catch(e){}toast('Dostęp odblokowany');renderAnaliza()}
+function doUnlock(inputId,rerender){
+  var v=document.getElementById(inputId).value;
+  if(v==='BIOFEED'){appUnlocked=true;try{localStorage.setItem('tmr_unlocked','1')}catch(e){}toast('Dostęp odblokowany');renderMieszanka();renderAnaliza()}
   else{toast('Nieprawidłowe hasło',true)}
 }
-var mieszankaUnlocked=false;
-try{if(sessionStorage.getItem('tmr_unlock_m')==='1')mieszankaUnlocked=true}catch(e){}
+function lockScreen(icon,title){
+  return '<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja zabezpieczona hasłem</div>'
+    +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti '+icon+'"></i></div><div class="em-t">'+title+'</div><div class="em-s">Wpisz hasło dostępu — wystarczy raz na tym urządzeniu.</div></div>'
+    +'<div style="padding:0 16px"><input type="password" id="unlock-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doUnlock(\'unlock-pass\')"><button class="btn bp" style="width:100%;background:#185FA5" onclick="doUnlock(\'unlock-pass\')"><i class="ti ti-key"></i> Odblokuj</button></div>';
+}
+function renderAnaliza(){
+  var el=document.getElementById('tab-a');
+  if(!appUnlocked){el.innerHTML=lockScreen('ti-flask','Analiza dawki');return}
+  el.innerHTML=analizaContent();
+}
 var mDoses=[];try{mDoses=JSON.parse(localStorage.getItem('tmr_md')||'[]')}catch(e){}
 var mId=null,mIngs=[];
 
 function renderMieszanka(){
   var el=document.getElementById('tab-m');
-  if(!mieszankaUnlocked){
-    el.innerHTML='<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja w przygotowaniu</div>'
-      +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Mieszanka treściwa</div><div class="em-s">Ta funkcja jest w przygotowaniu.<br>Aby testować, wpisz hasło dostępu.</div></div>'
-      +'<div style="padding:0 16px"><input type="password" id="m-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')checkPassM()"><button class="btn bp" style="width:100%;background:#185FA5" onclick="checkPassM()"><i class="ti ti-key"></i> Odblokuj</button></div>';
-    return;
-  }
+  if(!appUnlocked){el.innerHTML=lockScreen('ti-blender','Mieszanka treściwa');return}
   el.innerHTML=mListView();
-}
-function checkPassM(){
-  var v=document.getElementById('m-pass').value;
-  if(v==='BIOFEED'){mieszankaUnlocked=true;try{sessionStorage.setItem('tmr_unlock_m','1')}catch(e){}toast('Dostęp odblokowany');renderMieszanka()}
-  else{toast('Nieprawidłowe hasło',true)}
 }
 function mListView(){
   var h='<div class="hn"><i class="ti ti-info-circle"></i> Twórz własne mieszanki z pasz treściwych i dodatków. Aplikacja policzy skład, białko, skrobię, suchą masę i cenę — gotową mieszankę możesz wyeksportować do bazy surowców.</div>';
@@ -442,11 +461,16 @@ function renderMEdit(title,note){
     +'<div id="m-stats"></div>'
     +'<div id="m-ing-list"></div>'
     +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="m-sel" onchange="document.getElementById(\'m-cf\').style.display=this.value===\'__c__\'?\'block\':\'none\'">'+opts+'</select><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric"><button class="addb" style="background:#185FA5" onclick="addM()"><i class="ti ti-plus"></i></button></div>'
-    +'<div id="m-cf" style="display:none" class="cf"><input type="text" id="m-cn" placeholder="Nazwa surowca"><div style="display:flex;gap:6px"><input type="number" id="m-csm" placeholder="SM %" min="1" max="100" value="88" style="flex:1"><input type="number" id="m-cprot" placeholder="Białko %" min="0" max="100" value="0" style="flex:1"><input type="number" id="m-cstarch" placeholder="Skrobia %" min="0" max="100" value="0" style="flex:1"></div><input type="number" id="m-cprice" placeholder="Cena zł/t" min="0" style="margin-top:4px"></div></div>'
+    +'<div id="m-cf" style="display:none" class="cf"><input type="text" id="m-cn" placeholder="Nazwa surowca"><div class="ir" style="margin-top:6px"><div class="fw"><div class="fl-l">Sucha masa %</div><input type="number" id="m-csm" min="1" max="100" value="88"></div><div class="fw"><div class="fl-l">Cena zł/t</div><input type="number" id="m-cprice" min="0" placeholder="0"></div></div><div class="ir" style="margin-top:6px"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="m-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="m-cstarch" min="0" max="100" value="0"></div></div></div></div>'
     +'<div class="br"><button class="btn" onclick="dupM()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp" style="background:#185FA5" id="m-save-btn" onclick="saveM()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>'
     +'<div class="br"><button class="btn" onclick="pdfMieszankaLive()"><i class="ti ti-download"></i> Eksport PDF</button><button class="btn bp" style="background:#0F6E56" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Do bazy surowców</button></div>'
     +'<button class="btn bdd" id="m-del-btn" style="display:'+(mId?'flex':'none')+';width:calc(100% - 32px);margin:0 16px 10px" onclick="delM()"><i class="ti ti-trash"></i> Usuń mieszankę</button>';
   renderM();
+}
+function isCompleteIng(name){
+  // treściwy surowiec kompletny gdy ma SM>0, cenę>0 (białko/skrobia mogą być 0 np. dodatki mineralne)
+  var sm=getSM(name),price=getBasePrice(name);
+  return sm>0&&price>0;
 }
 function addM(){
   var v=document.getElementById('m-sel').value,kg=parseFloat(document.getElementById('m-kg').value);
@@ -457,9 +481,14 @@ function addM(){
     var prot=parseFloat(document.getElementById('m-cprot').value)||0;
     var st=parseFloat(document.getElementById('m-cstarch').value)||0;
     var price=parseFloat(document.getElementById('m-cprice').value)||0;
-    if(!customIngs.find(function(x){return x[0]===nm})){customIngs.push([nm,'t',sm,price,prot,st]);saveAll()}
+    if(price<=0){toast('Podaj cenę surowca (wymagana do kalkulacji)',true);return}
+    var ex=customIngs.find(function(x){return x[0]===nm});
+    if(ex){ex[1]='t';ex[2]=sm;ex[3]=price;ex[4]=prot;ex[5]=st}
+    else customIngs.push([nm,'t',sm,price,prot,st]);
+    saveAll();rebuildSelects();
     mIngs.push({name:nm,kg:kg});
   } else {
+    if(!isCompleteIng(v)){toast('Surowiec "'+v+'" nie ma ceny — uzupełnij w "Moje surowce"',true);return}
     mIngs.push({name:v,kg:kg});
   }
   document.getElementById('m-kg').value='';document.getElementById('m-cn')&&(document.getElementById('m-cf').style.display='none');
@@ -757,6 +786,75 @@ function pdfAnaliza(){
   doc.text(plchars('Przychod z mleka: '+przychod.toFixed(2)+' zl/szt   |   Zysk nad pasza: '+iofc.toFixed(2)+' zl/szt'),M,H-6);
   doc.save(sanitize('Analiza_'+c.dose.title)+'.pdf');
   toast('PDF zapisany w Pobranych');
+}
+
+// ===== MENEDŻER WŁASNYCH SUROWCÓW =====
+function openIngManager(){show('scr-ingmgr');renderIngManager()}
+function catLabel(c){return c==='tm'?'treściwa mokra':(c==='t'?'treściwa sucha':'objętościowa')}
+function renderIngManager(){
+  var el=document.getElementById('scr-ingmgr');
+  var h='<div class="topbar"><button class="ib" onclick="show(\'scr-main\')"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">Moje surowce</div></div>';
+  h+='<div class="hn"><i class="ti ti-info-circle"></i> Tu zarządzasz własnymi surowcami i wyeksportowanymi mieszankami — możesz edytować parametry lub usunąć. Surowce treściwe bez kompletu danych (SM, białko, skrobia, cena) nie wejdą do kalkulacji w Mieszance i Analizie.</div>';
+  // własne surowce
+  if(customIngs.length){
+    h+='<div class="sec-top">Własne surowce</div><div class="spacer"></div>';
+    h+=customIngs.map(function(c,i){
+      var incomplete=(c[1]==='t'||c[1]==='tm')&&(!c[3]||c[4]===undefined||c[5]===undefined||(c[3]===0&&c[4]===0&&c[5]===0));
+      return '<div class="dc"><div style="padding:11px 12px"><div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div style="font-size:15px;font-weight:600">'+escapeHtml(c[0])+(incomplete?' <span style="color:#BA7517;font-size:11px">(niekompletny)</span>':'')+'</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">'+catLabel(c[1])+' · SM '+(c[2]||0)+'% · białko '+(c[4]||0)+'% · skrobia '+(c[5]||0)+'% · '+(c[3]||0)+' zł/t</div></div><button class="dl" onclick="editCustomIng('+i+')" style="font-size:16px"><i class="ti ti-edit"></i></button><button class="dl" onclick="delCustomIng('+i+')" style="font-size:16px"><i class="ti ti-trash"></i></button></div></div></div>';
+    }).join('');
+  }
+  // wyeksportowane mieszanki w bazie
+  var mixGrp=BASE.find(function(g){return g.g==='Moje mieszanki'});
+  if(mixGrp&&mixGrp.items.length){
+    h+='<div class="sec-top">Mieszanki w bazie</div><div class="spacer"></div>';
+    h+=mixGrp.items.map(function(it,i){
+      return '<div class="dc"><div style="padding:11px 12px"><div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div style="font-size:15px;font-weight:600">'+escapeHtml(it[0])+'</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">SM '+(it[2]||0)+'% · białko '+(it[4]||0)+'% · skrobia '+(it[5]||0)+'% · '+(it[3]||0)+' zł/t</div></div><button class="dl" onclick="delMixBase('+i+')" style="font-size:16px"><i class="ti ti-trash"></i></button></div></div></div>';
+    }).join('');
+  }
+  if(!customIngs.length&&(!mixGrp||!mixGrp.items.length)){
+    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-database"></i></div><div class="em-t">Brak własnych surowców</div><div class="em-s">Własne surowce i mieszanki dodane w aplikacji pojawią się tutaj</div></div>';
+  }
+  el.innerHTML=h;
+}
+function editCustomIng(i){
+  var c=customIngs[i];if(!c)return;
+  var isObj=c[1]==='obj';
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='ing-modal';
+  var fields='<div style="margin-bottom:8px"><div class="fl-l">Nazwa</div><input type="text" id="ei-name" value="'+escapeHtml(c[0]).replace(/"/g,'&quot;')+'"></div>'
+    +'<div style="margin-bottom:8px"><div class="fl-l">Kategoria</div><select id="ei-cat" onchange="document.getElementById(\'ei-tres\').style.display=this.value===\'obj\'?\'none\':\'block\'"><option value="t"'+(c[1]==='t'?' selected':'')+'>Treściwa sucha</option><option value="tm"'+(c[1]==='tm'?' selected':'')+'>Treściwa mokra</option><option value="obj"'+(c[1]==='obj'?' selected':'')+'>Objętościowa</option></select></div>'
+    +'<div style="margin-bottom:8px"><div class="fl-l">Sucha masa %</div><input type="number" id="ei-sm" value="'+(c[2]||88)+'" min="1" max="100"></div>'
+    +'<div id="ei-tres" style="display:'+(isObj?'none':'block')+'"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="ei-prot" value="'+(c[4]||0)+'" min="0" max="100"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="ei-starch" value="'+(c[5]||0)+'" min="0" max="100"></div></div><div style="margin-top:8px"><div class="fl-l">Cena zł/t</div><input type="number" id="ei-price" value="'+(c[3]||0)+'" min="0"></div></div>';
+  ov.innerHTML='<div class="modal-bx" style="max-height:85vh;overflow-y:auto"><div class="modal-t">Edytuj surowiec</div>'+fields
+    +'<div class="modal-btns"><button class="btn" onclick="closeIngModal()">Anuluj</button><button class="btn bp" style="background:#185FA5" onclick="saveCustomIng('+i+')"><i class="ti ti-check"></i> Zapisz</button></div></div>';
+  document.body.appendChild(ov);
+}
+function closeIngModal(){var m=document.getElementById('ing-modal');if(m)m.remove()}
+function saveCustomIng(i){
+  var c=customIngs[i];if(!c)return;
+  var name=document.getElementById('ei-name').value.trim();if(!name){toast('Podaj nazwę',true);return}
+  var cat=document.getElementById('ei-cat').value;
+  var sm=parseFloat(document.getElementById('ei-sm').value)||88;
+  c[0]=name;c[1]=cat;c[2]=sm;
+  if(cat==='obj'){c[3]=c[3]||0;c[4]=0;c[5]=0}
+  else{c[3]=parseFloat(document.getElementById('ei-price').value)||0;c[4]=parseFloat(document.getElementById('ei-prot').value)||0;c[5]=parseFloat(document.getElementById('ei-starch').value)||0}
+  saveAll();rebuildSelects();closeIngModal();toast('Surowiec zaktualizowany');renderIngManager();
+}
+function delCustomIng(i){
+  var c=customIngs[i];if(!c)return;
+  if(!confirm('Usunąć surowiec "'+c[0]+'"?'))return;
+  customIngs.splice(i,1);saveAll();rebuildSelects();toast('Surowiec usunięty');renderIngManager();
+}
+function delMixBase(i){
+  var mixGrp=BASE.find(function(g){return g.g==='Moje mieszanki'});if(!mixGrp)return;
+  var it=mixGrp.items[i];if(!it)return;
+  if(!confirm('Usunąć mieszankę "'+it[0]+'" z bazy surowców?'))return;
+  mixGrp.items.splice(i,1);
+  // usuń też z localStorage tmr_mixbase
+  var savedMix=[];try{savedMix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]')}catch(e){}
+  savedMix=savedMix.filter(function(x){return x[0]!==it[0]});
+  try{localStorage.setItem('tmr_mixbase',JSON.stringify(savedMix))}catch(e){}
+  if(!mixGrp.items.length){var idx=BASE.indexOf(mixGrp);if(idx>=0)BASE.splice(idx,1)}
+  rebuildSelects();toast('Mieszanka usunięta z bazy');renderIngManager();
 }
 
 // ===== NOTATKI KLIENTÓW =====
