@@ -506,13 +506,13 @@ function addM(){
 function rmM(i){mIngs.splice(i,1);renderM()}
 function ukM(i,v){mIngs[i].kg=parseFloat(v)||0;renderM()}
 function renderM(){
-  var r=mCalc(mIngs);
+  var r=mCalc(mIngs,mPrices);
   var st=document.getElementById('m-stats');
   if(st){st.innerHTML='<div class="s2" style="padding:0;margin-bottom:6px">'
     +sb('#185FA5',r.protein.toFixed(1)+'%','białko (w SM)')
     +sb('#993C1D',r.starch.toFixed(1)+'%','skrobia (w SM)')
     +'</div><div class="s2" style="padding:0">'
-    +sb('var(--tx)',r.sm.toFixed(1)+'%','sucha masa')
+    +sb('var(--tx)',r.totalKg.toFixed(0)+' kg','suma mieszanki · SM '+r.sm.toFixed(1)+'%')
     +sb('#0F6E56',r.price.toFixed(0),'cena (zł/t)')
     +'</div>';}
   var el=document.getElementById('m-ing-list');if(!el)return;
@@ -593,7 +593,7 @@ function doPdfMieszanka(title,ings,priceMap){
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(200,220,245);
   doc.text(plchars(ings.length+' surowcow  |  '+r.totalKg.toFixed(0)+' kg  |  '+new Date().toLocaleDateString('pl')),M,18);
   // KPI parametry
-  var kpis=[['bialko (w SM)',r.protein.toFixed(1)+'%',[24,95,165]],['skrobia (w SM)',r.starch.toFixed(1)+'%',[153,60,29]],['sucha masa',r.sm.toFixed(1)+'%',[30,30,30]],['cena (zl/t)',r.price.toFixed(0),[15,110,86]]];
+  var kpis=[['bialko (w SM)',r.protein.toFixed(1)+'%',[24,95,165]],['skrobia (w SM)',r.starch.toFixed(1)+'%',[153,60,29]],['suma kg (SM '+r.sm.toFixed(1)+'%)',r.totalKg.toFixed(0)+' kg',[30,30,30]],['cena (zl/t)',r.price.toFixed(0),[15,110,86]]];
   var ky=28,kw=(W-2*M)/2,kh=18;
   kpis.forEach(function(k,i){var col=i%2,row=Math.floor(i/2);var kx=M+col*kw,kyy=ky+row*kh;doc.setFillColor(245,245,247);doc.roundedRect(kx,kyy,kw-3,kh-3,2,2,'F');doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text(k[1],kx+4,kyy+8);doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(plchars(k[0]),kx+4,kyy+13.5)});
   // tabela skladnikow
