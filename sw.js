@@ -1,8 +1,19 @@
-var CACHE = 'tmr-v5';
+var CACHE = 'tmr-v6';
 var ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+var EXTERNAL = [
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css'
+];
 
 self.addEventListener('install', function(e) {
-  e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(ASSETS).catch(function(){}) }));
+  e.waitUntil(caches.open(CACHE).then(function(c) {
+    return c.addAll(ASSETS).catch(function(){}).then(function(){
+      // cache external libs (best effort, no-cors)
+      return Promise.all(EXTERNAL.map(function(u){
+        return fetch(u,{mode:'no-cors'}).then(function(r){return c.put(u,r)}).catch(function(){});
+      }));
+    });
+  }));
   self.skipWaiting();
 });
 
@@ -33,7 +44,7 @@ self.addEventListener('fetch', function(e) {
         return fetch(req).then(function(r){
           if (r && r.status === 200) { var c = r.clone(); caches.open(CACHE).then(function(cache){cache.put(req,c)}) }
           return r;
-        });
+        }).catch(function(){ return cached });
       })
     );
   }

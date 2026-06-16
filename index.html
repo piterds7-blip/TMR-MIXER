@@ -13,6 +13,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TH6XRB2SHV"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-TH6XRB2SHV');</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--g:#1D9E75;--gd:#0F6E56;--gk:#085041;--gl:#E1F5EE;--gm:#9FE1CB;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--bg:#fff;--bg2:#f5f5f5;--bg3:#eee;--tx:#111;--tx2:#666;--tx3:#999;--bd:#e0e0e0;--bd2:#ccc;--red:#E24B4A;--r:10px;--rs:7px}
 @media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--tx:#f0f0f0;--tx2:#aaa;--tx3:#777;--bd:#333;--bd2:#444;--gl:#0a3028;--pl:#1a1540}}
@@ -95,7 +96,7 @@ input[type=number]{text-align:right}
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div></div>
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openNotes()" title="Notatki klientów"><i class="ti ti-notebook"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
     <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
@@ -145,6 +146,10 @@ input[type=number]{text-align:right}
   <div class="woz-ft"><div><div class="woz-ft-l">Surowców</div><div class="woz-ft-v" id="wz-cnt">0</div></div><div style="text-align:right"><div class="woz-ft-l">Razem kg/szt</div><div class="woz-ft-v" id="wz-ph2">0</div></div></div>
 </div>
 
+<div id="scr-m-edit" class="screen"></div>
+<div id="scr-notes" class="screen"></div>
+<div id="scr-note-client" class="screen"></div>
+
 <script>
 var BASE=[
 {g:'Kiszonki',items:[['Kiszonka z kukurydzy','obj',30,205,0,0],['Kiszonka z trawy','obj',25,175,0,0],['Kiszonka z koniczyny','obj',28,185,0,0],['Kiszonka z lucerny','obj',28,205,0,0],['Kiszonka z GPS','obj',32,180,0,0],['Kiszonka z żyta','obj',28,170,0,0],['Trawa mokry balot','obj',25,160,0,0],['Buraki pastewne','obj',12,150,0,0],['Pulpa buraczana mokra','obj',10,105,0,0]]},
@@ -178,15 +183,20 @@ function updateCounters(){var dc=document.getElementById('tab-d-cnt'),wc=documen
 // Migrate old v4 data
 (function(){try{var old=JSON.parse(localStorage.getItem('tmr_v4')||'[]');if(old.length&&!wDoses.length){wDoses=old.map(function(d){return{id:d.id||'wd'+Date.now()+Math.random(),title:d.title||'Dawka',note:d.note||'',szt:d.sztuki||d.szt||40,ings:d.ings||[]}});saveAll();localStorage.removeItem('tmr_v4')}}catch(e){}})();
 
-function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses))}catch(e){}}
+function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses));localStorage.setItem('tmr_md',JSON.stringify(mDoses))}catch(e){}}
 // Pomocnicza — zwraca SM% składnika (z danych lub z bazy), używana w zakładce 3
 function getSM(ing){var name=typeof ing==='string'?ing:ing.name;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[2]})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[2])return ci[2];if(ing.sm)return ing.sm;return 88;}
-var customPrices={};try{customPrices=JSON.parse(localStorage.getItem('tmr_prices')||'{}')}catch(e){}
+// Wczytaj wyeksportowane mieszanki do bazy (kategoria Moje mieszanki)
+(function(){try{var mix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]');if(mix.length){var grp=BASE.find(function(g){return g.g==='Moje mieszanki'});if(!grp){grp={g:'Moje mieszanki',items:[]};BASE.push(grp)}mix.forEach(function(it){if(!grp.items.find(function(x){return x[0]===it[0]}))grp.items.push(it)})}}catch(e){}})();
 function getBasePrice(name){var found=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[3]||0})});return found}
 function getProtein(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[4]||0})});return f}
 function getStarch(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[5]||0})});return f}
-function getPrice(name){if(customPrices[name]!==undefined)return customPrices[name];return getBasePrice(name)}
-function saveprices(){try{localStorage.setItem('tmr_prices',JSON.stringify(customPrices))}catch(e){}}
+// Cena: jeśli aktywna receptura analizy ma własne nadpisanie -> użyj go; inaczej cena bazowa (sztywna)
+function getPrice(name){
+  var d=aDoses.find(function(x){return x.id===aDoseId});
+  if(d&&d.prices&&d.prices[name]!==undefined)return d.prices[name];
+  return getBasePrice(name);
+}
 
 // PWA
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;document.getElementById('install-bar').classList.add('show')});
@@ -250,28 +260,87 @@ function wozView(){var t=document.getElementById('w-title').value||'Dawka',szt=p
 function wozDose(id){openW(id);setTimeout(wozView,60)}
 
 // PDF
-function buildPDF(title,note,szt,ings,mode){var n=ings.length,sc=n<=5?1:n<=7?.85:n<=9?.72:n<=12?.62:.52;var hP=Math.round(14*sc),h1F=Math.round(22*sc),subF=Math.round(11*sc),tvF=Math.round(40*sc),tlF=Math.round(14*sc),rP=Math.round(10*sc),nS=Math.round(28*sc),nF=Math.round(12*sc),nmF=Math.round(16*sc),kF=Math.round(28*sc),kuF=Math.round(9*sc),cuF=Math.round(11*sc),fF=Math.round(13*sc),flF=Math.round(10*sc);var hdrBg,barBg,cumBg,cumClr;if(mode==='d'){hdrBg='#3C3489';barBg='#534AB7';cumBg='#EEEDFE';cumClr='#534AB7'}else{hdrBg='#085041';barBg='#0F6E56';cumBg='#E1F5EE';cumClr='#1D9E75'}var cum=0,rows='';if(mode==='d'){var tw=ings.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;ings.forEach(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';rows+='<div class="row"><div class="row-l"><div class="num" style="width:'+nS+'px;height:'+nS+'px;font-size:'+nF+'px">'+(i+1)+'</div><div class="nm" style="font-size:'+nmF+'px">'+s.name+'</div></div><div class="row-r"><div class="kb" style="font-size:'+kF+'px">'+s.kgWoz.toFixed(0)+' <span style="font-size:'+kuF+'px;color:#999">kg/wóz</span> <span style="font-size:'+Math.round(kuF*1.1)+'px;color:'+cumClr+';font-weight:600">\u2192 '+p+' kg/szt</span></div><div class="cu" style="font-size:'+cuF+'px">w wozie: '+cum.toFixed(0)+' kg</div></div></div>'});return pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,ph.toFixed(2),tw.toFixed(0),'Suma kg/szt',ph.toFixed(2),rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF)}else{var total=ings.reduce(function(a,s){return a+s.kg},0),woz=total*szt;ings.forEach(function(s,i){var kw=s.kg*szt;cum+=kw;rows+='<div class="row"><div class="row-l"><div class="num" style="width:'+nS+'px;height:'+nS+'px;font-size:'+nF+'px">'+(i+1)+'</div><div class="nm" style="font-size:'+nmF+'px">'+s.name+'</div></div><div class="row-r"><div class="kb" style="font-size:'+kF+'px">'+kw.toFixed(1)+'</div><div class="ku" style="font-size:'+kuF+'px">kg na wóz</div><div class="kb" style="font-size:'+kF+'px;color:'+cumClr+'">'+cum.toFixed(0)+'</div><div class="ku" style="font-size:'+kuF+'px;color:'+cumClr+'">kg na wadze</div></div></div>'});return pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,total.toFixed(2),woz.toFixed(0),'Razem kg/szt',total.toFixed(2),rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF)}}
-function pdfShell(title,note,hdrBg,barBg,cumBg,cumClr,szt,phTxt,wozTxt,ftLbl,ftVal,rows,n,hP,h1F,subF,tvF,tlF,rP,fF,flF){return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;background:#fff;font-family:-apple-system,Arial,sans-serif;color:#111}.wrap{display:flex;flex-direction:column;min-height:100vh}.hdr{background:'+hdrBg+';color:#fff;padding:'+hP+'px 16px}.hdr h1{font-size:'+h1F+'px;font-weight:700}.hdr .sub{font-size:'+subF+'px;color:rgba(255,255,255,.7)}.tb{background:'+barBg+';color:#fff;padding:'+hP+'px 16px;display:flex;justify-content:space-between;align-items:center}.tl{font-size:'+tlF+'px;color:rgba(255,255,255,.7);line-height:1.8}.tl strong{color:#fff}.tr{text-align:right}.trl{font-size:'+Math.round(9*1)+'px;color:rgba(255,255,255,.7)}.trv{font-size:'+tvF+'px;font-weight:700;line-height:1}.list{flex:1}.row{display:flex;justify-content:space-between;align-items:center;padding:'+rP+'px 16px;border-bottom:1px solid #eee}.row:last-child{border-bottom:none}.row-l{display:flex;align-items:center;gap:10px;flex:1;min-width:0}.num{border-radius:50%;background:'+cumBg+';display:flex;align-items:center;justify-content:center;font-weight:700;color:'+cumClr+';flex-shrink:0}.nm{font-weight:600;color:#111}.row-r{text-align:right;flex-shrink:0;margin-left:10px}.kb{font-weight:700;color:#111;line-height:1.2}.ku{color:#999}.cu{color:'+cumClr+';font-weight:500;margin-top:1px}.ft{background:#f5f5f5;padding:'+rP+'px 16px;display:flex;justify-content:space-between;border-top:2px solid #ddd}.fl{font-size:'+flF+'px;color:#666}.fv{font-size:'+fF+'px;font-weight:700}@media print{html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="wrap"><div class="hdr"><h1>'+title+'</h1><div class="sub">'+(note?note+' \xB7 ':'')+new Date().toLocaleDateString('pl')+'</div></div><div class="tb"><div class="tl">Sztuk: <strong>'+szt+'</strong><br>kg/szt: <strong>'+phTxt+'</strong></div><div class="tr"><div class="trl">\u0141\u0105cznie w wozie</div><div class="trv">'+wozTxt+'</div><div style="font-size:'+Math.round(tlF*.7)+'px;color:rgba(255,255,255,.7)">kg</div></div></div><div class="list">'+rows+'</div><div class="ft"><div><div class="fl">Surowc\u00F3w</div><div class="fv">'+n+'</div></div><div style="text-align:right"><div class="fl">'+ftLbl+'</div><div class="fv">'+ftVal+' kg</div></div></div></div></body></html>'}
-function openPrint(h){
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  if(isIOS){
-    var blob=new Blob([h],{type:'text/html'});
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';
-    document.body.appendChild(a);a.click();
-    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},1000);
-    toast('Otworz "Udostepnij" w Safari, wybierz "Drukuj" lub "Zapisz PDF"');
-    return;
-  }
-  var w=window.open('','_blank');
-  if(!w){alert('Zezwol na wyskakujace okna w przegladarce, zeby wyeksportowac PDF');return}
-  w.document.write(h);w.document.close();
-  setTimeout(function(){try{w.print()}catch(e){}},500);
+// ===== Generowanie PDF przez jsPDF (natywne rysowanie, polskie znaki, 1 strona) =====
+function hexToRgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
+function genDosePDF(title,note,szt,ings,mode){
+  if(!window.jspdf){toast('Trwa ladowanie generatora PDF, sprobuj ponownie',true);return}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,H=297,M=14;
+  var hdrBg,barBg,cumClr;
+  if(mode==='d'){hdrBg='#3C3489';barBg='#534AB7';cumClr='#534AB7'}
+  else{hdrBg='#085041';barBg='#0F6E56';cumClr='#1D9E75'}
+  var n=ings.length;
+  // policz naglowkowe wartosci
+  var cum=0,total=0,tw=0,ph=0,woz=0;
+  if(mode==='d'){tw=ings.reduce(function(a,s){return a+s.kgWoz},0);ph=szt>0?tw/szt:0}
+  else{total=ings.reduce(function(a,s){return a+s.kg},0);woz=total*szt}
+  // Naglowek
+  var c=hexToRgb(hdrBg);doc.setFillColor(c[0],c[1],c[2]);doc.rect(0,0,W,24,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(17);
+  doc.text(plchars(title),M,13);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(210,210,230);
+  doc.text(plchars((note?note+'  |  ':'')+new Date().toLocaleDateString('pl')),M,19.5);
+  // Pasek sumy
+  c=hexToRgb(barBg);doc.setFillColor(c[0],c[1],c[2]);doc.rect(0,24,W,20,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text(plchars('Sztuk: '+szt),M,33);
+  doc.text(plchars('kg/szt: '+(mode==='d'?ph.toFixed(2):total.toFixed(2))),M,39);
+  doc.setFontSize(9);doc.setTextColor(210,210,230);
+  doc.text('LACZNIE W WOZIE',W-M,31,{align:'right'});
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(255,255,255);
+  doc.text((mode==='d'?tw.toFixed(0):woz.toFixed(0))+' kg',W-M,40,{align:'right'});
+  // Wiersze
+  var y=44;
+  var avail=H-y-20;
+  var rowH=Math.min(16, avail/n);
+  if(rowH<7)rowH=7;
+  doc.setDrawColor(230,230,230);
+  ings.forEach(function(s,i){
+    var ry=y+i*rowH;
+    if(ry>H-22)return;
+    doc.setDrawColor(235,235,235);doc.line(M,ry+rowH,W-M,ry+rowH);
+    // numer
+    var cc=hexToRgb(cumClr);
+    doc.setFillColor(cc[0],cc[1],cc[2]);doc.circle(M+4,ry+rowH/2,3,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(''+(i+1),M+4,ry+rowH/2+1.3,{align:'center'});
+    // nazwa
+    doc.setTextColor(20,20,20);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(12,rowH*0.7));
+    doc.text(plchars(s.name),M+11,ry+rowH/2+1.5);
+    // wartosci prawa strona
+    if(mode==='d'){
+      cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'-';
+      doc.setTextColor(20,20,20);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(13,rowH*0.75));
+      doc.text(s.kgWoz.toFixed(0)+' kg/woz',W-M,ry+rowH/2-0.5,{align:'right'});
+      doc.setTextColor(cc[0],cc[1],cc[2]);doc.setFont('helvetica','normal');doc.setFontSize(Math.min(9,rowH*0.5));
+      doc.text(plchars(p+' kg/szt  ->  w wozie '+cum.toFixed(0)+' kg'),W-M,ry+rowH/2+3.5,{align:'right'});
+    } else {
+      var kw=s.kg*szt;cum+=kw;
+      doc.setTextColor(20,20,20);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(13,rowH*0.75));
+      doc.text(kw.toFixed(1)+' kg na woz',W-M,ry+rowH/2-0.5,{align:'right'});
+      doc.setTextColor(cc[0],cc[1],cc[2]);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(11,rowH*0.62));
+      doc.text(cum.toFixed(0)+' kg na wadze',W-M,ry+rowH/2+4,{align:'right'});
+    }
+  });
+  // Stopka
+  doc.setFillColor(245,245,245);doc.rect(0,H-16,W,16,'F');
+  doc.setDrawColor(210,210,210);doc.line(0,H-16,W,H-16);
+  doc.setTextColor(100,100,100);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text(plchars('Surowcow: '+n),M,H-6);
+  doc.setFont('helvetica','bold');doc.setTextColor(30,30,30);doc.setFontSize(11);
+  var ftVal=(mode==='d'?ph.toFixed(2):total.toFixed(2))+' kg';
+  doc.text(plchars((mode==='d'?'Suma kg/szt: ':'Razem kg/szt: ')+ftVal),W-M,H-6,{align:'right'});
+  doc.save(sanitize(title)+'.pdf');
+  toast('PDF zapisany w Pobranych');
 }
-function pdfD(){openPrint(buildPDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,dIngs,'d'))}
-function pdfW(){openPrint(buildPDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,wIngs,'w'))}
-function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'d'))}
-function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)openPrint(buildPDF(d.title,d.note,d.szt,d.ings,'w'))}
+// Zamiana polskich znakow na ASCII (helvetica w jsPDF nie ma UTF-8)
+function plchars(s){if(s===undefined||s===null)return '';var m={'\u0105':'a','\u0107':'c','\u0119':'e','\u0142':'l','\u0144':'n','\u00f3':'o','\u015b':'s','\u017a':'z','\u017c':'z','\u0104':'A','\u0106':'C','\u0118':'E','\u0141':'L','\u0143':'N','\u00d3':'O','\u015a':'S','\u0179':'Z','\u017b':'Z'};return (''+s).replace(/[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]/g,function(ch){return m[ch]||ch})}
+function sanitize(s){return plchars(s).replace(/[^a-zA-Z0-9 _-]/g,'').replace(/\s+/g,'_').substring(0,40)||'dawka'}
+function pdfD(){genDosePDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,dIngs,'d')}
+function pdfW(){genDosePDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,wIngs,'w')}
+function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'d')}
+function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'w')}
 
 var analizaUnlocked=false;
 try{if(sessionStorage.getItem('tmr_unlock')==='1')analizaUnlocked=true}catch(e){}
@@ -295,6 +364,9 @@ function checkPass(){
 }
 var mieszankaUnlocked=false;
 try{if(sessionStorage.getItem('tmr_unlock_m')==='1')mieszankaUnlocked=true}catch(e){}
+var mDoses=[];try{mDoses=JSON.parse(localStorage.getItem('tmr_md')||'[]')}catch(e){}
+var mId=null,mIngs=[];
+
 function renderMieszanka(){
   var el=document.getElementById('tab-m');
   if(!mieszankaUnlocked){
@@ -303,12 +375,146 @@ function renderMieszanka(){
       +'<div style="padding:0 16px"><input type="password" id="m-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')checkPassM()"><button class="btn bp" style="width:100%;background:#185FA5" onclick="checkPassM()"><i class="ti ti-key"></i> Odblokuj</button></div>';
     return;
   }
-  el.innerHTML='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Mieszanka treściwa</div><div class="em-s">Tu powstanie kalkulator mieszanki treściwej.</div></div>';
+  el.innerHTML=mListView();
 }
 function checkPassM(){
   var v=document.getElementById('m-pass').value;
   if(v==='BIOFEED'){mieszankaUnlocked=true;try{sessionStorage.setItem('tmr_unlock_m','1')}catch(e){}toast('Dostęp odblokowany');renderMieszanka()}
   else{toast('Nieprawidłowe hasło',true)}
+}
+function mListView(){
+  var h='<div class="hn"><i class="ti ti-info-circle"></i> Twórz własne mieszanki z pasz treściwych i dodatków. Aplikacja policzy skład, białko, skrobię, suchą masę i cenę — gotową mieszankę możesz wyeksportować do bazy surowców.</div>';
+  if(!mDoses.length){
+    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Brak mieszanek</div><div class="em-s">Utwórz pierwszą własną mieszankę treściwą</div></div>';
+  } else {
+    h+=mDoses.map(function(d){
+      var r=mCalc(d.ings);
+      return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+d.ings.length+' surowców · '+r.totalKg.toFixed(0)+' kg</div></div>'
+        +'<div class="dcs"><div class="dss"><div class="dsv">'+r.protein.toFixed(1)+'%</div><div class="dsl">białko</div></div><div class="dss"><div class="dsv">'+r.starch.toFixed(1)+'%</div><div class="dsl">skrobia</div></div><div class="dss"><div class="dsv" style="color:#185FA5">'+r.sm.toFixed(1)+'%</div><div class="dsl">SM</div></div></div>'
+        +'<div class="dca"><button class="dab" style="color:#185FA5;font-weight:600" onclick="openM(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="exportMieszanka(\''+d.id+'\')"><i class="ti ti-database-import"></i> Do bazy</button></div></div>';
+    }).join('');
+  }
+  h+='<button class="fab" style="background:#185FA5" onclick="newM()"><i class="ti ti-plus"></i> Nowa mieszanka</button>';
+  return h;
+}
+// Oblicza parametry mieszanki: skład %, SM%, białko% w SM, skrobia% w SM, cena zł/t
+function mCalc(ings){
+  var totalKg=0,smKg=0,protKg=0,starchKg=0,costSum=0;
+  ings.forEach(function(s){
+    var sm=getSM(s.name),pr=getProtein(s.name),st=getStarch(s.name),price=getPrice(s.name);
+    var dm=s.kg*sm/100;
+    totalKg+=s.kg;smKg+=dm;
+    protKg+=dm*pr/100;starchKg+=dm*st/100;
+    costSum+=s.kg*price;
+  });
+  return {
+    totalKg:totalKg,
+    sm:totalKg>0?smKg/totalKg*100:0,
+    protein:smKg>0?protKg/smKg*100:0,
+    starch:smKg>0?starchKg/smKg*100:0,
+    price:totalKg>0?costSum/totalKg:0
+  };
+}
+function newM(){mId=null;mIngs=[];show('scr-m-edit');renderMEdit('Nowa mieszanka','')}
+function openM(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;mId=id;mIngs=JSON.parse(JSON.stringify(d.ings));show('scr-m-edit');renderMEdit(d.title,d.note||'')}
+function backM(){show('scr-main');showTab('m')}
+function renderMEdit(title,note){
+  var sc=document.getElementById('scr-m-edit');
+  var opts='';
+  BASE.forEach(function(g){
+    if(g.g==='Pasze treściwe — suche'||g.g==='Dodatki i minerały'||g.g==='Moje mieszanki'){
+      opts+='<optgroup label="'+g.g+'">';
+      g.items.forEach(function(it){opts+='<option value="'+it[0]+'">'+it[0]+'</option>'});
+      opts+='</optgroup>';
+    }
+  });
+  if(customIngs.length){var cc='';customIngs.forEach(function(c){if(c[1]==='t')cc+='<option value="'+c[0]+'">'+c[0]+'</option>'});if(cc)opts+='<optgroup label="⭐ Własne surowce">'+cc+'</optgroup>'}
+  opts+='<option value="__c__">✏️ Własny surowiec...</option>';
+  sc.innerHTML='<div class="topbar"><button class="ib" onclick="backM()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="m-topbar">'+title+'</div></div>'
+    +'<div class="sec-top">Informacje</div><div class="spacer"></div>'
+    +'<div class="fl"><div class="fl-l">Nazwa mieszanki</div><input type="text" id="m-title" placeholder="np. Mieszanka produkcyjna 20%" value="'+(title==='Nowa mieszanka'?'':title.replace(/"/g,'&quot;'))+'"></div>'
+    +'<div class="fl"><div class="fl-l">Notatka</div><input type="text" id="m-note" placeholder="np. dla krów w szczycie" value="'+(note||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="divider"></div><div class="sec-top">Parametry mieszanki</div><div class="spacer"></div>'
+    +'<div id="m-stats"></div>'
+    +'<div id="m-ing-list"></div>'
+    +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="m-sel" onchange="document.getElementById(\'m-cf\').style.display=this.value===\'__c__\'?\'block\':\'none\'">'+opts+'</select><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric"><button class="addb" style="background:#185FA5" onclick="addM()"><i class="ti ti-plus"></i></button></div>'
+    +'<div id="m-cf" style="display:none" class="cf"><input type="text" id="m-cn" placeholder="Nazwa surowca"><div style="display:flex;gap:6px"><input type="number" id="m-csm" placeholder="SM %" min="1" max="100" value="88" style="flex:1"><input type="number" id="m-cprot" placeholder="Białko %" min="0" max="100" value="0" style="flex:1"><input type="number" id="m-cstarch" placeholder="Skrobia %" min="0" max="100" value="0" style="flex:1"></div><input type="number" id="m-cprice" placeholder="Cena zł/t" min="0" style="margin-top:4px"></div></div>'
+    +'<div class="br"><button class="btn" onclick="dupM()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp" style="background:#185FA5" id="m-save-btn" onclick="saveM()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>'
+    +'<div class="br"><button class="btn bp" style="background:#0F6E56" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Eksportuj do bazy surowców</button></div>'
+    +'<button class="btn bdd" id="m-del-btn" style="display:'+(mId?'flex':'none')+';width:calc(100% - 32px);margin:0 16px 10px" onclick="delM()"><i class="ti ti-trash"></i> Usuń mieszankę</button>';
+  renderM();
+}
+function addM(){
+  var v=document.getElementById('m-sel').value,kg=parseFloat(document.getElementById('m-kg').value);
+  if(!kg||kg<=0){toast('Podaj kg',true);return}
+  if(v==='__c__'){
+    var nm=document.getElementById('m-cn').value.trim();if(!nm){toast('Podaj nazwę',true);return}
+    var sm=parseFloat(document.getElementById('m-csm').value)||88;
+    var prot=parseFloat(document.getElementById('m-cprot').value)||0;
+    var st=parseFloat(document.getElementById('m-cstarch').value)||0;
+    var price=parseFloat(document.getElementById('m-cprice').value)||0;
+    if(!customIngs.find(function(x){return x[0]===nm})){customIngs.push([nm,'t',sm,price,prot,st]);saveAll()}
+    mIngs.push({name:nm,kg:kg});
+  } else {
+    mIngs.push({name:v,kg:kg});
+  }
+  document.getElementById('m-kg').value='';document.getElementById('m-cn')&&(document.getElementById('m-cf').style.display='none');
+  document.getElementById('m-sel').value=mIngs.length?document.getElementById('m-sel').options[0].value:'';
+  renderM();
+}
+function rmM(i){mIngs.splice(i,1);renderM()}
+function ukM(i,v){mIngs[i].kg=parseFloat(v)||0;renderM()}
+function renderM(){
+  var r=mCalc(mIngs);
+  var st=document.getElementById('m-stats');
+  if(st){st.innerHTML='<div class="s2" style="padding:0;margin-bottom:6px">'
+    +sb('#185FA5',r.protein.toFixed(1)+'%','białko (w SM)')
+    +sb('#993C1D',r.starch.toFixed(1)+'%','skrobia (w SM)')
+    +'</div><div class="s2" style="padding:0">'
+    +sb('var(--tx)',r.sm.toFixed(1)+'%','sucha masa')
+    +sb('#0F6E56',r.price.toFixed(0),'cena (zł/t)')
+    +'</div>';}
+  var el=document.getElementById('m-ing-list');if(!el)return;
+  if(!mIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-flask"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj surowce treściwe lub dodatki</div></div>';return}
+  el.innerHTML='<div class="ls">'+mIngs.map(function(s,i){
+    var pct=r.totalKg>0?(s.kg/r.totalKg*100):0;
+    return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div><div class="cp" style="color:#185FA5">'+pct.toFixed(1)+'% składu</div></div><div class="rr"><div class="kw"><input type="number" value="'+s.kg+'" min="0" step="1" inputmode="numeric" onchange="ukM('+i+',this.value)"><span>kg</span></div><button class="dl" onclick="rmM('+i+')"><i class="ti ti-x"></i></button></div></div>';
+  }).join('')+'</div>';
+}
+function saveM(){
+  var t=document.getElementById('m-title').value.trim()||'Mieszanka',n=document.getElementById('m-note').value.trim();
+  if(!mIngs.length){toast('Dodaj surowce',true);return}
+  var dup=findDuplicateTitle(mDoses,t,mId);
+  if(dup){if(!confirm('Mieszanka "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(mDoses,t,mId)+'"?'))return;t=uniqueTitle(mDoses,t,mId);document.getElementById('m-title').value=t}
+  if(mId){var d=mDoses.find(function(x){return x.id===mId});if(d){d.title=t;d.note=n;d.ings=JSON.parse(JSON.stringify(mIngs))}}
+  else{mId='md'+Date.now();mDoses.push({id:mId,title:t,note:n,ings:JSON.parse(JSON.stringify(mIngs))});document.getElementById('m-del-btn').style.display='flex'}
+  document.getElementById('m-topbar').textContent=t;saveAll();flash('m-save-btn');toast('Zapisano mieszankę')
+}
+function delM(){if(!confirm('Usunąć tę mieszankę?'))return;mDoses=mDoses.filter(function(x){return x.id!==mId});saveAll();toast('Mieszanka usunięta');backM()}
+function dupM(){mId=null;document.getElementById('m-title').value=(document.getElementById('m-title').value||'Mieszanka')+' (kopia)';document.getElementById('m-del-btn').style.display='none'}
+function exportMieszankaLive(){
+  if(!mIngs.length){toast('Dodaj surowce',true);return}
+  var t=document.getElementById('m-title').value.trim()||'Mieszanka';
+  doExportMieszanka(t,mIngs);
+}
+function exportMieszanka(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;doExportMieszanka(d.title,d.ings)}
+function doExportMieszanka(title,ings){
+  var r=mCalc(ings);
+  // znajdź lub utwórz kategorię "Moje mieszanki"
+  var grp=BASE.find(function(g){return g.g==='Moje mieszanki'});
+  if(!grp){grp={g:'Moje mieszanki',items:[]};BASE.push(grp)}
+  // sprawdź duplikat nazwy w bazie
+  var exists=false;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===title)exists=true})});
+  var fname=title;var n=2;
+  while(exists){fname=title+' ('+n+')';exists=false;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===fname)exists=true})});n++}
+  // [nazwa, kat 'tm'? nie - to sucha treściwa 't', sm, cena, białko, skrobia]
+  grp.items.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10]);
+  // zapisz do customMieszanki w localStorage żeby przetrwało restart
+  var savedMix=[];try{savedMix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]')}catch(e){}
+  if(!savedMix.find(function(x){return x[0]===fname}))savedMix.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10]);
+  try{localStorage.setItem('tmr_mixbase',JSON.stringify(savedMix))}catch(e){}
+  rebuildSelects();
+  toast('"'+fname+'" dodana do bazy surowców');
 }
 
 function analizaContent(){
@@ -317,14 +523,21 @@ function analizaContent(){
       +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak receptur</div><div class="em-s">Użyj ikony <i class="ti ti-chart-line"></i> w pozostałych zakładkach, aby przenieść tu dawkę</div></div>';
   }
   if(!aDoseId||!aDoses.find(function(d){return d.id===aDoseId}))aDoseId=aDoses[0].id;
+  var cur=aDoses.find(function(d){return d.id===aDoseId});
+  // wczytaj zapisane wartości receptury (lub domyślne)
+  var milkVal=(cur&&cur.milk!==undefined)?cur.milk:32;
+  var priceVal=(cur&&cur.milkPrice!==undefined)?cur.milkPrice:1.80;
+  aMilk=milkVal;aPrice=priceVal;
   var opts=aDoses.map(function(d){return '<option value="'+d.id+'"'+(d.id===aDoseId?' selected':'')+'>'+d.title+'</option>'}).join('');
   var h='<div class="fl"><div class="fl-l">Wybierz recepturę</div><div style="display:flex;gap:6px"><select id="a-sel" style="flex:1" onchange="aDoseId=this.value;renderAnaliza()">'+opts+'</select><button class="ib" onclick="delAnalizaDose()" title="Usuń recepturę"><i class="ti ti-trash"></i></button></div></div>';
-  h+='<div class="ir"><div class="fw"><div class="fl-l">Mleko (l/szt/dzień)</div><input type="number" id="a-milk" value="'+aMilk+'" min="0" step="0.1" inputmode="decimal" oninput="aMilk=parseFloat(this.value)||0;calcAnaliza()"></div><div class="fw"><div class="fl-l">Cena mleka (zł/l)</div><input type="number" id="a-price" value="'+aPrice+'" min="0" step="0.01" inputmode="decimal" oninput="aPrice=parseFloat(this.value)||0;calcAnaliza()"></div></div>';
+  h+='<div class="ir"><div class="fw"><div class="fl-l">Mleko (l/szt/dzień)</div><input type="number" id="a-milk" value="'+milkVal+'" min="0" step="0.1" inputmode="decimal" oninput="setMilk(this.value)"></div><div class="fw"><div class="fl-l">Cena mleka (zł/l)</div><input type="number" id="a-price" value="'+priceVal+'" min="0" step="0.01" inputmode="decimal" oninput="setMilkPrice(this.value)"></div></div>';
   h+='<div id="a-results"></div>';
   h+='<div class="br" style="margin-top:10px"><button class="btn" onclick="editPrices()"><i class="ti ti-coin"></i> Edytuj ceny</button><button class="btn" onclick="pdfAnaliza()"><i class="ti ti-download"></i> PDF</button></div>';
   setTimeout(calcAnaliza,10);
   return h;
 }
+function setMilk(v){aMilk=parseFloat(v)||0;var d=aDoses.find(function(x){return x.id===aDoseId});if(d){d.milk=aMilk;saveAll()}calcAnaliza()}
+function setMilkPrice(v){aPrice=parseFloat(v)||0;var d=aDoses.find(function(x){return x.id===aDoseId});if(d){d.milkPrice=aPrice;saveAll()}calcAnaliza()}
 function delAnalizaDose(){if(!aDoseId)return;if(!confirm('Usunąć tę recepturę z Analizy?'))return;aDoses=aDoses.filter(function(x){return x.id!==aDoseId});aDoseId=null;saveAll();toast('Receptura usunięta');renderAnaliza()}
 function exportToAnaliza(src){
   var ings,title,szt;
@@ -395,28 +608,192 @@ function editPrices(){
 }
 function setPrice(name,val){
   var p=parseFloat(val)||0;
-  customPrices[name]=p;saveprices();
-  var inBase=false;
-  BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name){it[3]=p;inBase=true}})});
-  if(!inBase){var ci=customIngs.find(function(x){return x[0]===name});if(ci)ci[3]=p;saveAll()}
+  var d=aDoses.find(function(x){return x.id===aDoseId});
+  if(!d)return;
+  if(!d.prices)d.prices={};
+  d.prices[name]=p;
+  saveAll();
 }
 function closePrices(){var m=document.getElementById('price-modal');if(m)m.remove();calcAnaliza()}
 
 function pdfAnaliza(){
+  if(!window.jspdf){toast('Trwa ladowanie generatora PDF, sprobuj ponownie',true);return}
   var c=calcData();if(!c)return;
   var effT=aMilk>0?c.kgT/aMilk:0,costPerL=aMilk>0?c.costT/aMilk:0,costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
   var przychod=aMilk*aPrice,iofc=przychod-c.costTotal;
-  var rows=c.dose.ings.map(function(s,i){
+  var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,H=297,M=14;
+  // Naglowek
+  doc.setFillColor(12,68,124);doc.rect(0,0,W,24,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text(plchars('Analiza dawki - '+c.dose.title),M,13);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(181,212,244);
+  doc.text(plchars(c.szt+' szt  |  '+aMilk+' l/szt  |  cena mleka '+aPrice+' zl/l  |  '+new Date().toLocaleDateString('pl')),M,19.5);
+  // KPI - 2 kolumny x kilka wierszy
+  var kpis=[
+    ['kg tresciwej / litr mleka',effT.toFixed(3),[15,110,86]],
+    ['koszt tresciwej / litr (zl)',costPerL.toFixed(2),[153,60,29]],
+    ['kg tresciwej / szt (ekwiw. 88%)',c.kgT.toFixed(2),[24,95,165]],
+    ['koszt calej dawki (zl/szt)',c.costTotal.toFixed(2),[30,30,30]],
+    ['przychod z mleka (zl/szt)',przychod.toFixed(2),[24,95,165]],
+    ['przychod - koszt dawki (zl/szt)',iofc.toFixed(2),iofc>=0?[15,110,86]:[163,45,45]]
+  ];
+  var ky=32,kw=(W-2*M)/2,kh=18;
+  kpis.forEach(function(k,i){
+    var col=i%2,row=Math.floor(i/2);
+    var kx=M+col*kw,kyy=ky+row*kh;
+    doc.setFillColor(245,245,247);doc.roundedRect(kx,kyy,kw-3,kh-3,2,2,'F');
+    doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(17);
+    doc.text(k[1],kx+4,kyy+8);
+    doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text(plchars(k[0]),kx+4,kyy+13.5);
+  });
+  // Tabela surowcow
+  var ty=ky+3*kh+4;
+  doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
+  doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('SUROWIEC',M+2,ty+4.7);
+  doc.text('kg/szt',M+88,ty+4.7,{align:'right'});
+  doc.text('TYP',M+92,ty+4.7);
+  doc.text('ekw.88%',M+150,ty+4.7,{align:'right'});
+  doc.text('zl/t',M+168,ty+4.7,{align:'right'});
+  doc.text('zl/szt',W-M-1,ty+4.7,{align:'right'});
+  var ry=ty+7;
+  var n=c.dose.ings.length;
+  var rowH=Math.min(8,(H-ry-24)/n);if(rowH<5)rowH=5;
+  doc.setFont('helvetica','normal');
+  c.dose.ings.forEach(function(s,i){
     var pr=getPrice(s.name),cost=(s.kg*pr/1000).toFixed(2);
     var cat=getCat(s.name,s.cat);
-    var tag=cat==='tm'?'treściwa mokra':(cat==='t'?'treściwa':'objętościowa');
-    var kgEq='—';
-    if(cat==='t')kgEq=s.kg.toFixed(2);
-    else if(cat==='tm'){var sm=getSM(s);kgEq=(s.kg*sm/88).toFixed(2)}
-    return '<tr><td>'+(i+1)+'. '+s.name+'</td><td style="text-align:right">'+s.kg+'</td><td>'+tag+'</td><td style="text-align:right">'+kgEq+'</td><td style="text-align:right">'+pr+'</td><td style="text-align:right">'+cost+'</td></tr>';
-  }).join('');
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+c.dose.title+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111;padding:0}.hdr{background:#0C447C;color:#fff;padding:16px}.hdr h1{font-size:20px}.hdr .s{font-size:12px;color:#B5D4F4}.kpi{display:flex;flex-wrap:wrap;padding:12px 16px;gap:10px;border-bottom:2px solid #ddd}.k{flex:1;min-width:100px}.kv{font-size:19px;font-weight:700}.kl{font-size:10px;color:#666}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th,td{padding:6px 16px;border-bottom:1px solid #eee;text-align:left}th{background:#f5f5f5;font-size:10px;text-transform:uppercase}.foot{padding:12px 16px;font-size:12px;color:#444}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="hdr"><h1>Analiza dawki — '+c.dose.title+'</h1><div class="s">'+c.szt+' szt · '+aMilk+' l/szt · cena mleka '+aPrice+' zł/l · '+new Date().toLocaleDateString('pl')+'</div></div><div class="kpi"><div class="k"><div class="kv" style="color:#0F6E56">'+effT.toFixed(3)+'</div><div class="kl">kg treściwej / litr mleka</div></div><div class="k"><div class="kv" style="color:#993C1D">'+costPerL.toFixed(2)+'</div><div class="kl">koszt treściwej / litr (zł)</div></div><div class="k"><div class="kv">'+c.kgT.toFixed(2)+'</div><div class="kl">kg treściwej / szt (ekwiw. 88%)</div></div><div class="k"><div class="kv" style="color:#185FA5">'+przychod.toFixed(2)+'</div><div class="kl">przychód z mleka (zł/szt)</div></div><div class="k"><div class="kv" style="color:'+(iofc>=0?'#0F6E56':'#A32D2D')+'">'+iofc.toFixed(2)+'</div><div class="kl">przychód − koszt dawki (zł/szt)</div></div></div><table><thead><tr><th>Surowiec</th><th style="text-align:right">kg/szt</th><th>Typ</th><th style="text-align:right">kg ekwiw.88%</th><th style="text-align:right">zł/t</th><th style="text-align:right">zł/szt</th></tr></thead><tbody>'+rows+'</tbody></table><div class="foot">Koszt treściwych: <b>'+c.costT.toFixed(2)+' zł/szt</b> · Koszt całej dawki: <b>'+c.costTotal.toFixed(2)+' zł/szt</b> ('+costTotalPerL.toFixed(2)+' zł/l) · Przychód z mleka: <b>'+przychod.toFixed(2)+' zł/szt</b> · Zysk nad paszą: <b>'+iofc.toFixed(2)+' zł/szt</b></div></body></html>';
-  openPrint(html);
+    var tag=cat==='tm'?'tr.mokra':(cat==='t'?'tresciwa':'objet.');
+    var kgEq='-';if(cat==='t')kgEq=s.kg.toFixed(2);else if(cat==='tm'){kgEq=(s.kg*getSM(s)/88).toFixed(2)}
+    var yy=ry+i*rowH;
+    if(yy>H-26)return;
+    doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);
+    doc.setTextColor(25,25,25);doc.setFontSize(Math.min(9,rowH*0.95));
+    doc.text(plchars((i+1)+'. '+s.name).substring(0,32),M+2,yy+rowH*0.65);
+    doc.text(''+s.kg,M+88,yy+rowH*0.65,{align:'right'});
+    doc.setTextColor(120,120,120);doc.setFontSize(Math.min(7.5,rowH*0.8));
+    doc.text(tag,M+92,yy+rowH*0.65);
+    doc.setTextColor(25,25,25);doc.setFontSize(Math.min(9,rowH*0.95));
+    doc.text(kgEq,M+150,yy+rowH*0.65,{align:'right'});
+    doc.text(pr>0?''+pr:'-',M+168,yy+rowH*0.65,{align:'right'});
+    doc.text(cost,W-M-1,yy+rowH*0.65,{align:'right'});
+  });
+  // Stopka
+  doc.setFillColor(245,245,245);doc.rect(0,H-20,W,20,'F');
+  doc.setDrawColor(210,210,210);doc.line(0,H-20,W,H-20);
+  doc.setTextColor(70,70,70);doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+  doc.text(plchars('Koszt tresciwych: '+c.costT.toFixed(2)+' zl/szt   |   Koszt calej dawki: '+c.costTotal.toFixed(2)+' zl/szt ('+costTotalPerL.toFixed(2)+' zl/l)'),M,H-12);
+  doc.setFont('helvetica','bold');doc.setTextColor(15,110,86);
+  doc.text(plchars('Przychod z mleka: '+przychod.toFixed(2)+' zl/szt   |   Zysk nad pasza: '+iofc.toFixed(2)+' zl/szt'),M,H-6);
+  doc.save(sanitize('Analiza_'+c.dose.title)+'.pdf');
+  toast('PDF zapisany w Pobranych');
+}
+
+// ===== NOTATKI KLIENTÓW =====
+var noteClients=[];try{noteClients=JSON.parse(localStorage.getItem('tmr_notes')||'[]')}catch(e){}
+var curClientId=null;
+function saveNotes(){try{localStorage.setItem('tmr_notes',JSON.stringify(noteClients))}catch(e){}}
+function openNotes(){show('scr-notes');renderNotesList()}
+function renderNotesList(){
+  var el=document.getElementById('scr-notes');
+  var h='<div class="topbar"><button class="ib" onclick="show(\'scr-main\')"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">Notatki klientów</div></div>';
+  h+='<div class="hn"><i class="ti ti-info-circle"></i> Prowadź notatki dla każdego klienta — możesz pisać lub dyktować (mikrofon na klawiaturze). Każdy wpis ma datę.</div>';
+  if(!noteClients.length){
+    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-users"></i></div><div class="em-t">Brak klientów</div><div class="em-s">Dodaj pierwszego klienta, aby prowadzić notatki</div></div>';
+  } else {
+    h+=noteClients.map(function(c){
+      var last=c.entries&&c.entries.length?c.entries[0]:null;
+      var sub=last?fmtDate(last.ts)+' · '+c.entries.length+' wpis.'+(last.text?': '+last.text.substring(0,40):''):'brak wpisów';
+      return '<div class="dc" onclick="openClient(\''+c.id+'\')" style="cursor:pointer"><div class="dch"><div class="dct"><i class="ti ti-user" style="color:#185FA5"></i> '+c.name+'</div><div class="dcm">'+sub+'</div></div></div>';
+    }).join('');
+  }
+  h+='<button class="fab" style="background:#185FA5" onclick="newClient()"><i class="ti ti-plus"></i> Nowy klient</button>';
+  el.innerHTML=h;
+}
+function newClient(){
+  var name=prompt('Nazwa / imię klienta:');if(!name||!name.trim())return;
+  var id='nc'+Date.now();noteClients.push({id:id,name:name.trim(),entries:[]});saveNotes();
+  curClientId=id;openClient(id);
+}
+function openClient(id){curClientId=id;show('scr-note-client');renderClient()}
+function renderClient(){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  var el=document.getElementById('scr-note-client');
+  var h='<div class="topbar"><button class="ib" onclick="backNotes()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">'+c.name+'</div><button class="ib" onclick="pdfClient()" title="Eksport PDF"><i class="ti ti-download"></i></button><button class="ib" onclick="renameClient()" title="Zmień nazwę"><i class="ti ti-edit"></i></button><button class="ib" onclick="delClient()" title="Usuń klienta"><i class="ti ti-trash"></i></button></div>';
+  // pole nowego wpisu
+  h+='<div class="ac" style="margin-top:10px"><div class="at2"><i class="ti ti-plus"></i> Nowy wpis</div><textarea id="note-input" placeholder="Wpisz lub podyktuj notatkę (mikrofon na klawiaturze)..." style="width:100%;min-height:80px;padding:10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:14px;font-family:inherit;resize:vertical"></textarea><button class="btn bp" style="background:#185FA5;width:100%;margin-top:8px" onclick="addEntry()"><i class="ti ti-device-floppy"></i> Zapisz wpis</button></div>';
+  // historia wpisów
+  if(!c.entries||!c.entries.length){
+    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-note"></i></div><div class="em-t">Brak wpisów</div><div class="em-s">Dodaj pierwszy wpis powyżej</div></div>';
+  } else {
+    h+='<div class="sec-top">Historia wpisów</div><div class="spacer"></div>';
+    h+=c.entries.map(function(e,i){
+      return '<div class="dc"><div style="padding:11px 12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="ti ti-clock" style="color:#185FA5;font-size:13px"></i><span style="font-size:11px;color:#185FA5;font-weight:600">'+fmtDate(e.ts)+'</span><div style="flex:1"></div><button class="dl" onclick="editEntry('+i+')" style="font-size:14px"><i class="ti ti-edit"></i></button><button class="dl" onclick="delEntry('+i+')" style="font-size:14px"><i class="ti ti-x"></i></button></div><div style="font-size:14px;color:var(--tx);white-space:pre-wrap;line-height:1.5">'+escapeHtml(e.text)+'</div></div></div>';
+    }).join('');
+  }
+  el.innerHTML=h;
+}
+function backNotes(){show('scr-notes');renderNotesList()}
+function addEntry(){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  var txt=document.getElementById('note-input').value.trim();
+  if(!txt){toast('Wpisz treść notatki',true);return}
+  if(!c.entries)c.entries=[];
+  c.entries.unshift({ts:Date.now(),text:txt});
+  saveNotes();toast('Wpis zapisany');renderClient();
+}
+function editEntry(i){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c||!c.entries[i])return;
+  var nv=prompt('Edytuj wpis:',c.entries[i].text);
+  if(nv===null)return;
+  if(!nv.trim()){toast('Wpis nie może być pusty',true);return}
+  c.entries[i].text=nv.trim();c.entries[i].edited=Date.now();
+  saveNotes();toast('Wpis zaktualizowany');renderClient();
+}
+function delEntry(i){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  if(!confirm('Usunąć ten wpis?'))return;
+  c.entries.splice(i,1);saveNotes();toast('Wpis usunięty');renderClient();
+}
+function renameClient(){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  var nv=prompt('Nazwa klienta:',c.name);if(!nv||!nv.trim())return;
+  c.name=nv.trim();saveNotes();renderClient();
+}
+function delClient(){
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  if(!confirm('Usunąć klienta "'+c.name+'" wraz ze wszystkimi notatkami?'))return;
+  noteClients=noteClients.filter(function(x){return x.id!==curClientId});
+  saveNotes();toast('Klient usunięty');backNotes();
+}
+function fmtDate(ts){var d=new Date(ts);var p=function(n){return n<10?'0'+n:n};return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes())}
+function escapeHtml(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function pdfClient(){
+  if(!window.jspdf){toast('Trwa ladowanie generatora PDF, sprobuj ponownie',true);return}
+  var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
+  if(!c.entries||!c.entries.length){toast('Brak wpisów do eksportu',true);return}
+  var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,H=297,M=14;
+  doc.setFillColor(24,95,165);doc.rect(0,0,W,22,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text(plchars('Notatki - '+c.name),M,12);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(200,220,245);
+  doc.text(plchars(c.entries.length+' wpisow  |  wygenerowano '+fmtDate(Date.now())),M,18);
+  var y=30;
+  doc.setFontSize(10);
+  c.entries.forEach(function(e){
+    if(y>H-20){doc.addPage();y=20}
+    doc.setFont('helvetica','bold');doc.setTextColor(24,95,165);doc.setFontSize(9);
+    doc.text(plchars(fmtDate(e.ts)),M,y);y+=5;
+    doc.setFont('helvetica','normal');doc.setTextColor(20,20,20);doc.setFontSize(10);
+    var lines=doc.splitTextToSize(plchars(e.text),W-2*M);
+    lines.forEach(function(ln){if(y>H-15){doc.addPage();y=20}doc.text(ln,M,y);y+=5});
+    y+=4;doc.setDrawColor(225,225,225);doc.line(M,y-2,W-M,y-2);y+=3;
+  });
+  doc.save(sanitize('Notatki_'+c.name)+'.pdf');
+  toast('PDF zapisany w Pobranych');
 }
 
 rebuildSelects();renderDList();renderWList();
