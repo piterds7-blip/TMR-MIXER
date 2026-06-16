@@ -66,6 +66,10 @@ input[type=number]{text-align:right}
 .bp{color:#fff;border:none}.bpg{background:var(--g)}.bpp{background:var(--p)}
 .bdd{border-color:var(--red);color:var(--red)}
 .em{padding:36px 20px;text-align:center;color:var(--tx2)}.em-i{font-size:32px;margin-bottom:8px}.em-t{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:4px}.em-s{font-size:12px;line-height:1.4}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-bx{background:var(--bg);border-radius:16px;padding:18px;width:100%;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal-t{font-size:17px;font-weight:600;color:var(--tx);margin-bottom:14px}
+.modal-btns{display:flex;gap:8px;margin-top:14px}.modal-btns .btn{flex:1}
 .hn{font-size:11px;color:var(--tx2);background:var(--bg2);border-radius:var(--rs);padding:8px 12px;margin:0 16px 10px;line-height:1.4}
 .dc{margin:0 16px 8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .dch{padding:11px 12px 8px}.dct{font-size:15px;font-weight:600;color:var(--tx)}.dcm{font-size:11px;color:var(--tx2);margin-top:2px}
@@ -188,9 +192,9 @@ function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));loc
 function getSM(ing){var name=typeof ing==='string'?ing:ing.name;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[2]})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[2])return ci[2];if(ing.sm)return ing.sm;return 88;}
 // Wczytaj wyeksportowane mieszanki do bazy (kategoria Moje mieszanki)
 (function(){try{var mix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]');if(mix.length){var grp=BASE.find(function(g){return g.g==='Moje mieszanki'});if(!grp){grp={g:'Moje mieszanki',items:[]};BASE.push(grp)}mix.forEach(function(it){if(!grp.items.find(function(x){return x[0]===it[0]}))grp.items.push(it)})}}catch(e){}})();
-function getBasePrice(name){var found=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[3]||0})});return found}
-function getProtein(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[4]||0})});return f}
-function getStarch(name){var f=0;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[5]||0})});return f}
+function getBasePrice(name){var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[3]||0})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[3]!==undefined)return ci[3]||0;return 0}
+function getProtein(name){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[4]||0})});if(f!==null)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[4]!==undefined)return ci[4]||0;return 0}
+function getStarch(name){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[5]||0})});if(f!==null)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[5]!==undefined)return ci[5]||0;return 0}
 // Cena: jeśli aktywna receptura analizy ma własne nadpisanie -> użyj go; inaczej cena bazowa (sztywna)
 function getPrice(name){
   var d=aDoses.find(function(x){return x.id===aDoseId});
@@ -220,7 +224,7 @@ function showTab(t){
 
 // Shared ingredients
 function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var cf=id==='d-sel'?'d-cf':'w-cf';document.getElementById(cf).style.display=s.value==='__c__'?'block':'none'}})}
-function addCustom(n,c,sm){if(!customIngs.find(function(x){return x[0]===n})){customIngs.push([n,c,sm||88]);rebuildSelects();saveAll()}}
+function addCustom(n,c,sm){if(!customIngs.find(function(x){return x[0]===n})){customIngs.push([n,c,sm||88,0,0,0]);rebuildSelects();saveAll()}}
 function badge(c){if(c==='t')return '<span class="badge bt">treściwa</span>';if(c==='tm')return '<span class="badge btm">treściwa mokra</span>';return '<span class="badge bo">objętościowa</span>'}
 function isTresciwa(c){return c==='t'||c==='tm'}
 function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
@@ -391,7 +395,7 @@ function mListView(){
       var r=mCalc(d.ings);
       return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+d.ings.length+' surowców · '+r.totalKg.toFixed(0)+' kg</div></div>'
         +'<div class="dcs"><div class="dss"><div class="dsv">'+r.protein.toFixed(1)+'%</div><div class="dsl">białko</div></div><div class="dss"><div class="dsv">'+r.starch.toFixed(1)+'%</div><div class="dsl">skrobia</div></div><div class="dss"><div class="dsv" style="color:#185FA5">'+r.sm.toFixed(1)+'%</div><div class="dsl">SM</div></div></div>'
-        +'<div class="dca"><button class="dab" style="color:#185FA5;font-weight:600" onclick="openM(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="exportMieszanka(\''+d.id+'\')"><i class="ti ti-database-import"></i> Do bazy</button></div></div>';
+        +'<div class="dca"><button class="dab" style="color:#185FA5;font-weight:600" onclick="openM(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfMieszanka(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="exportMieszanka(\''+d.id+'\')"><i class="ti ti-database-import"></i> Do bazy</button></div></div>';
     }).join('');
   }
   h+='<button class="fab" style="background:#185FA5" onclick="newM()"><i class="ti ti-plus"></i> Nowa mieszanka</button>';
@@ -440,7 +444,7 @@ function renderMEdit(title,note){
     +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="m-sel" onchange="document.getElementById(\'m-cf\').style.display=this.value===\'__c__\'?\'block\':\'none\'">'+opts+'</select><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric"><button class="addb" style="background:#185FA5" onclick="addM()"><i class="ti ti-plus"></i></button></div>'
     +'<div id="m-cf" style="display:none" class="cf"><input type="text" id="m-cn" placeholder="Nazwa surowca"><div style="display:flex;gap:6px"><input type="number" id="m-csm" placeholder="SM %" min="1" max="100" value="88" style="flex:1"><input type="number" id="m-cprot" placeholder="Białko %" min="0" max="100" value="0" style="flex:1"><input type="number" id="m-cstarch" placeholder="Skrobia %" min="0" max="100" value="0" style="flex:1"></div><input type="number" id="m-cprice" placeholder="Cena zł/t" min="0" style="margin-top:4px"></div></div>'
     +'<div class="br"><button class="btn" onclick="dupM()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp" style="background:#185FA5" id="m-save-btn" onclick="saveM()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>'
-    +'<div class="br"><button class="btn bp" style="background:#0F6E56" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Eksportuj do bazy surowców</button></div>'
+    +'<div class="br"><button class="btn" onclick="pdfMieszankaLive()"><i class="ti ti-download"></i> Eksport PDF</button><button class="btn bp" style="background:#0F6E56" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Do bazy surowców</button></div>'
     +'<button class="btn bdd" id="m-del-btn" style="display:'+(mId?'flex':'none')+';width:calc(100% - 32px);margin:0 16px 10px" onclick="delM()"><i class="ti ti-trash"></i> Usuń mieszankę</button>';
   renderM();
 }
@@ -516,6 +520,38 @@ function doExportMieszanka(title,ings){
   rebuildSelects();
   toast('"'+fname+'" dodana do bazy surowców');
 }
+function pdfMieszankaLive(){
+  if(!mIngs.length){toast('Dodaj surowce',true);return}
+  var t=document.getElementById('m-title').value.trim()||'Mieszanka';
+  doPdfMieszanka(t,mIngs);
+}
+function pdfMieszanka(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;doPdfMieszanka(d.title,d.ings)}
+function doPdfMieszanka(title,ings){
+  if(!window.jspdf){toast('Trwa ladowanie generatora PDF, sprobuj ponownie',true);return}
+  var r=mCalc(ings);
+  var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,H=297,M=14;
+  // naglowek
+  doc.setFillColor(24,95,165);doc.rect(0,0,W,22,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text(plchars('Mieszanka: '+title),M,12);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(200,220,245);
+  doc.text(plchars(ings.length+' surowcow  |  '+r.totalKg.toFixed(0)+' kg  |  '+new Date().toLocaleDateString('pl')),M,18);
+  // KPI parametry
+  var kpis=[['bialko (w SM)',r.protein.toFixed(1)+'%',[24,95,165]],['skrobia (w SM)',r.starch.toFixed(1)+'%',[153,60,29]],['sucha masa',r.sm.toFixed(1)+'%',[30,30,30]],['cena (zl/t)',r.price.toFixed(0),[15,110,86]]];
+  var ky=28,kw=(W-2*M)/2,kh=18;
+  kpis.forEach(function(k,i){var col=i%2,row=Math.floor(i/2);var kx=M+col*kw,kyy=ky+row*kh;doc.setFillColor(245,245,247);doc.roundedRect(kx,kyy,kw-3,kh-3,2,2,'F');doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text(k[1],kx+4,kyy+8);doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(plchars(k[0]),kx+4,kyy+13.5)});
+  // tabela skladnikow
+  var ty=ky+2*kh+4;
+  doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
+  doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('SUROWIEC',M+2,ty+4.7);doc.text('kg',M+105,ty+4.7,{align:'right'});doc.text('% skladu',M+145,ty+4.7,{align:'right'});doc.text('zl/t',W-M-1,ty+4.7,{align:'right'});
+  var ry=ty+7,n=ings.length,rowH=Math.min(8,(H-ry-16)/n);if(rowH<5)rowH=5;
+  doc.setFont('helvetica','normal');
+  ings.forEach(function(s,i){var pct=r.totalKg>0?(s.kg/r.totalKg*100):0;var pr=getPrice(s.name);var yy=ry+i*rowH;if(yy>H-18)return;doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);doc.setTextColor(25,25,25);doc.setFontSize(Math.min(10,rowH*0.95));doc.text(plchars((i+1)+'. '+s.name).substring(0,40),M+2,yy+rowH*0.65);doc.text(''+s.kg,M+105,yy+rowH*0.65,{align:'right'});doc.setTextColor(24,95,165);doc.text(pct.toFixed(1)+'%',M+145,yy+rowH*0.65,{align:'right'});doc.setTextColor(25,25,25);doc.text(pr>0?''+pr:'-',W-M-1,yy+rowH*0.65,{align:'right'})});
+  doc.save(sanitize('Mieszanka_'+title)+'.pdf');
+  toast('PDF zapisany w Pobranych');
+}
 
 function analizaContent(){
   if(!aDoses.length){
@@ -548,7 +584,39 @@ function exportToAnaliza(src){
 }
 function exportDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)return;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:s.kg}});pushAnaliza(d.title,d.szt,ings)}
 function exportDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;var szt=d.szt||1;var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});pushAnaliza(d.title,szt,ings)}
-function pushAnaliza(title,szt,ings){var ft=uniqueTitle(aDoses,title,null);var id='ad'+Date.now();aDoses.push({id:id,title:ft,szt:szt,ings:ings});aDoseId=id;saveAll();toast('Receptura w Analizie efektywności');showTab('a')}
+function pushAnaliza(title,szt,ings){
+  // sprawdź czy istnieje już analiza o tej nazwie (bazowej)
+  var existing=aDoses.find(function(x){return x.title===title});
+  if(existing){
+    showAnalizaConflict(title,szt,ings,existing);
+    return;
+  }
+  var id='ad'+Date.now();aDoses.push({id:id,title:title,szt:szt,ings:ings});aDoseId=id;saveAll();toast('Receptura w Analizie dawki');showTab('a');
+}
+function showAnalizaConflict(title,szt,ings,existing){
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='conflict-modal';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t">Analiza "'+escapeHtml(title)+'" już istnieje</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.5;margin-bottom:4px">Co chcesz zrobić z tą recepturą w Analizie dawki?</div>'
+    +'<div class="modal-btns" style="flex-direction:column"><button class="btn bp" style="background:#185FA5;width:100%" onclick="resolveConflict(\'overwrite\')"><i class="ti ti-refresh"></i> Nadpisz istniejącą</button>'
+    +'<button class="btn" style="width:100%" onclick="resolveConflict(\'new\')"><i class="ti ti-plus"></i> Utwórz nową (kopię)</button>'
+    +'<button class="btn" style="width:100%" onclick="resolveConflict(\'cancel\')">Anuluj</button></div></div>';
+  document.body.appendChild(ov);
+  window._conflictData={title:title,szt:szt,ings:ings,existing:existing};
+}
+function resolveConflict(action){
+  var m=document.getElementById('conflict-modal');if(m)m.remove();
+  var d=window._conflictData;if(!d)return;
+  if(action==='cancel')return;
+  if(action==='overwrite'){
+    // zachowaj ceny/mleko z istniejącej receptury
+    d.existing.szt=d.szt;d.existing.ings=d.ings;
+    aDoseId=d.existing.id;saveAll();toast('Analiza zaktualizowana');showTab('a');
+  } else if(action==='new'){
+    var ft=uniqueTitle(aDoses,d.title,null);var id='ad'+Date.now();
+    aDoses.push({id:id,title:ft,szt:d.szt,ings:d.ings});aDoseId=id;saveAll();toast('Utworzono nową analizę');showTab('a');
+  }
+  window._conflictData=null;
+}
 
 function getCat(name,fallback){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[1]})});if(f)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci)return ci[1];return fallback||'obj'}
 function calcData(){
@@ -692,39 +760,54 @@ function pdfAnaliza(){
 }
 
 // ===== NOTATKI KLIENTÓW =====
+// Uniwersalny modal tekstowy (zastępuje prompt)
+function inputModal(opts){
+  var title=opts.title||'',val=opts.value||'',ph=opts.placeholder||'',multiline=opts.multiline,cb=opts.onOk,okLabel=opts.okLabel||'Zapisz';
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='input-modal';
+  var field=multiline
+    ?'<textarea id="im-field" placeholder="'+ph.replace(/"/g,'&quot;')+'" style="width:100%;min-height:120px;padding:11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:15px;font-family:inherit;resize:vertical">'+escapeHtml(val)+'</textarea>'
+    :'<input type="text" id="im-field" placeholder="'+ph.replace(/"/g,'&quot;')+'" value="'+(''+val).replace(/"/g,'&quot;')+'" style="width:100%;padding:11px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:15px">';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t">'+title+'</div>'+field
+    +'<div class="modal-btns"><button class="btn" onclick="closeInputModal()">Anuluj</button><button class="btn bp" style="background:#185FA5" id="im-ok"><i class="ti ti-check"></i> '+okLabel+'</button></div></div>';
+  document.body.appendChild(ov);
+  var f=document.getElementById('im-field');f.focus();if(!multiline)f.select();
+  document.getElementById('im-ok').onclick=function(){var v=f.value.trim();closeInputModal();cb(v)};
+  if(!multiline)f.onkeydown=function(e){if(e.key==='Enter'){var v=f.value.trim();closeInputModal();cb(v)}};
+}
+function closeInputModal(){var m=document.getElementById('input-modal');if(m)m.remove()}
 var noteClients=[];try{noteClients=JSON.parse(localStorage.getItem('tmr_notes')||'[]')}catch(e){}
 var curClientId=null;
 function saveNotes(){try{localStorage.setItem('tmr_notes',JSON.stringify(noteClients))}catch(e){}}
 function openNotes(){show('scr-notes');renderNotesList()}
 function renderNotesList(){
   var el=document.getElementById('scr-notes');
-  var h='<div class="topbar"><button class="ib" onclick="show(\'scr-main\')"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">Notatki klientów</div></div>';
-  h+='<div class="hn"><i class="ti ti-info-circle"></i> Prowadź notatki dla każdego klienta — możesz pisać lub dyktować (mikrofon na klawiaturze). Każdy wpis ma datę.</div>';
+  var h='<div class="topbar"><button class="ib" onclick="show(\'scr-main\')"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">Notatki</div></div>';
+  h+='<div class="hn"><i class="ti ti-info-circle"></i> Prowadź notatki dla każdego tematu — możesz pisać lub dyktować (mikrofon na klawiaturze). Każdy wpis ma datę.</div>';
   if(!noteClients.length){
-    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-users"></i></div><div class="em-t">Brak klientów</div><div class="em-s">Dodaj pierwszego klienta, aby prowadzić notatki</div></div>';
+    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-folder"></i></div><div class="em-t">Brak tematów</div><div class="em-s">Dodaj pierwszy temat, aby prowadzić notatki</div></div>';
   } else {
     h+=noteClients.map(function(c){
       var last=c.entries&&c.entries.length?c.entries[0]:null;
       var sub=last?fmtDate(last.ts)+' · '+c.entries.length+' wpis.'+(last.text?': '+last.text.substring(0,40):''):'brak wpisów';
-      return '<div class="dc" onclick="openClient(\''+c.id+'\')" style="cursor:pointer"><div class="dch"><div class="dct"><i class="ti ti-user" style="color:#185FA5"></i> '+c.name+'</div><div class="dcm">'+sub+'</div></div></div>';
+      return '<div class="dc" onclick="openClient(\''+c.id+'\')" style="cursor:pointer"><div class="dch"><div class="dct"><i class="ti ti-folder" style="color:#185FA5"></i> '+escapeHtml(c.name)+'</div><div class="dcm">'+escapeHtml(sub)+'</div></div></div>';
     }).join('');
   }
-  h+='<button class="fab" style="background:#185FA5" onclick="newClient()"><i class="ti ti-plus"></i> Nowy klient</button>';
+  h+='<button class="fab" style="background:#185FA5" onclick="newClient()"><i class="ti ti-plus"></i> Nowy temat</button>';
   el.innerHTML=h;
 }
 function newClient(){
-  var name=prompt('Nazwa / imię klienta:');if(!name||!name.trim())return;
-  var id='nc'+Date.now();noteClients.push({id:id,name:name.trim(),entries:[]});saveNotes();
-  curClientId=id;openClient(id);
+  inputModal({title:'Nowy temat',placeholder:'Nazwa tematu (np. nazwisko klienta)',okLabel:'Utwórz',onOk:function(name){
+    if(!name)return;
+    var id='nc'+Date.now();noteClients.push({id:id,name:name,entries:[]});saveNotes();
+    curClientId=id;openClient(id);
+  }});
 }
 function openClient(id){curClientId=id;show('scr-note-client');renderClient()}
 function renderClient(){
   var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
   var el=document.getElementById('scr-note-client');
-  var h='<div class="topbar"><button class="ib" onclick="backNotes()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">'+c.name+'</div><button class="ib" onclick="pdfClient()" title="Eksport PDF"><i class="ti ti-download"></i></button><button class="ib" onclick="renameClient()" title="Zmień nazwę"><i class="ti ti-edit"></i></button><button class="ib" onclick="delClient()" title="Usuń klienta"><i class="ti ti-trash"></i></button></div>';
-  // pole nowego wpisu
+  var h='<div class="topbar"><button class="ib" onclick="backNotes()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">'+escapeHtml(c.name)+'</div><button class="ib" onclick="pdfClient()" title="Eksport PDF"><i class="ti ti-download"></i></button><button class="ib" onclick="renameClient()" title="Zmień nazwę"><i class="ti ti-edit"></i></button><button class="ib" onclick="delClient()" title="Usuń temat"><i class="ti ti-trash"></i></button></div>';
   h+='<div class="ac" style="margin-top:10px"><div class="at2"><i class="ti ti-plus"></i> Nowy wpis</div><textarea id="note-input" placeholder="Wpisz lub podyktuj notatkę (mikrofon na klawiaturze)..." style="width:100%;min-height:80px;padding:10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:14px;font-family:inherit;resize:vertical"></textarea><button class="btn bp" style="background:#185FA5;width:100%;margin-top:8px" onclick="addEntry()"><i class="ti ti-device-floppy"></i> Zapisz wpis</button></div>';
-  // historia wpisów
   if(!c.entries||!c.entries.length){
     h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-note"></i></div><div class="em-t">Brak wpisów</div><div class="em-s">Dodaj pierwszy wpis powyżej</div></div>';
   } else {
@@ -746,11 +829,11 @@ function addEntry(){
 }
 function editEntry(i){
   var c=noteClients.find(function(x){return x.id===curClientId});if(!c||!c.entries[i])return;
-  var nv=prompt('Edytuj wpis:',c.entries[i].text);
-  if(nv===null)return;
-  if(!nv.trim()){toast('Wpis nie może być pusty',true);return}
-  c.entries[i].text=nv.trim();c.entries[i].edited=Date.now();
-  saveNotes();toast('Wpis zaktualizowany');renderClient();
+  inputModal({title:'Edytuj wpis',value:c.entries[i].text,multiline:true,okLabel:'Zapisz',onOk:function(nv){
+    if(!nv){toast('Wpis nie może być pusty',true);return}
+    c.entries[i].text=nv;c.entries[i].edited=Date.now();
+    saveNotes();toast('Wpis zaktualizowany');renderClient();
+  }});
 }
 function delEntry(i){
   var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
@@ -759,14 +842,15 @@ function delEntry(i){
 }
 function renameClient(){
   var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
-  var nv=prompt('Nazwa klienta:',c.name);if(!nv||!nv.trim())return;
-  c.name=nv.trim();saveNotes();renderClient();
+  inputModal({title:'Nazwa tematu',value:c.name,okLabel:'Zapisz',onOk:function(nv){
+    if(!nv)return;c.name=nv;saveNotes();renderClient();
+  }});
 }
 function delClient(){
   var c=noteClients.find(function(x){return x.id===curClientId});if(!c)return;
-  if(!confirm('Usunąć klienta "'+c.name+'" wraz ze wszystkimi notatkami?'))return;
+  if(!confirm('Usunąć temat "'+c.name+'" wraz ze wszystkimi notatkami?'))return;
   noteClients=noteClients.filter(function(x){return x.id!==curClientId});
-  saveNotes();toast('Klient usunięty');backNotes();
+  saveNotes();toast('Temat usunięty');backNotes();
 }
 function fmtDate(ts){var d=new Date(ts);var p=function(n){return n<10?'0'+n:n};return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes())}
 function escapeHtml(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
