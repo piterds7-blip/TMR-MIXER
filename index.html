@@ -305,21 +305,30 @@ function hexToRgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),pars
 // ===== PODGLĄD PDF =====
 function showPdfPreview(htmlContent, saveFn){
   var ov=document.createElement('div');ov.id='pdf-preview-ov';
-  ov.style.cssText='position:fixed;inset:0;background:#1a1a1a;z-index:4000;display:flex;flex-direction:column';
-  var topbar='<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;flex-shrink:0">'
-    +'<div style="flex:1;color:#fff;font-size:15px;font-weight:600"><i class="ti ti-eye" style="color:#85B7EB"></i> Podgląd — zrób screenshot lub zapisz PDF</div>'
-    +'<button onclick="closePdfPreview()" style="background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:8px;padding:7px 10px;font-size:18px;cursor:pointer"><i class="ti ti-x"></i></button>'
-    +'</div>';
-  var iframe='<iframe id="pdf-iframe" style="flex:1;border:none;background:#fff"></iframe>';
-  var btns='<div style="display:flex;gap:10px;padding:12px 14px;background:#111;flex-shrink:0">'
-    +'<button id="pdf-save-btn" style="flex:1;padding:13px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer"><i class="ti ti-download"></i> Zapisz PDF</button>'
-    +'<button onclick="closePdfPreview()" style="flex:1;padding:13px;background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer"><i class="ti ti-x"></i> Zamknij</button>'
-    +'</div>';
-  ov.innerHTML=topbar+iframe+btns;
+  ov.style.cssText='position:fixed;inset:0;background:#fff;z-index:4000;display:flex;flex-direction:column;overflow:hidden';
+  // Topbar
+  var top=document.createElement('div');
+  top.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0C447C;flex-shrink:0';
+  top.innerHTML='<div style="flex:1;color:#fff;font-size:14px;font-weight:600"><i class="ti ti-eye"></i> Podgląd — zrób screenshot lub zapisz PDF</div>'
+    +'<button onclick="closePdfPreview()" style="background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:8px;padding:7px 11px;font-size:18px;cursor:pointer"><i class="ti ti-x"></i></button>';
+  // Treść podglądu - scrollowalny div z HTML wyciągniętym z body
+  var content=document.createElement('div');
+  content.style.cssText='flex:1;overflow-y:auto;background:#fff;-webkit-overflow-scrolling:touch';
+  // Wyciągnij zawartość body z htmlContent
+  var bodyMatch=htmlContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  var bodyHtml=bodyMatch?bodyMatch[1]:htmlContent;
+  // Wyciągnij style
+  var styleMatch=htmlContent.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+  var styleHtml=styleMatch?'<style>'+styleMatch[1]+'</style>':'';
+  content.innerHTML=styleHtml+bodyHtml;
+  // Przyciski na dole
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:10px;padding:12px 14px;background:#0C447C;flex-shrink:0';
+  btns.innerHTML='<button id="pdf-save-btn" style="flex:1;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer"><i class="ti ti-download"></i> Zapisz PDF</button>'
+    +'<button onclick="closePdfPreview()" style="flex:1;padding:13px;background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer"><i class="ti ti-x"></i> Zamknij</button>';
+  ov.appendChild(top);ov.appendChild(content);ov.appendChild(btns);
   document.body.appendChild(ov);
-  var frame=document.getElementById('pdf-iframe');
-  frame.contentDocument.open();frame.contentDocument.write(htmlContent);frame.contentDocument.close();
-  document.getElementById('pdf-save-btn').onclick=function(){saveFn();};
+  document.getElementById('pdf-save-btn').onclick=function(){saveFn()};
 }
 function closePdfPreview(){var m=document.getElementById('pdf-preview-ov');if(m)m.remove()}
 
