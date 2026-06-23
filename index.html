@@ -221,15 +221,16 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').cat
 // Navigation
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function showTab(t){
+  if((t==='m'||t==='a')&&!appUnlocked){openKeyModal();return}
   document.getElementById('t-w').className=t==='w'?'tab tg':'tab';
   document.getElementById('t-d').className=t==='d'?'tab tp':'tab';
-  document.getElementById('t-m').className=t==='m'?'tab ta':'tab';
-  document.getElementById('t-a').className=t==='a'?'tab ta':'tab';
+  if(document.getElementById('t-m'))document.getElementById('t-m').className=t==='m'?'tab ta':'tab';
+  if(document.getElementById('t-a'))document.getElementById('t-a').className=t==='a'?'tab ta':'tab';
   document.getElementById('tab-w').style.display=t==='w'?'block':'none';
   document.getElementById('tab-d').style.display=t==='d'?'block':'none';
-  document.getElementById('tab-m').style.display=t==='m'?'block':'none';
-  document.getElementById('tab-a').style.display=t==='a'?'block':'none';
-  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='a')renderAnaliza();else if(t==='m')renderMieszanka();
+  if(document.getElementById('tab-m'))document.getElementById('tab-m').style.display=(t==='m'&&appUnlocked)?'block':'none';
+  if(document.getElementById('tab-a'))document.getElementById('tab-a').style.display=(t==='a'&&appUnlocked)?'block':'none';
+  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='a'&&appUnlocked)renderAnaliza();else if(t==='m'&&appUnlocked)renderMieszanka();
 }
 
 // Shared ingredients
@@ -294,7 +295,7 @@ function rmW(i){wIngs.splice(i,1);markDirtyW();renderW()}
 function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;markDirtyW();renderW()}
 function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;markDirtyW();renderW()}
 function renderW(){var szt=parseInt(document.getElementById('w-szt').value)||0,total=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('w-ph').textContent=total.toFixed(2);document.getElementById('w-woz').textContent=(total*szt).toFixed(0);document.getElementById('w-cnt').textContent=wIngs.length;var el=document.getElementById('w-ing-list');if(!wIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-plant"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj surowce z dawką na sztukę</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cg">'+kw.toFixed(1)+' kg na wóz \u2192 w wozie '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvW('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvW('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kg+'" min="0" step="0.01" inputmode="decimal" onchange="ukW('+i+',this.value)"><span>kg/szt</span></div><button class="dl" onclick="rmW('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
-function renderWList(){updateCounters();var el=document.getElementById('tab-w');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj dawkę na sztukę i liczbę sztuk \u2014 apka wyliczy ile kg załadować do wozu.</div>';if(!wDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Utwórz dawkę lub przenieś z Ustalania</div></div><button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+wDoses.map(function(d){var t=d.ings?d.ings.reduce(function(a,s){return a+s.kg},0):0,w=t*(d.szt||0);return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+(d.szt||0)+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+t.toFixed(1)+'</div><div class="dsl">kg/szt</div></div><div class="dss"><div class="dsv" style="color:var(--gd)">'+w.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div></div><div class="dca"><button class="dab op" onclick="openW(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="pdfDoseW(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="exportDoseW(\''+d.id+'\')"><i class="ti ti-chart-line"></i> Analiza</button></div></div>'}).join('')+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
+function renderWList(){updateCounters();var el=document.getElementById('tab-w');var h='<div class="hn"><i class="ti ti-info-circle"></i> Podaj dawkę na sztukę i liczbę sztuk \u2014 apka wyliczy ile kg załadować do wozu.</div>';if(!wDoses.length){el.innerHTML=h+'<div class="em"><div class="em-i" style="color:var(--gm)"><i class="ti ti-clipboard-list"></i></div><div class="em-t">Brak dawek</div><div class="em-s">Utwórz dawkę lub przenieś z Ustalania</div></div><button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';return}el.innerHTML=h+wDoses.map(function(d){var t=d.ings?d.ings.reduce(function(a,s){return a+s.kg},0):0,w=t*(d.szt||0);return '<div class="dc"><div class="dch"><div class="dct">'+d.title+'</div><div class="dcm">'+(d.note||'')+'</div></div><div class="dcs"><div class="dss"><div class="dsv">'+(d.szt||0)+'</div><div class="dsl">sztuk</div></div><div class="dss"><div class="dsv">'+t.toFixed(1)+'</div><div class="dsl">kg/szt</div></div><div class="dss"><div class="dsv" style="color:var(--gd)">'+w.toFixed(0)+'</div><div class="dsl">kg w wozie</div></div></div><div class="dca"><button class="dab op" onclick="openW(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+d.id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="pdfDoseW(\''+d.id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="exportDoseW(\''+d.id+'\')"><i class="ti ti-chart-line"></i> Analiza<button class="dab" onclick="shareDose(\''+d.id+'\')"><i class="ti ti-share"></i> Udostępnij</button></button></div></div>'}).join('')+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
 
 // Tryb wozu
 function wozView(){var t=document.getElementById('w-title').value||'Dawka',szt=parseInt(document.getElementById('w-szt').value)||0,tot=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('woz-t').textContent=t;document.getElementById('wz-szt').textContent=szt+' szt';document.getElementById('wz-ph').textContent=tot.toFixed(2)+' kg';document.getElementById('wz-tot').textContent=(tot*szt).toFixed(0);document.getElementById('wz-cnt').textContent=wIngs.length;document.getElementById('wz-ph2').textContent=tot.toFixed(2);var cum=0;document.getElementById('woz-items').innerHTML=wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="wi"><div class="win">'+(i+1)+'</div><div class="winm">'+s.name+'</div><div style="text-align:right"><div class="wirk">'+kw.toFixed(1)+'</div><div class="wiru">kg na wóz</div><div class="wirc">'+cum.toFixed(0)+'</div><div class="wircu">kg na wadze</div></div></div>'}).join('');show('scr-woz')}
@@ -434,14 +435,17 @@ try{if(localStorage.getItem('tmr_unlocked')==='1')appUnlocked=true}catch(e){}
 
 function updateKeyUI(){
   var btn=document.getElementById('key-btn');
-  if(btn){btn.style.color=appUnlocked?'#1D9E75':'var(--tx2)';btn.title=appUnlocked?'Aplikacja odblokowana':'Wpisz hasło dostępu'}
-  // zakładki m i a
+  if(btn){
+    btn.style.color=appUnlocked?'#1D9E75':'var(--tx2)';
+    btn.title=appUnlocked?'Aplikacja odblokowana':'Wpisz hasło dostępu';
+  }
+  // Pokaż/ukryj zakładki Mieszanka i Analiza
   var tm=document.getElementById('t-m'),ta=document.getElementById('t-a');
-  var sm=document.getElementById('sub-m'),sa=document.getElementById('sub-a');
-  if(tm){if(appUnlocked){tm.classList.remove('tlocked')}else{tm.classList.add('tlocked')}}
-  if(ta){if(appUnlocked){ta.classList.remove('tlocked')}else{ta.classList.add('tlocked')}}
-  if(sm)sm.textContent=appUnlocked?'własne mieszanki':'🔒 wymaga hasła';
-  if(sa)sa.textContent=appUnlocked?'koszty i wydajność':'🔒 wymaga hasła';
+  var tabm=document.getElementById('tab-m'),taba=document.getElementById('tab-a');
+  if(tm)tm.style.display=appUnlocked?'flex':'none';
+  if(ta)ta.style.display=appUnlocked?'flex':'none';
+  if(tabm)tabm.style.display=appUnlocked?'block':'none';
+  if(taba)taba.style.display=appUnlocked?'block':'none';
 }
 function openKeyModal(){
   if(appUnlocked){
