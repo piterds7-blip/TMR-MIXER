@@ -14,6 +14,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-TH6XRB2SHV');</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--g:#1D9E75;--gd:#0F6E56;--gk:#085041;--gl:#E1F5EE;--gm:#9FE1CB;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--bg:#fff;--bg2:#f5f5f5;--bg3:#eee;--tx:#111;--tx2:#666;--tx3:#999;--bd:#e0e0e0;--bd2:#ccc;--red:#E24B4A;--r:10px;--rs:7px}
 @media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--tx:#f0f0f0;--tx2:#aaa;--tx3:#777;--bd:#333;--bd2:#444;--gl:#0a3028;--pl:#1a1540}}
@@ -25,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ib{background:none;border:none;cursor:pointer;color:var(--tx2);padding:6px;border-radius:var(--rs);font-size:20px;display:flex;align-items:center}.ib:active{background:var(--bg3)}
 .tabs{display:flex;gap:4px;padding:10px 10px 0}
 .tab{flex:1;padding:8px 3px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
-.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}.tab.ta{background:#185FA5;color:#fff;border-color:#185FA5}
+.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}.tab.ta{background:#185FA5;color:#fff;border-color:#185FA5}.tab.tlocked{opacity:.5;cursor:pointer}
 .tab i{font-size:16px}.tab-sub{font-size:8px;opacity:.8;font-weight:400;line-height:1.15}
 .tab-cnt{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.15);color:inherit;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center}
 .tab.tp .tab-cnt,.tab.tg .tab-cnt{background:rgba(255,255,255,.25);color:#fff}
@@ -100,13 +101,13 @@ input[type=number]{text-align:right}
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button></div>
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openKeyModal()" title="Dostęp / hasło" id="key-btn"><i class="ti ti-key"></i></button><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
     <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-d" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → na sztukę</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
-    <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">własne mieszanki</span></button>
-    <button class="tab" id="t-a" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub">koszty i wydajność</span></button>
+    <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub" id="sub-m">własne mieszanki</span></button>
+    <button class="tab" id="t-a" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub" id="sub-a">koszty i wydajność</span></button>
   </div>
   <div id="tab-w" style="padding:10px 0"></div>
   <div id="tab-d" style="display:none;padding:10px 0"></div>
@@ -430,7 +431,77 @@ function pdfDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(d)genD
 // Jedno wspólne odblokowanie, zapamiętane na stałe (localStorage)
 var appUnlocked=false;
 try{if(localStorage.getItem('tmr_unlocked')==='1')appUnlocked=true}catch(e){}
-var aDoseId=null,aMilk=32,aPrice=1.80;
+
+function updateKeyUI(){
+  var btn=document.getElementById('key-btn');
+  if(btn){btn.style.color=appUnlocked?'#1D9E75':'var(--tx2)';btn.title=appUnlocked?'Aplikacja odblokowana':'Wpisz hasło dostępu'}
+  // zakładki m i a
+  var tm=document.getElementById('t-m'),ta=document.getElementById('t-a');
+  var sm=document.getElementById('sub-m'),sa=document.getElementById('sub-a');
+  if(tm){if(appUnlocked){tm.classList.remove('tlocked')}else{tm.classList.add('tlocked')}}
+  if(ta){if(appUnlocked){ta.classList.remove('tlocked')}else{ta.classList.add('tlocked')}}
+  if(sm)sm.textContent=appUnlocked?'własne mieszanki':'🔒 wymaga hasła';
+  if(sa)sa.textContent=appUnlocked?'koszty i wydajność':'🔒 wymaga hasła';
+}
+function openKeyModal(){
+  if(appUnlocked){
+    var ov=document.createElement('div');ov.className='modal-ov';ov.id='key-modal';
+    ov.innerHTML='<div class="modal-bx"><div class="modal-t" style="color:#1D9E75"><i class="ti ti-lock-open"></i> Aplikacja odblokowana</div>'
+      +'<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:14px">Masz dostęp do wszystkich funkcji: Mieszanka treściwa i Analiza dawki są aktywne.</div>'
+      +'<div class="modal-btns"><button class="btn bp" style="background:#185FA5;width:100%" onclick="document.getElementById(\'key-modal\').remove()"><i class="ti ti-check"></i> OK</button></div></div>';
+    document.body.appendChild(ov);return;
+  }
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='key-modal';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-key"></i> Odblokuj pełny dostęp</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:12px">Wpisz hasło dostępu, aby odblokować <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>. Wystarczy raz — urządzenie zapamięta na stałe.</div>'
+    +'<input type="password" id="key-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doKeyUnlock()">'
+    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'key-modal\').remove()">Anuluj</button><button class="btn bp" style="background:#185FA5" onclick="doKeyUnlock()"><i class="ti ti-key"></i> Odblokuj</button></div></div>';
+  document.body.appendChild(ov);
+  setTimeout(function(){var f=document.getElementById('key-pass');if(f)f.focus()},100);
+}
+function doKeyUnlock(){
+  var v=document.getElementById('key-pass').value;
+  if(v==='BIOFEED'){
+    appUnlocked=true;try{localStorage.setItem('tmr_unlocked','1')}catch(e){}
+    document.getElementById('key-modal').remove();
+    updateKeyUI();renderMieszanka();renderAnaliza();
+    toast('Dostęp odblokowany — wszystkie funkcje aktywne');
+  } else {toast('Nieprawidłowe hasło',true)}
+}
+function doUnlock(inputId){
+  var v=document.getElementById(inputId).value;
+  if(v==='BIOFEED'){appUnlocked=true;try{localStorage.setItem('tmr_unlocked','1')}catch(e){}toast('Dostęp odblokowany');updateKeyUI();renderMieszanka();renderAnaliza()}
+  else{toast('Nieprawidłowe hasło',true)}
+}
+// Ekran powitalny (tylko przy pierwszym uruchomieniu)
+function checkWelcome(){
+  if(appUnlocked)return; // już odblokowane, nie pokazuj
+  if(localStorage.getItem('tmr_seen')==='1')return; // już widział
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='welcome-modal';
+  ov.innerHTML='<div class="modal-bx"><div style="text-align:center;font-size:32px;margin-bottom:10px">🐄</div>'
+    +'<div class="modal-t" style="text-align:center">Witaj w TMR Mixer</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Dostępne od razu: <strong>Obliczanie wozu</strong>, <strong>Ustalanie dawki</strong> i <strong>Notatki</strong>.<br><br>Jeśli masz hasło dostępu, możesz odblokować pełne funkcje: <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>.</div>'
+    +'<input type="password" id="welcome-pass" placeholder="Hasło dostępu (opcjonalnie)" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doWelcomeUnlock()">'
+    +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
+    +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="doWelcomeUnlock()"><i class="ti ti-key"></i> Odblokuj i zacznij</button>'
+    +'<button class="btn" style="width:100%" onclick="dismissWelcome()">Pomiń na razie</button></div></div>';
+  document.body.appendChild(ov);
+  try{localStorage.setItem('tmr_seen','1')}catch(e){}
+}
+function doWelcomeUnlock(){
+  var v=document.getElementById('welcome-pass').value;
+  if(v==='BIOFEED'){
+    appUnlocked=true;try{localStorage.setItem('tmr_unlocked','1')}catch(e){}
+    document.getElementById('welcome-modal').remove();
+    updateKeyUI();renderMieszanka();renderAnaliza();
+    toast('Witaj! Wszystkie funkcje odblokowane');
+  } else if(v){toast('Nieprawidłowe hasło',true)}
+  else{dismissWelcome()}
+}
+function dismissWelcome(){
+  var m=document.getElementById('welcome-modal');if(m)m.remove();
+  updateKeyUI();
+}
 var aDoses=[];try{aDoses=JSON.parse(localStorage.getItem('tmr_ad')||'[]')}catch(e){}
 
 function doUnlock(inputId,rerender){
@@ -1092,7 +1163,115 @@ function pdfClient(){
   });
 }
 
+// ===== UDOSTĘPNIANIE DAWKI =====
+function encodeDose(d){
+  // Zbierz niestandardowe surowce (z customIngs) użyte w dawce
+  var customUsed=d.ings.filter(function(s){return customIngs.find(function(c){return c[0]===s.name})})
+    .map(function(s){var c=customIngs.find(function(x){return x[0]===s.name});return c});
+  var payload={v:1,title:d.title,note:d.note||'',szt:d.szt,ings:d.ings.map(function(s){return{n:s.name,c:s.cat,s:s.sm||0,k:s.kg}}),custom:customUsed};
+  try{return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))}catch(e){return null}
+}
+function decodeDose(str){
+  try{return JSON.parse(decodeURIComponent(escape(atob(str))))}catch(e){return null}
+}
+function shareDose(id){
+  var d=wDoses.find(function(x){return x.id===id});if(!d)return;
+  var enc=encodeDose(d);if(!enc){toast('Błąd kodowania dawki',true);return}
+  var url=location.origin+location.pathname+'?share='+enc;
+  if(url.length>2000)toast('Uwaga: Link jest długi ('+url.length+' znaków). QR może być trudny do zeskanowania.',false);
+  showShareModal(d.title,url);
+}
+function showShareModal(title,url){
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='share-modal';
+  ov.innerHTML='<div class="modal-bx" style="max-height:90vh;overflow-y:auto">'
+    +'<div class="modal-t"><i class="ti ti-share"></i> Udostępnij dawkę</div>'
+    +'<div style="font-size:13px;color:var(--tx2);margin-bottom:12px">Zeskanuj kod QR lub skopiuj link. Dawka: <strong>'+escapeHtml(title)+'</strong></div>'
+    +'<div id="qr-container" style="display:flex;justify-content:center;padding:16px;background:#fff;border-radius:10px;margin-bottom:12px"></div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:4px"><input type="text" id="share-url" value="'+escapeHtml(url)+'" readonly style="flex:1;font-size:11px;color:var(--tx2)"><button class="btn bp" style="background:#185FA5;white-space:nowrap" onclick="copyShareUrl()"><i class="ti ti-copy"></i></button></div>'
+    +'<div style="font-size:11px;color:var(--tx3);margin-bottom:12px">Klient skanuje QR lub otwiera link — dawka zaimportuje się automatycznie</div>'
+    +'<div class="modal-btns"><button class="btn bp" style="background:#185FA5;width:100%" onclick="document.getElementById(\'share-modal\').remove()"><i class="ti ti-check"></i> Gotowe</button></div></div>';
+  document.body.appendChild(ov);
+  // Generuj QR
+  try{new QRCode(document.getElementById('qr-container'),{text:url,width:220,height:220,colorDark:'#0C447C',colorLight:'#ffffff'})}
+  catch(e){document.getElementById('qr-container').innerHTML='<div style="font-size:12px;color:#888">QR niedostępny — użyj linku</div>'}
+}
+function copyShareUrl(){
+  var f=document.getElementById('share-url');if(!f)return;
+  try{navigator.clipboard.writeText(f.value).then(function(){toast('Link skopiowany!')}).catch(function(){f.select();document.execCommand('copy');toast('Link skopiowany!')})}
+  catch(e){f.select();document.execCommand('copy');toast('Link skopiowany!')}
+}
+function checkShareUrl(){
+  try{
+    var params=new URLSearchParams(location.search);
+    var share=params.get('share');
+    if(!share)return false;
+    // Wyczyść URL bez przeładowania
+    history.replaceState(null,'',location.pathname);
+    var data=decodeDose(share);
+    if(!data){toast('Nieprawidłowy link dawki',true);return false}
+    showImportModal(data);return true;
+  }catch(e){return false}
+}
+function showImportModal(data){
+  var customList=data.custom&&data.custom.length?data.custom:[];
+  var customInfo=customList.length?'<div style="background:#E6F1FB;border-radius:8px;padding:10px;margin:10px 0;font-size:12px;color:#0C447C"><i class="ti ti-info-circle"></i> Dawka zawiera surowce spoza standardowej bazy:<br><strong>'+customList.map(function(c){return c[0]}).join(', ')+'</strong><br>Możesz je dodać do swoich surowców.</div>':'';
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='import-modal';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-download"></i> Zaimportuj dawkę</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:8px">Otrzymałeś dawkę:<br><strong style="font-size:15px;color:var(--tx)">'+escapeHtml(data.title)+'</strong><br><span style="font-size:12px">'+data.ings.length+' surowców · '+data.szt+' sztuk</span></div>'
+    +customInfo
+    +(customList.length?'<label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:10px"><input type="checkbox" id="import-custom" checked> Dodaj niestandardowe surowce do mojej bazy</label>':'')
+    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'import-modal\').remove()">Anuluj</button><button class="btn bp" style="background:#185FA5" onclick="doImport()"><i class="ti ti-download"></i> Importuj</button></div></div>';
+  document.body.appendChild(ov);
+  window._importData=data;
+}
+function doImport(){
+  var data=window._importData;if(!data)return;
+  var importCustom=document.getElementById('import-custom');
+  if(importCustom&&importCustom.checked&&data.custom&&data.custom.length){
+    data.custom.forEach(function(c){
+      if(!customIngs.find(function(x){return x[0]===c[0]})){
+        customIngs.push([c[0],c[1]||'t',c[2]||88,c[3]||0,c[4]||0,c[5]||0]);
+      }
+    });
+    saveAll();rebuildSelects();
+  }
+  // Sprawdź duplikat nazwy
+  var title=data.title;
+  var existing=wDoses.find(function(x){return x.title===title});
+  var ings=data.ings.map(function(s){return{name:s.n,cat:s.c,sm:s.s,kg:s.k}});
+  document.getElementById('import-modal').remove();
+  window._importData=null;
+  if(existing){
+    // Pytaj nadpisać czy nowa
+    var ov2=document.createElement('div');ov2.className='modal-ov';ov2.id='import-conflict';
+    ov2.innerHTML='<div class="modal-bx"><div class="modal-t">Dawka "'+escapeHtml(title)+'" już istnieje</div>'
+      +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
+      +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="finishImport(\'overwrite\',\''+escapeHtml(title)+'\','+JSON.stringify(ings)+','+data.szt+',\''+escapeHtml(data.note||'')+'\')"><i class="ti ti-refresh"></i> Nadpisz istniejącą</button>'
+      +'<button class="btn" style="width:100%" onclick="finishImport(\'new\',\''+escapeHtml(title)+'\','+JSON.stringify(ings)+','+data.szt+',\''+escapeHtml(data.note||'')+'\')"><i class="ti ti-plus"></i> Zapisz jako nową</button>'
+      +'<button class="btn" style="width:100%" onclick="document.getElementById(\'import-conflict\').remove()">Anuluj</button></div></div>';
+    document.body.appendChild(ov2);
+  } else {
+    finishImport('new',title,ings,data.szt,data.note||'');
+  }
+}
+function finishImport(action,title,ings,szt,note){
+  var m=document.getElementById('import-conflict');if(m)m.remove();
+  if(action==='overwrite'){
+    var ex=wDoses.find(function(x){return x.title===title});
+    if(ex){ex.ings=ings;ex.szt=szt;ex.note=note;saveAll();showTab('w');openWDose(ex.id);toast('Dawka zaktualizowana');return}
+  }
+  var ft=uniqueTitle(wDoses,title,null);
+  var id='wd'+Date.now();
+  wDoses.push({id:id,title:ft,note:note,szt:szt,ings:ings});
+  saveAll();showTab('w');openWDose(id);
+  toast('Dawka "'+ft+'" zaimportowana');
+}
+
 rebuildSelects();renderDList();renderWList();
+updateKeyUI();
+// Sprawdź URL import (udostępniona dawka) - ma priorytet przed ekranem powitalnym
+var _shareHandled=checkShareUrl();
+if(!_shareHandled)checkWelcome();
 </script>
 </body>
 </html>
