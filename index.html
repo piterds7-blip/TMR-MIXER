@@ -468,15 +468,18 @@ function updateKeyUI(){
     btn.style.color=appUnlocked?'#1D9E75':'var(--tx2)';
     btn.title=appUnlocked?'Aplikacja odblokowana':'Wpisz hasło dostępu';
   }
-  // Pokaż/ukryj zakładki chronione hasłem (d, m, a)
+  // Pokaż/ukryj przyciski zakładek chronionych hasłem (d, m, a)
   var td=document.getElementById('t-d'),tm=document.getElementById('t-m'),ta=document.getElementById('t-a');
-  var tabd=document.getElementById('tab-d'),tabm=document.getElementById('tab-m'),taba=document.getElementById('tab-a');
   if(td)td.style.display=appUnlocked?'flex':'none';
   if(tm)tm.style.display=appUnlocked?'flex':'none';
   if(ta)ta.style.display=appUnlocked?'flex':'none';
-  if(tabd)tabd.style.display=appUnlocked?'block':'none';
-  if(tabm)tabm.style.display=appUnlocked?'block':'none';
-  if(taba)taba.style.display=appUnlocked?'block':'none';
+  // Kontenery treści - ukryj zablokowane, nie pokazuj automatycznie (showTab to robi)
+  if(!appUnlocked){
+    var tabd=document.getElementById('tab-d'),tabm=document.getElementById('tab-m'),taba=document.getElementById('tab-a');
+    if(tabd)tabd.style.display='none';
+    if(tabm)tabm.style.display='none';
+    if(taba)taba.style.display='none';
+  }
 }
 function openKeyModal(){
   if(appUnlocked){
