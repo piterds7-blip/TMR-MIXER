@@ -233,11 +233,10 @@ function show(id){document.querySelectorAll('.screen').forEach(function(s){s.cla
 function showTab(t){
   if((t==='d'||t==='m'||t==='a')&&!appUnlocked){openKeyModal();return}
   document.getElementById('t-w').className=t==='w'?'tab tg':'tab';
-  document.getElementById('t-d').className=t==='d'?'tab tp':'tab';
+  if(document.getElementById('t-d'))document.getElementById('t-d').className=t==='d'?'tab tp':'tab';
   if(document.getElementById('t-m'))document.getElementById('t-m').className=t==='m'?'tab ta':'tab';
   if(document.getElementById('t-a'))document.getElementById('t-a').className=t==='a'?'tab ta':'tab';
   document.getElementById('tab-w').style.display=t==='w'?'block':'none';
-  document.getElementById('tab-d').style.display=t==='d'?'block':'none';
   document.getElementById('tab-d').style.display=(t==='d'&&appUnlocked)?'block':'none';
   if(document.getElementById('tab-m'))document.getElementById('tab-m').style.display=(t==='m'&&appUnlocked)?'block':'none';
   if(document.getElementById('tab-a'))document.getElementById('tab-a').style.display=(t==='a'&&appUnlocked)?'block':'none';
@@ -246,7 +245,7 @@ function showTab(t){
 
 // Shared ingredients
 function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var t=id==='d-sel'?'d':'w';var cf=t+'-cf';var show=s.value==='__c__';document.getElementById(cf).style.display=show?'block':'none';if(show)toggleCustomFields(t)}})}
-function addCustom(n,c,sm){if(!customIngs.find(function(x){return x[0]===n})){customIngs.push([n,c,sm||88,0,0,0]);rebuildSelects();saveAll()}}
+// addCustom zastąpiony przez addCustomFull
 function toggleCustomFields(t){
   var cat=document.getElementById(t+'-cc').value;
   var isObj=cat==='obj';
@@ -516,7 +515,7 @@ function checkWelcome(){
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='welcome-modal';
   ov.innerHTML='<div class="modal-bx"><div style="text-align:center;font-size:32px;margin-bottom:10px">🐄</div>'
     +'<div class="modal-t" style="text-align:center">Witaj w TMR Mixer</div>'
-    +'<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Dostępne od razu: <strong>Obliczanie wozu</strong>, <strong>Ustalanie dawki</strong> i <strong>Notatki</strong>.<br><br>Jeśli masz hasło dostępu, możesz odblokować pełne funkcje: <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>.</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Dostępne od razu: <strong>Obliczanie wozu</strong> i <strong>Notatki</strong>.<br><br>Jeśli masz hasło dostępu, możesz odblokować pełne funkcje: <strong>Ustalanie dawki</strong>, <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>.</div>'
     +'<input type="password" id="welcome-pass" placeholder="Hasło dostępu (opcjonalnie)" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doWelcomeUnlock()">'
     +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
     +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="doWelcomeUnlock()"><i class="ti ti-key"></i> Odblokuj i zacznij</button>'
@@ -539,12 +538,6 @@ function dismissWelcome(){
   updateKeyUI();
 }
 var aDoses=[];try{aDoses=JSON.parse(localStorage.getItem('tmr_ad')||'[]')}catch(e){}
-
-function doUnlock(inputId,rerender){
-  var v=document.getElementById(inputId).value;
-  if(v==='BIOFEED'){appUnlocked=true;try{localStorage.setItem('tmr_unlocked','1')}catch(e){}toast('Dostęp odblokowany');renderMieszanka();renderAnaliza()}
-  else{toast('Nieprawidłowe hasło',true)}
-}
 function lockScreen(icon,title){
   return '<div class="hn" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-lock"></i> Funkcja zabezpieczona hasłem</div>'
     +'<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti '+icon+'"></i></div><div class="em-t">'+title+'</div><div class="em-s">Wpisz hasło dostępu — wystarczy raz na tym urządzeniu.</div></div>'
@@ -735,10 +728,10 @@ function doExportMieszanka(title,ings,priceMap){
   var fname=title;var n=2;
   while(exists){fname=title+' ('+n+')';exists=false;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===fname)exists=true})});n++}
   // [nazwa, kat 'tm'? nie - to sucha treściwa 't', sm, cena, białko, skrobia]
-  grp.items.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10]);
+  grp.items.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10,Math.round(r.nel*100)/100]);
   // zapisz do customMieszanki w localStorage żeby przetrwało restart
   var savedMix=[];try{savedMix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]')}catch(e){}
-  if(!savedMix.find(function(x){return x[0]===fname}))savedMix.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10]);
+  if(!savedMix.find(function(x){return x[0]===fname}))savedMix.push([fname,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10,Math.round(r.nel*100)/100]);
   try{localStorage.setItem('tmr_mixbase',JSON.stringify(savedMix))}catch(e){}
   rebuildSelects();
   toast('"'+fname+'" dodana do bazy surowców');
@@ -1086,7 +1079,7 @@ function delMixBase(i){
   rebuildSelects();toast('Mieszanka usunięta z bazy');renderIngManager();
 }
 
-// ===== NOTATKI KLIENTÓW =====
+// ===== NOTATKI (TEMATY) =====
 // Uniwersalny modal tekstowy (zastępuje prompt)
 function inputModal(opts){
   var title=opts.title||'',val=opts.value||'',ph=opts.placeholder||'',multiline=opts.multiline,cb=opts.onOk,okLabel=opts.okLabel||'Zapisz';
@@ -1280,7 +1273,7 @@ function doImport(){
   if(importCustom&&importCustom.checked&&data.custom&&data.custom.length){
     data.custom.forEach(function(c){
       if(!customIngs.find(function(x){return x[0]===c[0]})){
-        customIngs.push([c[0],c[1]||'t',c[2]||88,c[3]||0,c[4]||0,c[5]||0]);
+        customIngs.push([c[0],c[1]||'t',c[2]||88,c[3]||0,c[4]||0,c[5]||0,c[6]||0]);
       }
     });
     saveAll();rebuildSelects();
