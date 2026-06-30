@@ -372,7 +372,7 @@ function buildDosePreviewHTML(title,note,szt,ings,mode){
   var rows=ings.map(function(s,i){
     var val,sub;
     if(mode==='d'){cum+=s.kgWoz;val=s.kgWoz.toFixed(1)+' kg/wóz';sub=(szt>0?(s.kgWoz/szt).toFixed(2):'-')+' kg/szt → w wozie '+cum.toFixed(0)+' kg'}
-    else{var kw=s.kg*szt;cum+=kw;val=kw.toFixed(1)+' kg na wóz';sub=cum.toFixed(0)+' kg na wadze'}
+    else{var kw=s.kg*szt;cum+=kw;val=kw.toFixed(1)+' kg na wóz';sub=s.kg.toFixed(2)+' kg/szt → '+cum.toFixed(0)+' kg na wadze'}
     return '<tr><td style="padding:10px 12px"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:'+cumClr+';color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;margin-right:6px">'+(i+1)+'</span><strong>'+s.name+'</strong></td>'
       +'<td style="padding:10px 12px;text-align:right"><strong style="font-size:16px">'+val+'</strong><br><span style="font-size:12px;color:'+cumClr+'">'+sub+'</span></td></tr>';
   }).join('');
@@ -435,8 +435,8 @@ function genDosePDF(title,note,szt,ings,mode){
         var kw=s.kg*szt;cum+=kw;
         doc.setTextColor(20,20,20);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(13,rowH*0.75));
         doc.text(kw.toFixed(1)+' kg na woz',W-M,ry+rowH/2-0.5,{align:'right'});
-        doc.setTextColor(cc[0],cc[1],cc[2]);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(11,rowH*0.62));
-        doc.text(cum.toFixed(0)+' kg na wadze',W-M,ry+rowH/2+4,{align:'right'});
+        doc.setTextColor(cc[0],cc[1],cc[2]);doc.setFont('helvetica','normal');doc.setFontSize(Math.min(9,rowH*0.5));
+        doc.text(plchars(s.kg.toFixed(2)+' kg/szt  ->  '+cum.toFixed(0)+' kg na wadze'),W-M,ry+rowH/2+3.5,{align:'right'});
       }
     });
     doc.setFillColor(245,245,245);doc.rect(0,H-16,W,16,'F');
@@ -518,7 +518,7 @@ function checkWelcome(){
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='welcome-modal';
   ov.innerHTML='<div class="modal-bx"><div style="text-align:center;font-size:32px;margin-bottom:10px">🐄</div>'
     +'<div class="modal-t" style="text-align:center">Witaj w TMR Mixer</div>'
-    +'<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Dostępne od razu: <strong>Obliczanie wozu</strong> i <strong>Notatki</strong>.<br><br>Jeśli masz hasło dostępu, możesz odblokować pełne funkcje: <strong>Ustalanie dawki</strong>, <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>.</div>'
+    +'<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Aplikacja do zarządzania żywieniem bydła mlecznego.<br><br>Dostępne od razu: <strong>Obliczanie wozu</strong> i <strong>Notatki</strong>.<br><br>Jeśli otrzymałeś hasło dostępu, wpisz je poniżej aby odblokować wszystkie funkcje.</div>'
     +'<input type="password" id="welcome-pass" placeholder="Hasło dostępu (opcjonalnie)" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doWelcomeUnlock()">'
     +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
     +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="doWelcomeUnlock()"><i class="ti ti-key"></i> Odblokuj i zacznij</button>'
@@ -1313,9 +1313,11 @@ function finishImport(action,title,ings,szt,note){
   toast('Dawka "'+ft+'" zaimportowana');
 }
 
-rebuildSelects();renderDList();renderWList();
+rebuildSelects();
+renderWList();
+if(appUnlocked)renderDList();
 updateKeyUI();
-// Sprawdź URL import (udostępniona dawka) - ma priorytet przed ekranem powitalnym
+showTab('w');
 var _shareHandled=checkShareUrl();
 if(!_shareHandled)checkWelcome();
 </script>
