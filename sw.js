@@ -1,4 +1,4 @@
-var CACHE = 'tmr-v7';
+var CACHE = 'tmr-v8';
 var ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 var EXTERNAL = [
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
