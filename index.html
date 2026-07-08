@@ -351,6 +351,23 @@ function showFolderModal(tab,doseId){
       +'<div style="flex:1;font-size:14px'+fw+'">'+escapeHtml(f.name)+'</div>'
       +check+'</div>';
   }).join('');
+  var noneActive=!cur;
+  var noneColor=noneActive?'#185FA5':'var(--tx2)';
+  var noneFw=noneActive?';font-weight:600':'';
+  var noneCheck=noneActive?'<i class="ti ti-check" style="color:#185FA5"></i>':'';
+  rows='<div class="folder-row" data-tab="'+tab+'" data-dose="'+doseId+'" data-fid="" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--bd);cursor:pointer"><i class="ti ti-folder-off" style="color:'+noneColor+'"></i><div style="flex:1;font-size:14px'+noneFw+'">Bez folderu</div>'+noneCheck+'</div>'+rows;
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-folder"></i> Przenieś do folderu</div>'+rows+'<div style="margin-top:12px"><button class="btn" style="width:100%" id="fm-new-folder-btn"><i class="ti ti-folder-plus"></i> Nowy folder</button></div><div class="modal-btns" style="margin-top:8px"><button class="btn" style="width:100%" onclick="closeFolderModal()">Anuluj</button></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelectorAll('.folder-row').forEach(function(row){
+    row.addEventListener('click',function(){
+      var t=row.dataset.tab,di=row.dataset.dose,fid=row.dataset.fid||null;
+      moveDoseToFolder(t,di,fid);closeFolderModal();
+      if(t==='w')renderWList();else renderDList();
+    });
+  });
+  var newBtn=document.getElementById('fm-new-folder-btn');
+  if(newBtn)newBtn.addEventListener('click',function(){newFolderPrompt(tab,doseId)});
+}
 function closeFolderModal(){var m=document.getElementById('folder-modal');if(m)m.remove()}
 function newFolderPrompt(tab,doseId){
   closeFolderModal();
@@ -408,7 +425,7 @@ function renderDList(){updateCounters();var el=document.getElementById('tab-d');
       +'<i class="ti ti-chevron-'+(f.open?'up':'down')+'" style="color:var(--tx2)"></i></div>'
       +(f.open?'<div style="padding:0 8px 8px">'+inner+'</div>':'')
       +'</div>';}).join('');
-  el.innerHTML=h+cards+folderHtml+'<button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>'}
+  el.innerHTML=h+cards+folderHtml+'<button class="fab" style="background:var(--p)" onclick="newD()"><i class="ti ti-plus"></i> Nowa dawka</button>';}
 
 // ====== WÓZ (Obliczanie) ======
 function newW(){wId=null;wIngs=[];document.getElementById('w-title').value='';document.getElementById('w-note').value='';document.getElementById('w-szt').value='40';document.getElementById('w-topbar').textContent='Nowa dawka';document.getElementById('w-del-btn').style.display='none';renderW();wOrig=snapshotW();wIsDirty=false;show('scr-w-edit')}
@@ -440,7 +457,7 @@ function renderWList(){updateCounters();var el=document.getElementById('tab-w');
       +'<i class="ti ti-chevron-'+(f.open?'up':'down')+'" style="color:var(--tx2)"></i></div>'
       +(f.open?'<div style="padding:0 8px 8px">'+inner+'</div>':'')
       +'</div>';}).join('');
-  el.innerHTML=h+cards+folderHtml+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>'}+'<i class=\'ti ti-plus\'></i> Nowa dawka</button>\'';}
+  el.innerHTML=h+cards+folderHtml+'<button class="fab" style="background:var(--g)" onclick="newW()"><i class="ti ti-plus"></i> Nowa dawka</button>';}
 
 // Tryb wozu
 function wozView(){var t=document.getElementById('w-title').value||'Dawka',szt=parseInt(document.getElementById('w-szt').value)||0,tot=wIngs.reduce(function(a,s){return a+s.kg},0);document.getElementById('woz-t').textContent=t;document.getElementById('wz-szt').textContent=szt+' szt';document.getElementById('wz-ph').textContent=tot.toFixed(2)+' kg';document.getElementById('wz-tot').textContent=(tot*szt).toFixed(0);document.getElementById('wz-cnt').textContent=wIngs.length;document.getElementById('wz-ph2').textContent=tot.toFixed(2);var cum=0;document.getElementById('woz-items').innerHTML=wIngs.map(function(s,i){var kw=s.kg*szt;cum+=kw;return '<div class="wi"><div class="win">'+(i+1)+'</div><div class="winm">'+s.name+'</div><div style="text-align:right"><div class="wirk">'+kw.toFixed(1)+'</div><div class="wiru">kg na wóz</div><div class="wirc">'+cum.toFixed(0)+'</div><div class="wircu">kg na wadze</div></div></div>'}).join('');show('scr-woz')}
