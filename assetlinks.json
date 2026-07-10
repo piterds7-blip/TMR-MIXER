@@ -1,8 +1,0 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "TU_WSTAWISZ_PACKAGE_NAME_Z_PWABUILDER",
-    "sha256_cert_fingerprints": ["TU_WSTAWISZ_FINGERPRINT_Z_PWABUILDER"]
-  }
-}]
