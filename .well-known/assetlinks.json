@@ -2,7 +2,7 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "TU_WSTAWISZ_PACKAGE_NAME_Z_PWABUILDER",
-    "sha256_cert_fingerprints": ["TU_WSTAWISZ_FINGERPRINT_Z_PWABUILDER"]
+    "package_name": "io.github.piterds7_blip.twa",
+    "sha256_cert_fingerprints": ["17:20:DD:91:96:F0:D9:C9:90:58:01:67:C5:7B:F2:EE:98:C0:6A:97:94:DA:DF:8E:6D:56:34:2B:A8:42:D0:A6"]
   }
 }]
