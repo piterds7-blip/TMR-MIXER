@@ -129,6 +129,10 @@ input[type=number]{text-align:right}
   <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="d-sel"></select><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><div id="d-cf" style="display:none" class="cf"><input type="text" id="d-cn" placeholder="Nazwa surowca"><select id="d-cc" onchange="toggleCustomFields('d')"><option value="obj">Objętościowa</option><option value="t">Treściwa sucha</option><option value="tm">Treściwa mokra</option></select><div id="d-csm-wrap" style="align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="d-csm" min="1" max="100" step="0.1" value="88" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div><div id="d-ctres" style="display:none;margin-top:6px"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="d-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="d-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Cena zł/t</div><input type="number" id="d-cprice" min="0" placeholder="0"></div><div style="margin-top:6px"><div class="fl-l">Energia</div><div style="display:flex;gap:6px;align-items:center"><select id="d-cnel-unit" onchange="updateDNelHint()"><option value="MJ">MJ NEL</option><option value="VEM">VEM</option></select><input type="number" id="d-cnel" min="0" step="0.1" placeholder="0" oninput="updateDNelHint()"><span id="d-cnel-hint" style="font-size:11px;color:var(--tx2);white-space:nowrap"></span></div></div></div></div></div>
   <div class="br"><button class="btn" onclick="dupD()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpp" id="d-save-btn" onclick="saveD()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
   <div class="br"><button class="btn bp bpg" onclick="migrateD()"><i class="ti ti-arrow-right"></i> Przenieś do Obliczania wozu</button></div>
+  <div class="divider"></div><div class="sec-top">Niedojady — realne pobranie paszy</div><div class="spacer"></div>
+  <div class="fl"><div class="fl-l">Niedojady łącznie z wozu/koryta (kg)</div><input type="number" id="d-niedojady" placeholder="0" min="0" step="0.1" inputmode="decimal" oninput="calcNiedojady()"></div>
+  <div id="d-niedojady-result"></div>
+  <button class="btn" id="d-niedojady-pdf-btn" style="width:calc(100% - 32px);margin:0 16px 10px;display:none" onclick="pdfNiedojady()"><i class="ti ti-download"></i> Eksportuj raport pobrania PDF</button>
   <button class="btn bdd" id="d-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delD()"><i class="ti ti-trash"></i> Usuń dawkę</button>
 </div>
 
@@ -304,8 +308,8 @@ function isTresciwa(c){return c==='t'||c==='tm'}
 function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
 
 // ====== DAWKA (Ustalanie) ======
-function newD(){dId=null;dIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
-function openD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;dId=id;dIngs=JSON.parse(JSON.stringify(d.ings));document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='block';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
+function newD(){dId=null;dIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
+function openD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;dId=id;dIngs=JSON.parse(JSON.stringify(d.ings));document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='block';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
 function backD(){markDirtyD();if(dIsDirty&&!confirm('Masz niezapisane zmiany. Wyjść bez zapisywania?'))return;show('scr-main');renderDList()}
 function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;var dup=findDuplicateTitle(dDoses,t,dId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(dDoses,t,dId)+'"?'))return;t=uniqueTitle(dDoses,t,dId);document.getElementById('d-title').value=t}if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(dIngs));d.updatedAt=Date.now()}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs)),createdAt:Date.now()});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę')}
 function delD(){if(!confirm('Usunąć tę dawkę?'))return;dDoses=dDoses.filter(function(x){return x.id!==dId});saveAll();toast('Dawka usunięta');backD()}
@@ -314,6 +318,71 @@ function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(docum
 function rmD(i){dIngs.splice(i,1);markDirtyD();renderD()}
 function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;markDirtyD();renderD()}
 function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
+// ===== NIEDOJADY - realne pobranie paszy =====
+function calcNiedojady(){
+  var el=document.getElementById('d-niedojady-result');
+  var pdfBtn=document.getElementById('d-niedojady-pdf-btn');
+  var niedojadyVal=parseFloat(document.getElementById('d-niedojady').value);
+  var tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0);
+  var szt=parseInt(document.getElementById('d-szt').value)||0;
+  if(!niedojadyVal||niedojadyVal<=0||tw<=0){el.innerHTML='';pdfBtn.style.display='none';return}
+  if(niedojadyVal>=tw){el.innerHTML='<div class="hn" style="background:#FFEBEE;color:#A32D2D"><i class="ti ti-alert-triangle"></i> Niedojady nie mogą być większe niż cała dawka ('+tw.toFixed(0)+' kg)</div>';pdfBtn.style.display='none';return}
+  var pobranePct=(tw-niedojadyVal)/tw*100;
+  var niedopadySzt=szt>0?(niedojadyVal/szt).toFixed(2):'—';
+  var zjedzoneTotal=tw-niedojadyVal;
+  var zjedzoneNaSzt=szt>0?(zjedzoneTotal/szt).toFixed(2):'—';
+  var rows=dIngs.map(function(s){
+    var zjedzone=s.kgWoz*pobranePct/100;
+    var zjedzNaSzt=szt>0?(zjedzone/szt).toFixed(2):'—';
+    var zadanoNaSzt=szt>0?(s.kgWoz/szt).toFixed(2):'—';
+    return '<div class="rw"><div style="flex:1"><div class="rname">'+s.name+'</div><div class="cp cv">zadano: '+s.kgWoz.toFixed(1)+' kg ('+zadanoNaSzt+' kg/szt)</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:700;color:#0F6E56">'+zjedzone.toFixed(1)+' kg</div><div style="font-size:10px;color:#0F6E56;font-weight:600">'+zjedzNaSzt+' kg/szt</div></div></div>';
+  }).join('');
+  el.innerHTML='<div class="s2" style="padding:0 16px;margin-bottom:8px">'
+    +sb('#0F6E56',pobranePct.toFixed(1)+'%','pobranie dawki')
+    +sb('#A32D2D',niedojadyVal.toFixed(1)+' kg','niedojady łącznie')
+    +'</div><div class="s2" style="padding:0 16px;margin-bottom:8px">'
+    +sb('#0F6E56',zjedzoneNaSzt+' kg','zjedzone / szt')
+    +sb('#A32D2D',niedopadySzt+' kg','niedojady / szt')
+    +'</div><div class="ls" style="margin:0 16px">'+rows+'</div>';
+  pdfBtn.style.display='block';
+}
+function pdfNiedojady(){
+  if(!window.jspdf){toast('Trwa ladowanie generatora PDF, sprobuj ponownie',true);return}
+  var title=document.getElementById('d-title').value.trim()||'Dawka';
+  var niedojadyVal=parseFloat(document.getElementById('d-niedojady').value)||0;
+  var tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0);
+  var szt=parseInt(document.getElementById('d-szt').value)||0;
+  if(tw<=0||niedojadyVal<=0){toast('Wpisz niedojady',true);return}
+  var pobranePct=(tw-niedojadyVal)/tw*100;
+  var zjedzoneTotal=tw-niedojadyVal;
+  var rows=dIngs.map(function(s){var zjedzone=s.kgWoz*pobranePct/100;return {name:s.name,zadano:s.kgWoz,zjedzone:zjedzone,zadanoSzt:szt>0?s.kgWoz/szt:0,zjedzSzt:szt>0?zjedzone/szt:0}});
+  var rowsHtml=rows.map(function(r,i){return '<tr><td style="padding:8px 12px"><strong>'+(i+1)+'. '+r.name+'</strong></td><td style="padding:8px 12px;text-align:right">'+r.zadano.toFixed(1)+'</td><td style="padding:8px 12px;text-align:right">'+(szt>0?r.zadanoSzt.toFixed(2):'—')+'</td><td style="padding:8px 12px;text-align:right;color:#0F6E56;font-weight:700">'+r.zjedzone.toFixed(1)+'</td><td style="padding:8px 12px;text-align:right;color:#0F6E56;font-weight:700">'+(szt>0?r.zjedzSzt.toFixed(2):'—')+'</td></tr>'}).join('');
+  var previewHtml='<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111}.hdr{background:#3C3489;color:#fff;padding:14px 16px}.kpis{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}table{width:100%;border-collapse:collapse;font-size:13px}tr{border-bottom:1px solid #eee}th{padding:8px 12px;text-align:left;background:#f0f0f0;font-size:11px}</style></head><body>'
+    +'<div class="hdr"><h1 style="font-size:18px">Raport pobrania — '+escapeHtml(title)+'</h1><div style="font-size:12px;opacity:.8;margin-top:3px">'+szt+' szt · '+new Date().toLocaleDateString('pl')+'</div></div>'
+    +'<div class="kpis"><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#0F6E56">'+pobranePct.toFixed(1)+'%</div><div style="font-size:11px;color:#666">pobranie</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#A32D2D">'+niedojadyVal.toFixed(1)+'</div><div style="font-size:11px;color:#666">niedojady kg</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#0F6E56">'+(szt>0?(zjedzoneTotal/szt).toFixed(2):'—')+'</div><div style="font-size:11px;color:#666">zjedzone/szt</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#A32D2D">'+(szt>0?(niedojadyVal/szt).toFixed(2):'—')+'</div><div style="font-size:11px;color:#666">niedojady/szt</div></div></div>'
+    +'<table><thead><tr><th>Surowiec</th><th style="text-align:right">zadano kg</th><th style="text-align:right">zadano/szt</th><th style="text-align:right">zjedzone kg</th><th style="text-align:right">zjedzone/szt</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></body></html>';
+  showPdfPreview(previewHtml,function(){
+    closePdfPreview();
+    var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
+    var W=210,H=297,M=14;
+    doc.setFillColor(60,52,137);doc.rect(0,0,W,22,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
+    doc.text(plchars('Raport pobrania - '+title),M,12);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(210,210,230);
+    doc.text(plchars(new Date().toLocaleDateString('pl')),M,18);
+    var kpis=[['pobranie dawki',pobranePct.toFixed(1)+'%',[15,110,86]],['niedojady',niedojadyVal.toFixed(1)+' kg',[163,45,45]],['dawka łącznie',tw.toFixed(1)+' kg',[30,30,30]]];
+    var ky=28,kw=(W-2*M)/3,kh=20;
+    kpis.forEach(function(k,i){var kx=M+i*kw;doc.setFillColor(245,245,247);doc.roundedRect(kx,ky,kw-3,kh-3,2,2,'F');doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(k[1],kx+4,ky+9);doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(plchars(k[0]),kx+4,ky+15)});
+    var ty=ky+kh+4;
+    doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
+    doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('SUROWIEC',M+2,ty+4.7);doc.text('ZADANO',M+130,ty+4.7,{align:'right'});doc.text('ZJEDZONE',W-M-1,ty+4.7,{align:'right'});
+    var ry=ty+7,n=rows.length,rowH=Math.min(10,(H-ry-20)/n);if(rowH<6)rowH=6;
+    rows.forEach(function(r,i){var yy=ry+i*rowH;if(yy>H-22)return;doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);doc.setTextColor(25,25,25);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(10,rowH*0.85));doc.text(plchars((i+1)+'. '+r.name).substring(0,40),M+2,yy+rowH*0.65);doc.setFont('helvetica','normal');doc.text(r.zadano.toFixed(1)+' kg',M+130,yy+rowH*0.65,{align:'right'});doc.setFont('helvetica','bold');doc.setTextColor(15,110,86);doc.text(r.zjedzone.toFixed(1)+' kg',W-M-1,yy+rowH*0.65,{align:'right'})});
+    doc.save(sanitize('Pobranie_'+title)+'.pdf');
+    toast('PDF zapisany w Pobranych');
+  });
+}
 function renderD(){var szt=parseInt(document.getElementById('d-szt').value)||0,tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;var el=document.getElementById('d-ing-list');if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Podaj ile kg każdego surowca trafia do wozu</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div><div class="cp cg" style="font-weight:400;font-size:10px">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
 function migrateD(){if(!dIngs.length){toast('Brak surowców do przeniesienia',true);return}var szt=parseInt(document.getElementById('d-szt').value)||1,title=document.getElementById('d-title').value.trim()||'Dawka',note=document.getElementById('d-note').value.trim();if(!confirm('Przenieść dawkę "'+title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,title,null);var ings=dIngs.map(function(s){return{name:s.name,cat:s.cat,kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(note?note+' | ':'')+'z ustalania dawki',szt:szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
 function migrateFromList(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;if(!confirm('Przenieść dawkę "'+d.title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,d.title,null);var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,kg:d.szt>0?Math.round(s.kgWoz/d.szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(d.note?d.note+' | ':'')+'z ustalania dawki',szt:d.szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
