@@ -183,13 +183,14 @@ var wFolders=[];try{wFolders=JSON.parse(localStorage.getItem('tmr_wf')||'[]')}ca
 (function(){var now=Date.now();wDoses.forEach(function(d){if(!d.createdAt)d.createdAt=now});dDoses.forEach(function(d){if(!d.createdAt)d.createdAt=now})})();
 var dId=null,dIngs=[],wId=null,wIngs=[],deferredInstall=null;
 var wParentId=null,wExtraIngs=[];
+var dParentId=null,dExtraIngs=[];
 var dIsDirty=false,wIsDirty=false,dOrig=null,wOrig=null;
 
 // Toast notifications (lepsze niż alert)
 function toast(msg,isErr){var t=document.createElement('div');t.className='toast'+(isErr?' err':'');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show')},10);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove()},300)},2500)}
 
 // Snapshot helpers for dirty tracking
-function snapshotD(){return JSON.stringify({t:document.getElementById('d-title').value,n:document.getElementById('d-note').value,s:document.getElementById('d-szt').value,i:dIngs})}
+function snapshotD(){return JSON.stringify({t:document.getElementById('d-title').value,n:document.getElementById('d-note').value,s:document.getElementById('d-szt').value,i:dIngs,p:dParentId,e:dExtraIngs})}
 function snapshotW(){return JSON.stringify({t:document.getElementById('w-title').value,n:document.getElementById('w-note').value,s:document.getElementById('w-szt').value,i:wIngs,p:wParentId,e:wExtraIngs})}
 function markDirtyD(){dIsDirty=(snapshotD()!==dOrig)}
 function markDirtyW(){wIsDirty=(snapshotW()!==wOrig)}
@@ -310,13 +311,13 @@ function isTresciwa(c){return c==='t'||c==='tm'}
 function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
 
 // ====== DAWKA (Ustalanie) ======
-function newD(){dId=null;dIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
-function openD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;dId=id;dIngs=JSON.parse(JSON.stringify(d.ings));document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='block';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
+function newD(){dId=null;dIngs=[];dParentId=null;dExtraIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
+function openD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;dId=id;dParentId=d.parentId||null;dExtraIngs=dParentId?JSON.parse(JSON.stringify(d.extraIngs||[])):[];dIngs=dParentId?[]:JSON.parse(JSON.stringify(d.ings));document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='block';document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none';renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit')}
 function backD(){markDirtyD();if(dIsDirty&&!confirm('Masz niezapisane zmiany. Wyjść bez zapisywania?'))return;show('scr-main');renderDList()}
-function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;var dup=findDuplicateTitle(dDoses,t,dId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(dDoses,t,dId)+'"?'))return;t=uniqueTitle(dDoses,t,dId);document.getElementById('d-title').value=t}if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.ings=JSON.parse(JSON.stringify(dIngs));d.updatedAt=Date.now()}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs)),createdAt:Date.now()});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę')}
+function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;var dup=findDuplicateTitle(dDoses,t,dId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(dDoses,t,dId)+'"?'))return;t=uniqueTitle(dDoses,t,dId);document.getElementById('d-title').value=t}if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.updatedAt=Date.now();if(dParentId){d.parentId=dParentId;d.extraIngs=JSON.parse(JSON.stringify(dExtraIngs));d.ings=getDDoseIngs(d,{})}else{d.parentId=null;d.extraIngs=[];d.ings=JSON.parse(JSON.stringify(dIngs))}}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs)),createdAt:Date.now()});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę')}
 function delD(){if(!confirm('Usunąć tę dawkę?'))return;dDoses=dDoses.filter(function(x){return x.id!==dId});saveAll();toast('Dawka usunięta');backD()}
 function dupD(){dId=null;document.getElementById('d-title').value=(document.getElementById('d-title').value||'Dawka')+' (kopia)';document.getElementById('d-del-btn').style.display='none'}
-function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('d');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg});document.getElementById('d-kg').value='';markDirtyD();renderD()}
+function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('d');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}if(dParentId){dExtraIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}else{dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}document.getElementById('d-kg').value='';markDirtyD();renderD()}
 function rmD(i){dIngs.splice(i,1);markDirtyD();renderD()}
 function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;markDirtyD();renderD()}
 function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
@@ -385,10 +386,30 @@ function pdfNiedojady(){
     toast('PDF zapisany w Pobranych');
   });
 }
-function renderD(){var szt=parseInt(document.getElementById('d-szt').value)||0,tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;var el=document.getElementById('d-ing-list');if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Podaj ile kg każdego surowca trafia do wozu</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div><div class="cp cg" style="font-weight:400;font-size:10px">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
+function renderD(){
+  var szt=parseInt(document.getElementById('d-szt').value)||0;
+  var el=document.getElementById('d-ing-list');
+  if(dParentId){
+    var parent=dDoses.find(function(x){return x.id===dParentId});
+    if(!parent){dParentId=null;renderD();return}
+    var baseIngs=getDDoseIngs(parent,{});
+    var extraTotal=dExtraIngs.reduce(function(a,e){return a+(parseFloat(e.kgWoz)||0)},0);
+    var tw=baseIngs.reduce(function(a,s){return a+s.kgWoz},0)+extraTotal;
+    var ph=szt>0?tw/szt:0;
+    document.getElementById('d-ph').textContent=ph.toFixed(2);
+    document.getElementById('d-woz').textContent=tw.toFixed(0);
+    document.getElementById('d-cnt').textContent=(baseIngs.length+dExtraIngs.length);
+    var baseRows=baseIngs.map(function(s){var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw" style="opacity:.75"><div class="rn"><i class="ti ti-lock" style="font-size:12px"></i></div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt (z bazy)</div></div></div>'}).join('');
+    var extraRows=dExtraIngs.map(function(e,i){var kw=parseFloat(e.kgWoz)||0;var p=szt>0?(kw/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">+</div><div style="flex:1"><div class="rname">'+e.name+'</div>'+badge(e.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div></div><div class="rr"><div class="kw"><input type="number" value="'+kw+'" min="0" step="1" inputmode="numeric" onchange="ukDExtra('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmDExtra('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('');
+    var lockHdr='<div class="sec-top" style="margin-top:0"><i class="ti ti-lock" style="font-size:12px"></i> Z bazy: '+parent.title+'</div>';
+    var extraHdr=dExtraIngs.length?'<div class="sec-top">Dodatki (kg na wóz)</div>':'';
+    el.innerHTML=lockHdr+'<div class="ls">'+baseRows+'</div>'+extraHdr+(dExtraIngs.length?'<div class="ls">'+extraRows+'</div>':'<div class="em" style="padding:10px 0"><div class="em-s">Dodaj surowce dorzucane do wozu (np. dodatkowa śruta)</div></div>');
+    return;
+  }
+  var tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Podaj ile kg każdego surowca trafia do wozu</div></div>';return}var cum=0;el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cv">\u2192 '+p+' kg/szt</div><div class="cp cg" style="font-weight:400;font-size:10px">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>'}
 function migrateD(){if(!dIngs.length){toast('Brak surowców do przeniesienia',true);return}var szt=parseInt(document.getElementById('d-szt').value)||1,title=document.getElementById('d-title').value.trim()||'Dawka',note=document.getElementById('d-note').value.trim();if(!confirm('Przenieść dawkę "'+title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,title,null);var ings=dIngs.map(function(s){return{name:s.name,cat:s.cat,kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(note?note+' | ':'')+'z ustalania dawki',szt:szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
 function migrateFromList(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;if(!confirm('Przenieść dawkę "'+d.title+'" do Obliczania wozu?'))return;var finalTitle=uniqueTitle(wDoses,d.title,null);var ings=d.ings.map(function(s){return{name:s.name,cat:s.cat,kg:d.szt>0?Math.round(s.kgWoz/d.szt*100)/100:0}});wDoses.push({id:'wd'+Date.now(),title:finalTitle,note:(d.note?d.note+' | ':'')+'z ustalania dawki',szt:d.szt,ings:ings});saveAll();toast('Przeniesiono do Obliczania wozu');showTab('w')}
-function dCardBtns(id){return '<button class="dab opv" onclick="openD(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfDoseD(\''+id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="migrateFromList(\''+id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button>'+(appUnlocked?'<button class="dab" onclick="exportDoseD(\''+id+'\')"><i class="ti ti-chart-line"></i> Analiza</button>':'');}
+function dCardBtns(id){return '<button class="dab opv" onclick="openD(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfDoseD(\''+id+'\')"><i class="ti ti-download"></i> PDF</button><button class="dab" onclick="migrateFromList(\''+id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button><button class="dab" onclick="newDerivedDDoseModal(\''+id+'\')" title="Dodaj do TMR"><i class="ti ti-git-branch"></i> Dodaj do TMR</button>'+(appUnlocked?'<button class="dab" onclick="exportDoseD(\''+id+'\')"><i class="ti ti-chart-line"></i> Analiza</button>':'');}
 function wCardBtns(id){return '<button class="dab op" onclick="openW(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+id+'\')"><i class="ti ti-truck"></i> Wóz</button><button class="dab" onclick="newDerivedDoseModal(\''+id+'\')" title="Dodaj do TMR"><i class="ti ti-git-branch"></i> Dodaj do TMR</button><button class="dab" onclick="pdfDoseW(\''+id+'\')"><i class="ti ti-download"></i> PDF</button>'+(appUnlocked?'<button class="dab" onclick="exportDoseW(\''+id+'\')"><i class="ti ti-chart-line"></i> Analiza</button><button class="dab" onclick="shareDose(\''+id+'\')"><i class="ti ti-share"></i> Udostępnij</button>':'');}
 
 // Skrócony timestamp dla kart dawek
@@ -508,7 +529,7 @@ function getWDoseIngs(d,visited){
   var parent=wDoses.find(function(x){return x.id===d.parentId});
   var base=parent?getWDoseIngs(parent,visited):[];
   var extras=(d.extraIngs||[]).map(function(e){
-    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kg:(parseFloat(e.totalKg)||0)/(d.szt||1),isExtra:true};
+    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kg:parseFloat(e.kg)||0,isExtra:true};
   });
   return base.concat(extras);
 }
@@ -517,6 +538,56 @@ function syncDerivedDoses(){
     if(d.parentId)d.ings=getWDoseIngs(d,{});
   });
 }
+
+// D tab derived dose resolver
+function getDDoseIngs(d,visited){
+  visited=visited||{};
+  if(!d.parentId||visited[d.id])return d.ings||[];
+  visited[d.id]=true;
+  var parent=dDoses.find(function(x){return x.id===d.parentId});
+  var base=parent?getDDoseIngs(parent,visited):[];
+  var extras=(d.extraIngs||[]).map(function(e){
+    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kgWoz:parseFloat(e.kgWoz)||0,isExtra:true};
+  });
+  return base.concat(extras);
+}
+function syncDerivedDDoses(){
+  dDoses.forEach(function(d){
+    if(d.parentId)d.ings=getDDoseIngs(d,{});
+  });
+}
+function getResolvedDIngs(){
+  if(!dParentId)return dIngs;
+  var parent=dDoses.find(function(x){return x.id===dParentId});
+  var base=parent?getDDoseIngs(parent,{}):[]; 
+  var szt=parseInt(document.getElementById('d-szt').value)||1;
+  var extras=dExtraIngs.map(function(e){
+    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kgWoz:parseFloat(e.kgWoz)||0,isExtra:true};
+  });
+  return base.concat(extras);
+}
+function newDerivedDDoseModal(parentId){
+  var parent=dDoses.find(function(x){return x.id===parentId});if(!parent)return;
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='derived-d-modal';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-git-branch"></i> Nowa dawka z bazy</div>'
+    +'<div style="font-size:13px;color:var(--tx2);margin-bottom:10px">Baza: <strong>'+escapeHtml(parent.title)+'</strong><br>Surowce z bazy kopiują się automatycznie. Dodatki wpiszesz w kg na wóz.</div>'
+    +'<div class="fl"><div class="fl-l">Nazwa nowej dawki</div><input type="text" id="derived-d-title" placeholder="np. Grupa 1" value="'+escapeHtml(parent.title)+' — grupa"></div>'
+    +'<div class="fl"><div class="fl-l">Liczba sztuk</div><input type="number" id="derived-d-szt" placeholder="0" min="1" value="'+Math.max(1,Math.round((parent.szt||1)/2))+'"></div>'
+    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'derived-d-modal\').remove()">Anuluj</button><button class="btn bp" style="background:var(--p)" onclick="confirmNewDerivedDDose(\''+parentId+'\')"><i class="ti ti-check"></i> Utwórz</button></div></div>';
+  document.body.appendChild(ov);
+}
+function confirmNewDerivedDDose(parentId){
+  var title=document.getElementById('derived-d-title').value.trim()||'Nowa dawka';
+  var szt=parseInt(document.getElementById('derived-d-szt').value)||1;
+  var m=document.getElementById('derived-d-modal');if(m)m.remove();
+  var ft=uniqueTitle(dDoses,title,null);
+  var id='dd'+Date.now();
+  dDoses.push({id:id,title:ft,note:'',szt:szt,parentId:parentId,extraIngs:[],ings:[],createdAt:Date.now()});
+  syncDerivedDDoses();saveAll();
+  openD(id);
+}
+function rmDExtra(i){dExtraIngs.splice(i,1);markDirtyD();renderD()}
+function ukDExtra(i,val){dExtraIngs[i].kgWoz=parseFloat(val)||0;markDirtyD();renderD()}
 function newDerivedDoseModal(parentId){
   var parent=wDoses.find(function(x){return x.id===parentId});if(!parent)return;
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='derived-modal';
@@ -538,14 +609,14 @@ function confirmNewDerivedDose(parentId){
   openW(id);
 }
 function rmWExtra(i){wExtraIngs.splice(i,1);markDirtyW();renderW()}
-function ukWExtra(i,val){wExtraIngs[i].totalKg=parseFloat(val)||0;markDirtyW();renderW()}
+function ukWExtra(i,val){wExtraIngs[i].kg=parseFloat(val)||0;markDirtyW();renderW()}
 function newW(){wId=null;wIngs=[];wParentId=null;wExtraIngs=[];document.getElementById('w-title').value='';document.getElementById('w-note').value='';document.getElementById('w-szt').value='40';document.getElementById('w-topbar').textContent='Nowa dawka';document.getElementById('w-del-btn').style.display='none';renderW();wOrig=snapshotW();wIsDirty=false;show('scr-w-edit')}
 function openW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)return;wId=id;wParentId=d.parentId||null;wExtraIngs=wParentId?JSON.parse(JSON.stringify(d.extraIngs||[])):[];wIngs=wParentId?[]:JSON.parse(JSON.stringify(d.ings));document.getElementById('w-title').value=d.title;document.getElementById('w-note').value=d.note||'';document.getElementById('w-szt').value=d.szt;document.getElementById('w-topbar').textContent=d.title;document.getElementById('w-del-btn').style.display='block';renderW();wOrig=snapshotW();wIsDirty=false;show('scr-w-edit')}
 function backW(){markDirtyW();if(wIsDirty&&!confirm('Masz niezapisane zmiany. Wyjść bez zapisywania?'))return;show('scr-main');renderWList()}
 function saveW(){var t=document.getElementById('w-title').value.trim()||'Bez nazwy',n=document.getElementById('w-note').value.trim(),s=parseInt(document.getElementById('w-szt').value)||40;var dup=findDuplicateTitle(wDoses,t,wId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(wDoses,t,wId)+'"?'))return;t=uniqueTitle(wDoses,t,wId);document.getElementById('w-title').value=t}if(wId){var d=wDoses.find(function(x){return x.id===wId});if(d){d.title=t;d.note=n;d.szt=s;d.updatedAt=Date.now();if(wParentId){d.parentId=wParentId;d.extraIngs=JSON.parse(JSON.stringify(wExtraIngs));d.ings=getWDoseIngs(d,{})}else{d.parentId=null;d.extraIngs=[];d.ings=JSON.parse(JSON.stringify(wIngs))}}}else{wId='wd'+Date.now();wDoses.push({id:wId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(wIngs)),createdAt:Date.now()});document.getElementById('w-del-btn').style.display='block'}document.getElementById('w-topbar').textContent=t;syncDerivedDoses();saveAll();wOrig=snapshotW();wIsDirty=false;flash('w-save-btn');toast('Zapisano dawkę')}
 function delW(){if(!confirm('Usunąć?'))return;wDoses=wDoses.filter(function(x){return x.id!==wId});saveAll();toast('Dawka usunięta');backW()}
 function dupW(){wId=null;document.getElementById('w-title').value=(document.getElementById('w-title').value||'Dawka')+' (kopia)';document.getElementById('w-del-btn').style.display='none'}
-function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast(wParentId?'Podaj kg do wozu':'Podaj kg/szt',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('w');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}if(wParentId){wExtraIngs.push({name:nm,cat:ct,sm:sm,totalKg:kg})}else{wIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}document.getElementById('w-kg').value='';markDirtyW();renderW()}
+function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast('Podaj kg/szt',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('w');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}if(wParentId){wExtraIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}else{wIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}document.getElementById('w-kg').value='';markDirtyW();renderW()}
 function rmW(i){wIngs.splice(i,1);markDirtyW();renderW()}
 function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;markDirtyW();renderW()}
 function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;markDirtyW();renderW()}
@@ -572,11 +643,11 @@ function renderW(){
     document.getElementById('w-woz').textContent=(totalPh*szt).toFixed(0);
     document.getElementById('w-cnt').textContent=(baseIngs.length+wExtraIngs.length);
     var baseRows=baseIngs.map(function(s){var kw=s.kg*szt;return '<div class="rw" style="opacity:.75"><div class="rn"><i class="ti ti-lock" style="font-size:12px"></i></div><div style="flex:1"><div class="rname">'+s.name+'</div>'+badge(s.cat)+'<div class="cp cg">'+kw.toFixed(1)+' kg na wóz (z bazy)</div></div></div>'}).join('');
-    var extraRows=wExtraIngs.map(function(e,i){var tk=parseFloat(e.totalKg)||0;var perSzt=szt>0?tk/szt:0;return '<div class="rw"><div class="rn">+</div><div style="flex:1"><div class="rname">'+e.name+'</div>'+badge(e.cat)+'<div class="cp cg">'+perSzt.toFixed(2)+' kg/szt</div></div><div class="rr"><div class="kw"><input type="number" value="'+tk+'" min="0" step="0.1" inputmode="decimal" onchange="ukWExtra('+i+',this.value)"><span>kg do wozu</span></div><button class="dl" onclick="rmWExtra('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('');
+    var extraRows=wExtraIngs.map(function(e,i){var kgSzt=parseFloat(e.kg)||0;var kw=kgSzt*szt;return '<div class="rw"><div class="rn">+</div><div style="flex:1"><div class="rname">'+e.name+'</div>'+badge(e.cat)+'<div class="cp cg">'+kw.toFixed(1)+' kg na wóz</div></div><div class="rr"><div class="kw"><input type="number" value="'+kgSzt+'" min="0" step="0.01" inputmode="decimal" onchange="ukWExtra('+i+',this.value)"><span>kg/szt</span></div><button class="dl" onclick="rmWExtra('+i+')"><i class="ti ti-x"></i></button></div></div>'}).join('');
     var lockHdr='<div class="sec-top" style="margin-top:0"><i class="ti ti-lock" style="font-size:12px"></i> Z bazy: '+parent.title+'</div>';
     var extraHdr=wExtraIngs.length?'<div class="sec-top">Dodatki (kg do wozu)</div>':'';
     el.innerHTML=lockHdr+'<div class="ls">'+baseRows+'</div>'+extraHdr+(wExtraIngs.length?'<div class="ls">'+extraRows+'</div>':'<div class="em" style="padding:10px 0"><div class="em-s">Dodaj surowce dorzucane do wozu (np. dodatkowa śruta)</div></div>');
-    if(addKg)addKg.placeholder='kg do wozu';
+    if(addKg)addKg.placeholder='kg/szt';
     return;
   }
   if(addKg)addKg.placeholder='kg/szt';
@@ -610,7 +681,7 @@ function getResolvedWIngs(){
   var base=parent?getWDoseIngs(parent,{}):[]; 
   var szt=parseInt(document.getElementById('w-szt').value)||1;
   var extras=wExtraIngs.map(function(e){
-    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kg:(parseFloat(e.totalKg)||0)/szt,isExtra:true};
+    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kg:parseFloat(e.kg)||0,isExtra:true};
   });
   return base.concat(extras);
 }
@@ -754,9 +825,9 @@ function genDosePDF(title,note,szt,ings,mode){
 // Zamiana polskich znakow na ASCII (helvetica w jsPDF nie ma UTF-8)
 function plchars(s){if(s===undefined||s===null)return '';var m={'\u0105':'a','\u0107':'c','\u0119':'e','\u0142':'l','\u0144':'n','\u00f3':'o','\u015b':'s','\u017a':'z','\u017c':'z','\u0104':'A','\u0106':'C','\u0118':'E','\u0141':'L','\u0143':'N','\u00d3':'O','\u015a':'S','\u0179':'Z','\u017b':'Z'};return (''+s).replace(/[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]/g,function(ch){return m[ch]||ch})}
 function sanitize(s){return plchars(s).replace(/[^a-zA-Z0-9 _-]/g,'').replace(/\s+/g,'_').substring(0,40)||'dawka'}
-function pdfD(){genDosePDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,dIngs,'d')}
+function pdfD(){genDosePDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,getResolvedDIngs(),'d')}
 function pdfW(){genDosePDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,getResolvedWIngs(),'w')}
-function pdfDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'d')}
+function pdfDoseD(id){syncDerivedDDoses();var d=dDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'d')}
 function pdfDoseW(id){syncDerivedDoses();var d=wDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'w')}
 
 // Jedno wspólne odblokowanie, zapamiętane na stałe (localStorage)
