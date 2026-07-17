@@ -101,7 +101,7 @@ input[type=number]{text-align:right}
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openKeyModal()" title="Dostęp / hasło" id="key-btn"><i class="ti ti-key"></i></button><button class="ib" onclick="openSettings()" title="Ustawienia"><i class="ti ti-settings"></i></button><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button></div>
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openKeyModal()" title="Dostęp / hasło" id="key-btn"><i class="ti ti-key"></i></button><button class="ib" onclick="openSettings()" title="Ustawienia"><i class="ti ti-settings"></i></button><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button><button class="ib" onclick="openPlayStoreModal()" title="Pobierz z Google Play"><i class="ti ti-qrcode"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
     <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
@@ -1603,6 +1603,36 @@ function encodeDose(d){
 }
 function decodeDose(str){
   try{return JSON.parse(decodeURIComponent(escape(atob(str))))}catch(e){return null}
+}
+// ===== POBIERZ Z GOOGLE PLAY (QR) =====
+var PLAY_STORE_URL='https://play.google.com/store/apps/details?id=io.github.piterds7_blip.twa';
+function openPlayStoreModal(){
+  var existing=document.getElementById('playstore-modal');
+  if(existing){existing.style.display='flex';return}
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='playstore-modal';
+  ov.innerHTML='<div class="modal-bx" style="max-height:90vh;overflow-y:auto">'
+    +'<div class="modal-t"><i class="ti ti-brand-google-play"></i> Pobierz z Google Play</div>'
+    +'<div style="font-size:13px;color:var(--tx2);margin-bottom:12px">Zeskanuj kod QR lub skopiuj link, aby zainstalować aplikację TMR Mixer</div>'
+    +'<div id="playstore-qr-container" style="display:flex;justify-content:center;padding:16px;background:#fff;border-radius:10px;margin-bottom:12px"></div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:4px"><input type="text" id="playstore-url" value="'+escapeHtml(PLAY_STORE_URL)+'" readonly style="flex:1;font-size:11px;color:var(--tx2)"><button class="btn bp" id="playstore-copy-btn" style="background:#185FA5;white-space:nowrap" onclick="copyPlayStoreUrl()"><i class="ti ti-copy"></i></button></div>'
+    +'<div class="modal-btns" style="margin-top:12px"><button class="btn bp" style="background:#185FA5;width:100%" onclick="closePlayStoreModal()"><i class="ti ti-check"></i> Gotowe</button></div></div>';
+  document.body.appendChild(ov);
+  // Generuj QR tylko raz — kolejne otwarcia modala pokazują ten sam kontener
+  try{new QRCode(document.getElementById('playstore-qr-container'),{text:PLAY_STORE_URL,width:220,height:220,colorDark:'#185FA5',colorLight:'#ffffff'})}
+  catch(e){document.getElementById('playstore-qr-container').innerHTML='<div style="font-size:12px;color:#888">QR niedostępny — użyj linku</div>'}
+}
+function closePlayStoreModal(){var m=document.getElementById('playstore-modal');if(m)m.style.display='none'}
+function copyPlayStoreUrl(){
+  var f=document.getElementById('playstore-url');if(!f)return;
+  var btn=document.getElementById('playstore-copy-btn');
+  var showCheck=function(){
+    if(!btn)return;
+    var orig=btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check"></i>';
+    setTimeout(function(){btn.innerHTML=orig},1500);
+  };
+  try{navigator.clipboard.writeText(f.value).then(function(){toast('Link skopiowany!');showCheck()}).catch(function(){f.select();document.execCommand('copy');toast('Link skopiowany!');showCheck()})}
+  catch(e){f.select();document.execCommand('copy');toast('Link skopiowany!');showCheck()}
 }
 function shareDose(id){
   var d=wDoses.find(function(x){return x.id===id});if(!d)return;
