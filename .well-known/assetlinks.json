@@ -3,6 +3,9 @@
   "target": {
     "namespace": "android_app",
     "package_name": "io.github.piterds7_blip.twa",
-    "sha256_cert_fingerprints": ["17:20:DD:91:96:F0:D9:C9:90:58:01:67:C5:7B:F2:EE:98:C0:6A:97:94:DA:DF:8E:6D:56:34:2B:A8:42:D0:A6"]
+    "sha256_cert_fingerprints": [
+      "B7:74:92:9B:0F:BB:7F:60:F4:AC:B5:DE:6F:B3:D4:AE:C2:4D:C4:5B:87:57:F5:5B:77:50:0B:65:B5:C0:CE:A9",
+      "17:20:DD:91:96:F0:D9:C9:90:58:01:67:C5:7B:F2:EE:98:C0:6A:97:94:DA:DF:8E:6D:56:34:2B:A8:42:D0:A6"
+    ]
   }
 }]
