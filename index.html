@@ -1701,35 +1701,48 @@ function doImport(){
     });
     saveAll();rebuildSelects();
   }
-  // Sprawdź duplikat nazwy
-  var title=data.title;
-  var existing=wDoses.find(function(x){return x.title===title});
+  // Sprawdź duplikat nazwy (bez uwzględniania wielkości liter i skrajnych spacji)
+  var title=(data.title||'').trim();
+  var titleLower=title.toLowerCase();
+  var existing=wDoses.find(function(x){return (x.title||'').trim().toLowerCase()===titleLower});
   var ings=data.ings.map(function(s){return{name:s.n,cat:s.c,sm:s.s,kg:s.k}});
   document.getElementById('import-modal').remove();
   window._importData=null;
+  // Zapisz dane do zmiennej globalnej zamiast wstrzykiwać w onclick — unika błędów z apostrofami w nazwach
+  window._pendingImport={title:title,ings:ings,szt:data.szt,note:data.note||''};
   if(existing){
-    // Pytaj nadpisać czy nowa
     var ov2=document.createElement('div');ov2.className='modal-ov';ov2.id='import-conflict';
     ov2.innerHTML='<div class="modal-bx"><div class="modal-t">Dawka "'+escapeHtml(title)+'" już istnieje</div>'
       +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
-      +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="finishImport(\'overwrite\',\''+escapeHtml(title)+'\','+JSON.stringify(ings)+','+data.szt+',\''+escapeHtml(data.note||'')+'\')"><i class="ti ti-refresh"></i> Nadpisz istniejącą</button>'
-      +'<button class="btn" style="width:100%" onclick="finishImport(\'new\',\''+escapeHtml(title)+'\','+JSON.stringify(ings)+','+data.szt+',\''+escapeHtml(data.note||'')+'\')"><i class="ti ti-plus"></i> Zapisz jako nową</button>'
-      +'<button class="btn" style="width:100%" onclick="document.getElementById(\'import-conflict\').remove()">Anuluj</button></div></div>';
+      +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="finishImport(\'overwrite\')"><i class="ti ti-refresh"></i> Nadpisz istniejącą</button>'
+      +'<button class="btn" style="width:100%" onclick="finishImport(\'new\')"><i class="ti ti-plus"></i> Zapisz jako nową</button>'
+      +'<button class="btn" style="width:100%" onclick="document.getElementById(\'import-conflict\').remove();window._pendingImport=null">Anuluj</button></div></div>';
     document.body.appendChild(ov2);
   } else {
-    finishImport('new',title,ings,data.szt,data.note||'');
+    finishImport('new');
   }
 }
-function finishImport(action,title,ings,szt,note){
+function finishImport(action){
   var m=document.getElementById('import-conflict');if(m)m.remove();
+  var p=window._pendingImport;if(!p)return;
+  var title=p.title,ings=p.ings,szt=p.szt,note=p.note;
   if(action==='overwrite'){
-    var ex=wDoses.find(function(x){return x.title===title});
-    if(ex){ex.ings=ings;ex.szt=szt;ex.note=note;saveAll();showTab('w');openWDose(ex.id);toast('Dawka zaktualizowana');return}
+    var titleLower=title.toLowerCase();
+    var ex=wDoses.find(function(x){return (x.title||'').trim().toLowerCase()===titleLower});
+    if(ex){
+      ex.ings=ings;ex.szt=szt;ex.note=note;ex.updatedAt=Date.now();
+      // Ważne: importowana dawka nie jest już powiązana z żadną bazą na tym urządzeniu —
+      // wyczyść powiązanie, inaczej syncDerivedDoses() nadpisze import danymi z (nieistniejącej) bazy
+      ex.parentId=null;ex.extraIngs=[];
+      window._pendingImport=null;
+      saveAll();showTab('w');openW(ex.id);toast('Dawka zaktualizowana');return;
+    }
   }
   var ft=uniqueTitle(wDoses,title,null);
   var id='wd'+Date.now();
-  wDoses.push({id:id,title:ft,note:note,szt:szt,ings:ings});
-  saveAll();showTab('w');openWDose(id);
+  wDoses.push({id:id,title:ft,note:note,szt:szt,ings:ings,createdAt:Date.now()});
+  window._pendingImport=null;
+  saveAll();showTab('w');openW(id);
   toast('Dawka "'+ft+'" zaimportowana');
 }
 
