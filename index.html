@@ -96,35 +96,6 @@ input[type=number]{text-align:right}
 .install-bar{display:none;background:var(--gl);border:1px solid var(--g);border-radius:var(--r);margin:10px 16px 0;padding:10px 12px;align-items:center;gap:8px}
 .install-bar.show{display:flex}.install-txt{flex:1;font-size:12px;color:var(--gk);font-weight:500}
 .install-btn{padding:7px 12px;background:var(--g);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:600}
-.ipk-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:4000;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .2s}
-.ipk-ov.show{opacity:1;pointer-events:auto}
-.ipk-box{background:var(--bg);width:100%;max-width:480px;margin:0 auto;height:100%;display:flex;flex-direction:column;overflow:hidden}
-.ipk-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.ipk-hdr-t{flex:1;font-size:16px;font-weight:600}.ipk-close{background:none;border:none;font-size:22px;color:var(--tx2);cursor:pointer;padding:4px;display:flex}
-.ipk-search{padding:10px 14px;flex-shrink:0}
-.ipk-search input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--bd);border-radius:8px;background:var(--bg2);font-size:14px;color:var(--tx);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
-.ipk-search input:focus{outline:2px solid var(--g);border-color:var(--g)}
-.ipk-cats{display:flex;gap:6px;padding:0 14px 10px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
-.ipk-cats::-webkit-scrollbar{display:none}
-.ipk-cat{padding:6px 12px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);flex-shrink:0;transition:all .15s}
-.ipk-cat.act{background:var(--gd);color:#fff;border-color:var(--gd)}
-.ipk-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 80px}
-.ipk-item{display:flex;align-items:center;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:5px;cursor:pointer;gap:10px;transition:background .1s}
-.ipk-item:active{background:var(--bg2)}
-.ipk-i-info{flex:1;min-width:0}
-.ipk-i-name{font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ipk-i-vals{font-size:10px;color:var(--tx2);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
-.ipk-i-badge{padding:2px 6px;border-radius:99px;font-size:8px;font-weight:700;flex-shrink:0;text-transform:uppercase}
-.ipk-i-badge.obj{background:#E6F1FB;color:#185FA5}.ipk-i-badge.t{background:#EAF3DE;color:#3B6D11}.ipk-i-badge.tm{background:#EEEDFE;color:#3C3489}
-.ipk-i-star{font-size:18px;color:var(--bd2);cursor:pointer;flex-shrink:0;padding:4px}.ipk-i-star.on{color:#F5A623}
-.ipk-custom{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:2px dashed var(--bd);border-radius:8px;margin:6px 0 20px;cursor:pointer;font-size:13px;font-weight:600;color:var(--tx2)}
-.ipk-custom:active{background:var(--bg2)}
-.ipk-empty{padding:30px 20px;text-align:center;color:var(--tx3);font-size:13px}
-.ipk-grp{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;padding:10px 0 5px}
-.pick-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:13px;cursor:pointer;flex:1;min-width:0}
-.pick-btn:active{background:var(--bg2)}
-.pick-btn .pick-name{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.pick-btn .pick-arrow{color:var(--tx3);font-size:16px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -155,7 +126,7 @@ input[type=number]{text-align:right}
   <div class="s2"><div class="sb"><div class="sv" id="d-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="d-cnt">0</div><div class="sl">surowców</div></div></div>
   <div class="bn2 bdd2"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="d-woz">0</div><div class="bu">kg</div></div></div>
   <div id="d-ing-list"></div>
-  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><button class="pick-btn" onclick="openPicker('d')"><span class="pick-name" id="d-pick-label">Wybierz surowiec…</span><i class="ti ti-chevron-down pick-arrow"></i></button><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><input type="hidden" id="d-sel-val"></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="d-sel"></select><input type="number" id="d-kg" placeholder="kg/wóz" min="0" step="1" inputmode="numeric"><button class="addb" style="background:var(--p)" onclick="addD()"><i class="ti ti-plus"></i></button></div><div id="d-cf" style="display:none" class="cf"><input type="text" id="d-cn" placeholder="Nazwa surowca"><select id="d-cc" onchange="toggleCustomFields('d')"><option value="obj">Objętościowa</option><option value="t">Treściwa sucha</option><option value="tm">Treściwa mokra</option></select><div id="d-csm-wrap" style="align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="d-csm" min="1" max="100" step="0.1" value="88" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div><div id="d-ctres" style="display:none;margin-top:6px"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="d-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="d-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Cena zł/t</div><input type="number" id="d-cprice" min="0" placeholder="0"></div><div style="margin-top:6px"><div class="fl-l">Energia</div><div style="display:flex;gap:6px;align-items:center"><select id="d-cnel-unit" onchange="updateDNelHint()"><option value="MJ">MJ NEL</option><option value="VEM">VEM</option></select><input type="number" id="d-cnel" min="0" step="0.1" placeholder="0" oninput="updateDNelHint()"><span id="d-cnel-hint" style="font-size:11px;color:var(--tx2);white-space:nowrap"></span></div></div></div></div></div>
   <div class="br"><button class="btn" onclick="dupD()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpp" id="d-save-btn" onclick="saveD()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
   <div class="br"><button class="btn bp bpg" onclick="migrateD()"><i class="ti ti-arrow-right"></i> Przenieś do Obliczania wozu</button></div>
   <div class="divider"></div><div class="sec-top">Niedojady — realne pobranie paszy</div><div class="spacer"></div>
@@ -174,7 +145,7 @@ input[type=number]{text-align:right}
   <div class="s2"><div class="sb"><div class="sv" id="w-ph">0.00</div><div class="sl">kg / sztukę</div></div><div class="sb"><div class="sv" id="w-cnt">0</div><div class="sl">surowców</div></div></div>
   <div class="bn2 bw"><div class="bi"><i class="ti ti-truck"></i></div><div><div class="bl">Łącznie w wozie</div><div class="bvl" id="w-woz">0</div><div class="bu">kg</div></div></div>
   <div id="w-ing-list"></div>
-  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><button class="pick-btn" onclick="openPicker('w')"><span class="pick-name" id="w-pick-label">Wybierz surowiec…</span><i class="ti ti-chevron-down pick-arrow"></i></button><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><input type="hidden" id="w-sel-val"></div>
+  <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="w-sel"></select><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><div id="w-cf" style="display:none" class="cf"><input type="text" id="w-cn" placeholder="Nazwa surowca"><select id="w-cc" onchange="toggleCustomFields('w')"><option value="obj">Objętościowa</option><option value="t">Treściwa sucha</option><option value="tm">Treściwa mokra</option></select><div id="w-csm-wrap" style="align-items:center;gap:8px;margin-top:6px"><span style="font-size:13px;color:var(--tx2);font-weight:500;white-space:nowrap">Sucha masa:</span><input type="number" id="w-csm" min="1" max="100" step="0.1" value="88" style="flex:1"><span style="font-size:13px;color:var(--tx2)">%</span></div><div id="w-ctres" style="display:none;margin-top:6px"><div class="ir"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="w-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="w-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Cena zł/t</div><input type="number" id="w-cprice" min="0" placeholder="0"></div><div style="margin-top:6px"><div class="fl-l">Energia</div><div style="display:flex;gap:6px;align-items:center"><select id="w-cnel-unit" onchange="updateWNelHint()"><option value="MJ">MJ NEL</option><option value="VEM">VEM</option></select><input type="number" id="w-cnel" min="0" step="0.1" placeholder="0" oninput="updateWNelHint()"><span id="w-cnel-hint" style="font-size:11px;color:var(--tx2);white-space:nowrap"></span></div></div></div></div></div>
   <div class="br"><button class="btn" onclick="dupW()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpg" id="w-save-btn" onclick="saveW()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
   <button class="btn bdd" id="w-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delW()"><i class="ti ti-trash"></i> Usuń dawkę</button>
 </div>
@@ -194,16 +165,12 @@ input[type=number]{text-align:right}
 
 <script>
 var BASE=[
-{g:'Kiszonki',items:[['Kiszonka z kukurydzy','obj',33,205,8,33,6.5],['Kiszonka z trawy','obj',35,175,16,0,6.0],['Kiszonka z koniczyny','obj',30,185,18,0,5.7],['Kiszonka z lucerny','obj',32,205,20,0,5.5],['Kiszonka z GPS','obj',35,180,10,15,5.8],['Kiszonka z żyta','obj',30,170,9,0,5.5],['Kiszonka z sorgo','obj',28,170,8,20,5.8],['Sianokiszonka z traw','obj',45,200,14,0,5.5],['Trawa mokry balot','obj',40,160,14,0,5.5],['Buraki pastewne','obj',12,150,7,0,6.8],['Pulpa buraczana mokra','obj',12,105,10,0,6.2]]},
-{g:'Pasze treściwe — mokre',items:[['Wysłodki kiszone','tm',23,130,10,1,6.8],['Młóto browarniane','tm',24,110,25,2,5.8],['Wywar gorzelniany','tm',8,65,30,3,6.5],['Wywar zbożowy DDGS mokry','tm',30,200,30,5,7.0],['Wywar kukurydziany CGF','tm',40,250,22,15,7.2],['Pulpa ziemniaczana','tm',15,85,6,40,7.2],['Kiszonka z wycierki ziemn.','tm',16,80,8,50,7.0],['Serwatka płynna','tm',6,50,13,0,7.5],['Melasa','tm',75,825,8,0,8.5],['CCM (kiszonka z kolb kukurydzy)','tm',60,575,9,55,7.5],['LKS (kiszonka z wilgotnego ziarna)','tm',65,625,10,62,7.8]]},
-{g:'Pasze suche objętościowe',items:[['Siano łąkowe','obj',85,500,9,0,5.1],['Siano z lucerny','obj',86,625,17,0,5.0],['Słoma pszenna','obj',87,275,4,0,3.2],['Słoma jęczmienna','obj',87,200,4,0,3.5],['Słoma rzepakowa','obj',87,180,5,0,2.8]]},
-{g:'Zboża i nasiona',items:[['Śruta kukurydziana','t',88,875,9,68,8.1],['Kukurydza ziarno','t',88,875,9,70,8.1],['Pszenica ziarno','t',87,850,13,67,8.0],['Pszenżyto ziarno','t',87,650,12,62,7.4],['Jęczmień ziarno','t',87,660,11,57,7.2],['Żyto ziarno','t',87,580,10,60,7.3],['Owies ziarno','t',87,600,12,42,6.5],['Śruta zbożowa','t',87,725,12,60,7.2],['Mieszanka zbożowa','t',87,725,12,58,7.1],['Śruta pszenna','t',87,700,12,67,8.0],['Otręby pszenne','t',87,625,17,20,6.0]]},
-{g:'Białkowe',items:[['Śruta sojowa 44%','t',88,1650,47,6,7.8],['Śruta sojowa HP 48%','t',88,1850,48,3,8.0],['Soja pełnotłusta prażona','t',90,2200,38,5,10.5],['Śruta rzepakowa','t',89,1150,35,1,7.0],['Makuch rzepakowy','t',90,1250,34,3,7.2],['Rzepak nasiona','t',92,2285,22,0,10.2],['Śruta słonecznikowa','t',90,1025,35,1,6.0],['Śruta lniana','t',90,1750,34,0,7.5],['Śruta palmowa','t',90,750,17,0,6.8],['Śruta bawełniana','t',90,1200,40,2,6.5],['Gluten kukurydziany','t',90,2800,62,15,8.8],['Mączka rybna','t',92,5000,67,0,8.0],['DDGS kukurydziany suchy','t',90,1100,30,5,8.5],['Młóto suszone','t',92,1000,26,4,6.5],['Wysłodki suszone','t',90,950,9,1,7.2],['Drożdże piwne','t',92,3250,48,0,7.0],['Groch pastewny','t',87,900,23,48,7.8],['Bobik','t',87,1000,28,42,7.5],['Łubin słodki nasiona','t',88,1100,35,5,7.2]]},
-{g:'Mieszanki paszowe',items:[['Pasza 22','t',88,1900,22,25,7.2],['Pasza 18','t',88,1600,18,30,7.0]]},
-{g:'Dodatki i minerały',items:[['Premiks mineralny','t',97,4500,0,0,0],['Witaminy / premiks','t',97,6000,0,0,0],['Soda oczyszczona','t',99,2000,0,0,0],['Magnezyt MgO','t',99,1600,0,0,0],['Sół NaCl','t',99,600,0,0,0],['Kreda pastewna','t',99,450,0,0,0],['Fosforan dwuwapniowy','t',99,3000,0,0,0],['Tłuszcz chroniony','t',97,7500,0,0,24.0],['Tłuszcz chroniony Ca-FA','t',97,8500,0,0,22.0],['Tłuszcz paszowy palmowy','t',99,4500,0,0,18.5],['Glikol propylenowy','t',100,4000,0,0,4.8],['Gliceryna techniczna','t',80,2000,0,0,7.5],['Bufor KHCO3','t',99,3250,0,0,0],['Mocznik paszowy','t',99,2500,287,0,0],['Żywe drożdże Saccharomyces','t',95,25000,0,0,0],['Metionina chroniona','t',99,18000,0,0,0],['Lizyna chroniona','t',99,12000,0,0,0],['Niacyna wit. B3','t',99,35000,0,0,0]]}
+{g:'Kiszonki',items:[['Kiszonka z kukurydzy','obj',30,205,0,0,0],['Kiszonka z trawy','obj',25,175,0,0,0],['Kiszonka z koniczyny','obj',28,185,0,0,0],['Kiszonka z lucerny','obj',28,205,0,0,0],['Kiszonka z GPS','obj',32,180,0,0,0],['Kiszonka z żyta','obj',28,170,0,0,0],['Trawa mokry balot','obj',25,160,0,0,0],['Buraki pastewne','obj',12,150,0,0,0],['Pulpa buraczana mokra','obj',10,105,0,0,0]]},
+{g:'Pasze treściwe — mokre',items:[['Wysłodki kiszone','tm',22,130,0,0,0],['Młóto browarniane','tm',22,110,0,0,0],['Wywar gorzelniany','tm',8,65,0,0,0],['Wywar zbożowy DDGS mokry','tm',30,200,0,0,0],['Pulpa ziemniaczana','tm',12,85,0,0,0],['Melasa','tm',75,825,0,0,0],['CCM (kiszonka z kolb kukurydzy)','tm',65,575,0,0,0],['LKS (kiszonka z wilgotnego ziarna)','tm',62,625,0,0,0]]},
+{g:'Pasze suche objętościowe',items:[['Siano łąkowe','obj',85,500,0,0,0],['Siano z lucerny','obj',86,625,0,0,0],['Słoma pszenna','obj',87,275,0,0,0]]},
+{g:'Pasze treściwe — suche',items:[['Śruta kukurydziana','t',88,875,9,70,8.0],['Kukurydza ziarno','t',88,875,9,72,8.2],['Śruta zbożowa','t',87,725,12,60,7.2],['Mieszanka zbożowa','t',87,725,12,58,7.1],['Śruta pszenna','t',87,700,13,64,7.6],['Śruta jęczmienna','t',87,660,12,58,7.0],['Otręby pszenne','t',87,625,16,22,6.2],['Młóto suszone','t',90,1000,25,5,6.8],['Wysłodki suszone','t',88,950,10,2,7.3],['Śruta sojowa','t',89,1650,45,6,7.5],['Śruta rzepakowa','t',88,1150,33,2,6.9],['Rzepak nasiona','t',92,2285,21,5,9.8],['Makuch rzepakowy','t',88,1250,33,4,7.4],['Śruta słonecznikowa','t',88,1025,34,2,6.3],['Śruta lniana','t',88,1750,36,3,7.2],['Mączka rybna','t',90,5000,65,0,8.2],['Drożdże piwne','t',92,3250,45,2,6.8],['Pasza 22','t',88,1900,22,25,7.2]]},
+{g:'Dodatki i minerały',items:[['Premiks mineralny','t',97,4500,0,0,0],['Witaminy / premiks','t',97,6000,0,0,0],['Soda oczyszczona','t',99,2000,0,0,0],['Magnezyt MgO','t',99,1600,0,0,0],['Sół NaCl','t',99,600,0,0,0],['Kreda pastewna','t',99,450,0,0,0],['Fosforan dwuwapniowy','t',99,3000,0,0,0],['Tłuszcz chroniony','t',97,7500,0,0,24.0],['Tłuszcz paszowy (palmowy)','t',99,4500,0,0,18.5],['Glikol propylenowy','t',100,4000,0,0,4.8],['Gliceryna techniczna','t',80,2000,0,0,7.5],['Bufor KHCO3','t',99,3250,0,0,0]]}
 ];
-var ipkFavs=[];try{ipkFavs=JSON.parse(localStorage.getItem('tmr_favs')||'[]')}catch(e){}
-function saveFavs(){try{localStorage.setItem('tmr_favs',JSON.stringify(ipkFavs))}catch(e){}}
 var customIngs=[];try{customIngs=JSON.parse(localStorage.getItem('tmr_custom')||'[]')}catch(e){}
 // Migracja: uzupełnij brakujące pola [nazwa,kat,sm,cena,bialko,skrobia,nel]
 customIngs.forEach(function(c){if(c[3]===undefined)c[3]=0;if(c[4]===undefined)c[4]=0;if(c[5]===undefined)c[5]=0;if(c[6]===undefined)c[6]=0});
@@ -237,10 +204,8 @@ function updateCounters(){var dc=document.getElementById('tab-d-cnt'),wc=documen
 
 // Migrate old v4 data
 (function(){try{var old=JSON.parse(localStorage.getItem('tmr_v4')||'[]');if(old.length&&!wDoses.length){wDoses=old.map(function(d){return{id:d.id||'wd'+Date.now()+Math.random(),title:d.title||'Dawka',note:d.note||'',szt:d.sztuki||d.szt||40,ings:d.ings||[]}});saveAll();localStorage.removeItem('tmr_v4')}}catch(e){}})();
-// Migrate renamed ingredients v6
-(function(){var rn={'Śruta sojowa':'Śruta sojowa 44%','Śruta jęczmienna':'Jęczmień ziarno','Tłuszcz paszowy (palmowy)':'Tłuszcz paszowy palmowy'};function fixIngs(arr){arr.forEach(function(d){if(d.ings)d.ings.forEach(function(i){if(rn[i.name])i.name=rn[i.name]});if(d.extraIngs)d.extraIngs.forEach(function(i){if(rn[i.name])i.name=rn[i.name]})})}fixIngs(dDoses);fixIngs(wDoses);fixIngs(mDoses||[]);saveAll()})();
 
-function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses));localStorage.setItem('tmr_md',JSON.stringify(mDoses));localStorage.setItem('tmr_df',JSON.stringify(dFolders));localStorage.setItem('tmr_wf',JSON.stringify(wFolders))}catch(e){}}
+function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses||[]));localStorage.setItem('tmr_wd',JSON.stringify(wDoses||[]));localStorage.setItem('tmr_custom',JSON.stringify(customIngs||[]));localStorage.setItem('tmr_ad',JSON.stringify(aDoses||[]));localStorage.setItem('tmr_md',JSON.stringify(mDoses||[]));localStorage.setItem('tmr_df',JSON.stringify(dFolders||[]));localStorage.setItem('tmr_wf',JSON.stringify(wFolders||[]))}catch(e){}}
 // Pomocnicza — zwraca SM% składnika (z danych lub z bazy), używana w zakładce 3
 function getSM(ing){var name=typeof ing==='string'?ing:ing.name;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[2]})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[2])return ci[2];if(ing.sm)return ing.sm;return 88;}
 // Wczytaj wyeksportowane mieszanki do bazy (kategoria Moje mieszanki)
@@ -294,141 +259,52 @@ function showTab(t){
   if(t==='d'&&appUnlocked)renderDList();else if(t==='w')renderWList();else if(t==='a'&&appUnlocked)renderAnaliza();else if(t==='m'&&appUnlocked)renderMieszanka();else if(t==='s'&&appUnlocked)renderSita();
 }
 
-// ===== INGREDIENT PICKER =====
-var _ipkTarget=null,_ipkFilter='',_ipkCat='all',_ipkForM=false;
-function rebuildSelects(){} // legacy stub
-function toggleCustomFields(){} // legacy stub
-
-function getAllItems(forMieszanka){
-  var items=[];
-  BASE.forEach(function(g){
-    g.items.forEach(function(it){
-      if(forMieszanka&&g.g!=='Zboża i nasiona'&&g.g!=='Białkowe'&&g.g!=='Mieszanki paszowe'&&g.g!=='Dodatki i minerały'&&g.g!=='Moje mieszanki')return;
-      items.push({name:it[0],cat:it[1],sm:it[2],price:it[3],prot:it[4],starch:it[5],nel:it[6],group:g.g,custom:false});
-    });
-  });
-  customIngs.forEach(function(c){
-    if(forMieszanka&&c[1]!=='t')return;
-    items.push({name:c[0],cat:c[1],sm:c[2]||88,price:c[3]||0,prot:c[4]||0,starch:c[5]||0,nel:c[6]||0,group:'\u2B50 Własne',custom:true});
-  });
-  return items;
+// Shared ingredients
+function rebuildSelects(){['d-sel','w-sel'].forEach(function(id){var s=document.getElementById(id);if(!s)return;var v=s.value;s.innerHTML='';BASE.forEach(function(g){var og=document.createElement('optgroup');og.label=g.g;g.items.forEach(function(it){var o=document.createElement('option');o.value=it[0]+'|'+it[1]+'|'+it[2];o.textContent=it[0];og.appendChild(o)});s.appendChild(og)});if(customIngs.length){var cg=document.createElement('optgroup');cg.label='\u2B50 Własne surowce';customIngs.forEach(function(c){var o=document.createElement('option');o.value=c[0]+'|'+c[1]+'|'+(c[2]||88);o.textContent=c[0];cg.appendChild(o)});s.appendChild(cg)}var co=document.createElement('option');co.value='__c__';co.textContent='\u270F\uFE0F Własny surowiec...';s.appendChild(co);if(v)s.value=v;s.onchange=function(){var t=id==='d-sel'?'d':'w';var cf=t+'-cf';var show=s.value==='__c__';document.getElementById(cf).style.display=show?'block':'none';if(show)toggleCustomFields(t)}})}
+// addCustom zastąpiony przez addCustomFull
+function toggleCustomFields(t){
+  var cat=document.getElementById(t+'-cc').value;
+  var isObj=cat==='obj';
+  document.getElementById(t+'-csm-wrap').style.display='flex';
+  document.getElementById(t+'-ctres').style.display=isObj?'none':'block';
+  // dla objętościowej domyślne SM ~30, dla treściwej ~88
+  var smField=document.getElementById(t+'-csm');
+  if(isObj&&smField.value=='88')smField.value=30;
+  else if(!isObj&&smField.value=='30')smField.value=88;
 }
-function getCategories(items){
-  var cats=[],seen={};
-  items.forEach(function(it){if(!seen[it.group]){seen[it.group]=1;cats.push(it.group)}});
-  return cats;
+function updateDNelHint(){
+  var unit=document.getElementById('d-cnel-unit');
+  var val=parseFloat(document.getElementById('d-cnel').value)||0;
+  var hint=document.getElementById('d-cnel-hint');
+  if(!hint||!unit||val<=0){if(hint)hint.textContent='';return}
+  hint.textContent=unit.value==='MJ'?'= '+nelToVem(val)+' VEM':'= '+vemToNel(val).toFixed(2)+' MJ NEL';
 }
-function catBadge(c){
-  if(c==='t')return '<span class="ipk-i-badge t">treściwa</span>';
-  if(c==='tm')return '<span class="ipk-i-badge tm">mokra</span>';
-  return '<span class="ipk-i-badge obj">objęt.</span>';
+function updateWNelHint(){
+  var unit=document.getElementById('w-cnel-unit');
+  var val=parseFloat(document.getElementById('w-cnel').value)||0;
+  var hint=document.getElementById('w-cnel-hint');
+  if(!hint||!unit||val<=0){if(hint)hint.textContent='';return}
+  hint.textContent=unit.value==='MJ'?'= '+nelToVem(val)+' VEM':'= '+vemToNel(val).toFixed(2)+' MJ NEL';
 }
-function openPicker(target,forM){
-  _ipkTarget=target;_ipkFilter='';_ipkCat='all';_ipkForM=!!forM;
-  var ov=document.getElementById('ipk-overlay');
-  if(!ov){
-    ov=document.createElement('div');ov.id='ipk-overlay';ov.className='ipk-ov';
-    ov.innerHTML='<div class="ipk-box"><div class="ipk-hdr"><div class="ipk-hdr-t">Wybierz surowiec</div><button class="ipk-close" onclick="closePicker()"><i class="ti ti-x"></i></button></div>'
-      +'<div class="ipk-search"><input type="text" id="ipk-q" placeholder="Szukaj surowca…" oninput="filterPicker()"></div>'
-      +'<div class="ipk-cats" id="ipk-cats"></div>'
-      +'<div class="ipk-list" id="ipk-list"></div></div>';
-    document.body.appendChild(ov);
+function addCustomFull(t){
+  var nm=document.getElementById(t+'-cn').value.trim();
+  var ct=document.getElementById(t+'-cc').value;
+  var sm=parseFloat(document.getElementById(t+'-csm').value)||88;
+  if(!nm)return null;
+  var prot=0,starch=0,price=0;
+  if(ct!=='obj'){
+    prot=parseFloat(document.getElementById(t+'-cprot').value)||0;
+    starch=parseFloat(document.getElementById(t+'-cstarch').value)||0;
+    price=parseFloat(document.getElementById(t+'-cprice').value)||0;
   }
-  document.getElementById('ipk-q').value='';
-  renderPicker();
-  requestAnimationFrame(function(){ov.classList.add('show');document.getElementById('ipk-q').focus()});
-}
-function closePicker(){var ov=document.getElementById('ipk-overlay');if(ov)ov.classList.remove('show')}
-function filterPicker(){_ipkFilter=document.getElementById('ipk-q').value.toLowerCase();renderPicker()}
-function setCat(c){_ipkCat=c;renderPicker()}
-function toggleFav(name,e){
-  e.stopPropagation();
-  var idx=ipkFavs.indexOf(name);
-  if(idx>=0)ipkFavs.splice(idx,1);else ipkFavs.push(name);
-  saveFavs();renderPicker();
-}
-function pickItem(name,cat,sm){
-  var label=document.getElementById(_ipkTarget+'-pick-label');
-  if(label)label.textContent=name;
-  var hid=document.getElementById(_ipkTarget+'-sel-val');
-  if(hid)hid.value=name+'|'+cat+'|'+sm;
-  if(_ipkForM){
-    document.getElementById('m-sel-val').value=name+'|'+cat+'|'+sm;
-    document.getElementById('m-pick-label').textContent=name;
-  }
-  closePicker();
-}
-function pickCustom(){
-  closePicker();
-  var nm=prompt('Nazwa nowego surowca:');
-  if(!nm||!nm.trim())return;nm=nm.trim();
-  var cat=prompt('Kategoria:\n  obj = objętościowa\n  t = treściwa sucha\n  tm = treściwa mokra','t');
-  if(!cat)cat='t';if(cat!=='obj'&&cat!=='tm')cat='t';
-  var sm=parseFloat(prompt('Sucha masa %:',cat==='obj'?'30':'88'))||88;
-  var price=parseFloat(prompt('Cena zł/tona:','0'))||0;
-  var prot=parseFloat(prompt('Białko % w SM:','0'))||0;
-  var starch=parseFloat(prompt('Skrobia % w SM:','0'))||0;
-  var nel=parseFloat(prompt('NEL MJ/kg SM:','0'))||0;
+  var nelRawF=parseFloat(document.getElementById(t+'-cnel')&&document.getElementById(t+'-cnel').value)||0;
+  var nelUnitF=(document.getElementById(t+'-cnel-unit')&&document.getElementById(t+'-cnel-unit').value)||'MJ';
+  var nelF=nelUnitF==='VEM'?vemToNel(nelRawF):nelRawF;
   var ex=customIngs.find(function(x){return x[0]===nm});
-  if(ex){ex[1]=cat;ex[2]=sm;ex[3]=price;ex[4]=prot;ex[5]=starch;ex[6]=nel}
-  else customIngs.push([nm,cat,sm,price,prot,starch,nel]);
-  saveAll();
-  var label=document.getElementById(_ipkTarget+'-pick-label');
-  if(label)label.textContent=nm;
-  var hid=document.getElementById(_ipkTarget+'-sel-val');
-  if(hid)hid.value=nm+'|'+cat+'|'+sm;
-  toast('Dodano surowiec: '+nm);
-}
-function renderPicker(){
-  var items=getAllItems(_ipkForM);
-  var cats=getCategories(items);
-  // Category pills
-  var ch='<div class="ipk-cat'+(_ipkCat==='all'?' act':'')+'" onclick="setCat(\'all\')">Wszystkie</div>';
-  if(ipkFavs.length)ch+='<div class="ipk-cat'+(_ipkCat==='fav'?' act':'')+'" onclick="setCat(\'fav\')">\u2B50 Ulubione</div>';
-  cats.forEach(function(c){ch+='<div class="ipk-cat'+(_ipkCat===c?' act':'')+'" onclick="setCat(\''+c.replace(/'/g,"\\'")+'\')">'+c+'</div>'});
-  document.getElementById('ipk-cats').innerHTML=ch;
-  // Filter items
-  var filtered=items.filter(function(it){
-    if(_ipkCat==='fav')return ipkFavs.indexOf(it.name)>=0;
-    if(_ipkCat!=='all'&&it.group!==_ipkCat)return false;
-    if(_ipkFilter){
-      var q=_ipkFilter;
-      var hay=(it.name+' '+it.group).toLowerCase();
-      return hay.indexOf(q)>=0;
-    }
-    return true;
-  });
-  // Sort: favorites first, then alphabetically within groups
-  filtered.sort(function(a,b){
-    var af=ipkFavs.indexOf(a.name)>=0?0:1,bf=ipkFavs.indexOf(b.name)>=0?0:1;
-    if(af!==bf)return af-bf;
-    return a.name.localeCompare(b.name,'pl');
-  });
-  // Render
-  var html='';
-  if(!filtered.length){
-    html='<div class="ipk-empty">Brak wyników dla „'+(_ipkFilter||'')+ '"</div>';
-  } else {
-    var lastGrp='';
-    filtered.forEach(function(it){
-      if(_ipkCat==='all'&&!_ipkFilter&&it.group!==lastGrp){
-        lastGrp=it.group;
-        html+='<div class="ipk-grp">'+it.group+'</div>';
-      }
-      var isFav=ipkFavs.indexOf(it.name)>=0;
-      var vals='SM '+it.sm+'%';
-      if(it.prot)vals+=' · BO '+it.prot+'%';
-      if(it.starch)vals+=' · Skr '+it.starch+'%';
-      if(it.nel)vals+=' · '+it.nel.toFixed(1)+' MJ';
-      html+='<div class="ipk-item" onclick="pickItem(\''+it.name.replace(/'/g,"\\'")+'\',\''+it.cat+'\','+it.sm+')">'
-        +catBadge(it.cat)
-        +'<div class="ipk-i-info"><div class="ipk-i-name">'+it.name+'</div><div class="ipk-i-vals">'+vals+'</div></div>'
-        +'<div class="ipk-i-star'+(isFav?' on':'')+'" onclick="toggleFav(\''+it.name.replace(/'/g,"\\'")+'\',event)">'+(isFav?'\u2605':'\u2606')+'</div>'
-        +'</div>';
-    });
-  }
-  html+='<div class="ipk-custom" onclick="pickCustom()"><i class="ti ti-plus"></i> Własny surowiec…</div>';
-  document.getElementById('ipk-list').innerHTML=html;
+  if(ex){ex[1]=ct;ex[2]=sm;ex[3]=price;ex[4]=prot;ex[5]=starch;ex[6]=nelF}
+  else customIngs.push([nm,ct,sm,price,prot,starch,nelF]);
+  rebuildSelects();saveAll();
+  return {name:nm,cat:ct,sm:sm};
 }
 function badge(c){if(c==='t')return '<span class="badge bt">treściwa</span>';if(c==='tm')return '<span class="badge btm">treściwa mokra</span>';return '<span class="badge bo">objętościowa</span>'}
 function isTresciwa(c){return c==='t'||c==='tm'}
@@ -441,7 +317,7 @@ function backD(){markDirtyD();if(dIsDirty&&!confirm('Masz niezapisane zmiany. Wy
 function saveD(){var t=document.getElementById('d-title').value.trim()||'Bez nazwy',n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;var dup=findDuplicateTitle(dDoses,t,dId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(dDoses,t,dId)+'"?'))return;t=uniqueTitle(dDoses,t,dId);document.getElementById('d-title').value=t}if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.updatedAt=Date.now();if(dParentId){d.parentId=dParentId;d.extraIngs=JSON.parse(JSON.stringify(dExtraIngs));d.ings=getDDoseIngs(d,{})}else{d.parentId=null;d.extraIngs=[];d.ings=JSON.parse(JSON.stringify(dIngs))}}}else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(dIngs)),createdAt:Date.now()});document.getElementById('d-del-btn').style.display='block'}document.getElementById('d-topbar').textContent=t;saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę')}
 function delD(){if(!confirm('Usunąć tę dawkę?'))return;dDoses=dDoses.filter(function(x){return x.id!==dId});saveAll();toast('Dawka usunięta');backD()}
 function dupD(){dId=null;document.getElementById('d-title').value=(document.getElementById('d-title').value||'Dawka')+' (kopia)';document.getElementById('d-del-btn').style.display='none'}
-function addD(){var v=document.getElementById('d-sel-val').value;if(!v){toast('Wybierz surowiec',true);return}var kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var p=v.split('|'),nm=p[0],ct=p[1],sm=parseFloat(p[2])||88;if(dParentId){dExtraIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}else{dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}document.getElementById('d-kg').value='';document.getElementById('d-sel-val').value='';document.getElementById('d-pick-label').textContent='Wybierz surowiec\u2026';markDirtyD();renderD()}
+function addD(){var v=document.getElementById('d-sel').value,kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('d');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}if(dParentId){dExtraIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}else{dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}document.getElementById('d-kg').value='';markDirtyD();renderD()}
 function rmD(i){dIngs.splice(i,1);markDirtyD();renderD()}
 function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;markDirtyD();renderD()}
 function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
@@ -740,14 +616,14 @@ function backW(){markDirtyW();if(wIsDirty&&!confirm('Masz niezapisane zmiany. Wy
 function saveW(){var t=document.getElementById('w-title').value.trim()||'Bez nazwy',n=document.getElementById('w-note').value.trim(),s=parseInt(document.getElementById('w-szt').value)||40;var dup=findDuplicateTitle(wDoses,t,wId);if(dup){if(!confirm('Dawka o nazwie "'+t+'" już istnieje. Zapisać jako "'+uniqueTitle(wDoses,t,wId)+'"?'))return;t=uniqueTitle(wDoses,t,wId);document.getElementById('w-title').value=t}if(wId){var d=wDoses.find(function(x){return x.id===wId});if(d){d.title=t;d.note=n;d.szt=s;d.updatedAt=Date.now();if(wParentId){d.parentId=wParentId;d.extraIngs=JSON.parse(JSON.stringify(wExtraIngs));d.ings=getWDoseIngs(d,{})}else{d.parentId=null;d.extraIngs=[];d.ings=JSON.parse(JSON.stringify(wIngs))}}}else{wId='wd'+Date.now();wDoses.push({id:wId,title:t,note:n,szt:s,ings:JSON.parse(JSON.stringify(wIngs)),createdAt:Date.now()});document.getElementById('w-del-btn').style.display='block'}document.getElementById('w-topbar').textContent=t;syncDerivedDoses();saveAll();wOrig=snapshotW();wIsDirty=false;flash('w-save-btn');toast('Zapisano dawkę')}
 function delW(){if(!confirm('Usunąć?'))return;wDoses=wDoses.filter(function(x){return x.id!==wId});saveAll();toast('Dawka usunięta');backW()}
 function dupW(){wId=null;document.getElementById('w-title').value=(document.getElementById('w-title').value||'Dawka')+' (kopia)';document.getElementById('w-del-btn').style.display='none'}
-function addW(){var v=document.getElementById('w-sel-val').value;if(!v){toast('Wybierz surowiec',true);return}var kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast('Podaj kg/szt',true);return}var p=v.split('|'),nm=p[0],ct=p[1],sm=parseFloat(p[2])||88;if(wParentId){wExtraIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}else{wIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}document.getElementById('w-kg').value='';document.getElementById('w-sel-val').value='';document.getElementById('w-pick-label').textContent='Wybierz surowiec\u2026';markDirtyW();renderW()}
+function addW(){var v=document.getElementById('w-sel').value,kg=parseFloat(document.getElementById('w-kg').value);if(!kg||kg<=0){toast('Podaj kg/szt',true);return}var nm,ct,sm;if(v==='__c__'){var r=addCustomFull('w');if(!r){toast('Podaj nazwę',true);return}nm=r.name;ct=r.cat;sm=r.sm}else{var p=v.split('|');nm=p[0];ct=p[1];sm=parseFloat(p[2])||88}if(wParentId){wExtraIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}else{wIngs.push({name:nm,cat:ct,sm:sm,kg:kg})}document.getElementById('w-kg').value='';markDirtyW();renderW()}
 function rmW(i){wIngs.splice(i,1);markDirtyW();renderW()}
 function mvW(i,d){var j=i+d;if(j<0||j>=wIngs.length)return;var t=wIngs[i];wIngs[i]=wIngs[j];wIngs[j]=t;markDirtyW();renderW()}
 function ukW(i,v){wIngs[i].kg=parseFloat(v)||0;markDirtyW();renderW()}
 function renderW(){
   var szt=parseInt(document.getElementById('w-szt').value)||0;
   var el=document.getElementById('w-ing-list');
-  var addKg=document.getElementById('w-kg'),addBtn=document.querySelector('#scr-w-edit .at2');
+  var addSel=document.getElementById('w-sel'),addKg=document.getElementById('w-kg'),addBtn=document.querySelector('#scr-w-edit .at2');
   if(wParentId){
     var parent=wDoses.find(function(x){return x.id===wParentId});
     if(!parent){
@@ -1049,7 +925,7 @@ function renderAnaliza(){
   if(!appUnlocked){el.innerHTML=lockScreen('ti-flask','Analiza dawki');return}
   el.innerHTML=analizaContent();
 }
-var mDoses=[];try{mDoses=JSON.parse(localStorage.getItem('tmr_md')||'[]')}catch(e){}
+var mDoses=[];try{var _md=localStorage.getItem('tmr_md');if(_md&&_md!=='undefined'&&_md!=='null')mDoses=JSON.parse(_md)||[]}catch(e){}
 var mId=null,mIngs=[];
 
 function renderMieszanka(){
@@ -1058,6 +934,13 @@ function renderMieszanka(){
   el.innerHTML=mListView();
 }
 function updateMNelHint(){
+  var unit=document.getElementById('m-cnel-unit');
+  var val=parseFloat(document.getElementById('m-cnel').value)||0;
+  var hint=document.getElementById('m-cnel-hint');
+  if(!hint||!unit)return;
+  if(val<=0){hint.textContent='';return}
+  if(unit.value==='MJ'){hint.textContent='= '+nelToVem(val)+' VEM'}
+  else{hint.textContent='= '+vemToNel(val).toFixed(2)+' MJ NEL'}
 }
 function mListView(){
   var h='<div class="hn"><i class="ti ti-info-circle"></i> Twórz własne mieszanki z pasz treściwych i dodatków. Aplikacja policzy skład, białko, skrobię, suchą masę i cenę — gotową mieszankę możesz wyeksportować do bazy surowców.</div>';
@@ -1099,6 +982,16 @@ function openM(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return
 function backM(){show('scr-main');showTab('m')}
 function renderMEdit(title,note){
   var sc=document.getElementById('scr-m-edit');
+  var opts='';
+  BASE.forEach(function(g){
+    if(g.g==='Pasze treściwe — suche'||g.g==='Dodatki i minerały'||g.g==='Moje mieszanki'){
+      opts+='<optgroup label="'+g.g+'">';
+      g.items.forEach(function(it){opts+='<option value="'+it[0]+'">'+it[0]+'</option>'});
+      opts+='</optgroup>';
+    }
+  });
+  if(customIngs.length){var cc='';customIngs.forEach(function(c){if(c[1]==='t')cc+='<option value="'+c[0]+'">'+c[0]+'</option>'});if(cc)opts+='<optgroup label="⭐ Własne surowce">'+cc+'</optgroup>'}
+  opts+='<option value="__c__">✏️ Własny surowiec...</option>';
   sc.innerHTML='<div class="topbar"><button class="ib" onclick="backM()"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="m-topbar">'+title+'</div></div>'
     +'<div class="sec-top">Informacje</div><div class="spacer"></div>'
     +'<div class="fl"><div class="fl-l">Nazwa mieszanki</div><input type="text" id="m-title" placeholder="np. Mieszanka produkcyjna 20%" value="'+(title==='Nowa mieszanka'?'':title.replace(/"/g,'&quot;'))+'"></div>'
@@ -1106,7 +999,8 @@ function renderMEdit(title,note){
     +'<div class="divider"></div><div class="sec-top">Parametry mieszanki</div><div class="spacer"></div>'
     +'<div id="m-stats"></div>'
     +'<div id="m-ing-list"></div>'
-    +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><button class="pick-btn" onclick="openPicker(\'m\',true)"><span class="pick-name" id="m-pick-label">Wybierz surowiec\u2026</span><i class="ti ti-chevron-down pick-arrow"></i></button><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric"><button class="addb" style="background:#185FA5" onclick="addM()"><i class="ti ti-plus"></i></button></div><input type="hidden" id="m-sel-val"></div>'
+    +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><select id="m-sel" onchange="document.getElementById(\'m-cf\').style.display=this.value===\'__c__\'?\'block\':\'none\'">'+opts+'</select><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric"><button class="addb" style="background:#185FA5" onclick="addM()"><i class="ti ti-plus"></i></button></div>'
+    +'<div id="m-cf" style="display:none" class="cf"><input type="text" id="m-cn" placeholder="Nazwa surowca"><div class="ir" style="margin-top:6px"><div class="fw"><div class="fl-l">Sucha masa %</div><input type="number" id="m-csm" min="1" max="100" value="88"></div><div class="fw"><div class="fl-l">Cena zł/t</div><input type="number" id="m-cprice" min="0" placeholder="0"></div></div><div class="ir" style="margin-top:6px"><div class="fw"><div class="fl-l">Białko % (w SM)</div><input type="number" id="m-cprot" min="0" max="100" value="0"></div><div class="fw"><div class="fl-l">Skrobia % (w SM)</div><input type="number" id="m-cstarch" min="0" max="100" value="0"></div></div><div style="margin-top:6px"><div class="fl-l">Energia</div><div style="display:flex;gap:6px;align-items:center"><select id="m-cnel-unit" onchange="updateMNelHint()"><option value="MJ">MJ NEL</option><option value="VEM">VEM</option></select><input type="number" id="m-cnel" min="0" step="0.1" placeholder="0" oninput="updateMNelHint()"><span id="m-cnel-hint" style="font-size:11px;color:var(--tx2);white-space:nowrap"></span></div></div></div></div>'
     +'<div class="br"><button class="btn" style="width:100%" onclick="editMixPrices()"><i class="ti ti-coin"></i> Edytuj ceny surowców</button></div>'
     +'<div class="br"><button class="btn" onclick="dupM()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp" style="background:#185FA5" id="m-save-btn" onclick="saveM()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>'
     +'<div class="br"><button class="btn" onclick="pdfMieszankaLive()"><i class="ti ti-download"></i> Eksport PDF</button><button class="btn bp" style="background:#0F6E56" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Do bazy surowców</button></div>'
@@ -1119,16 +1013,29 @@ function isCompleteIng(name){
   return sm>0&&price>0;
 }
 function addM(){
-  var val=document.getElementById('m-sel-val').value;
-  if(!val){toast('Wybierz surowiec',true);return}
-  var kg=parseFloat(document.getElementById('m-kg').value);
+  var v=document.getElementById('m-sel').value,kg=parseFloat(document.getElementById('m-kg').value);
   if(!kg||kg<=0){toast('Podaj kg',true);return}
-  var p=val.split('|'),nm=p[0];
-  if(!isCompleteIng(nm)){toast('Surowiec "'+nm+'" nie ma ceny — uzupełnij w "Moje surowce"',true);return}
-  mIngs.push({name:nm,kg:kg});
-  document.getElementById('m-kg').value='';
-  document.getElementById('m-sel-val').value='';
-  document.getElementById('m-pick-label').textContent='Wybierz surowiec\u2026';
+  if(v==='__c__'){
+    var nm=document.getElementById('m-cn').value.trim();if(!nm){toast('Podaj nazwę',true);return}
+    var sm=parseFloat(document.getElementById('m-csm').value)||88;
+    var prot=parseFloat(document.getElementById('m-cprot').value)||0;
+    var st=parseFloat(document.getElementById('m-cstarch').value)||0;
+    var price=parseFloat(document.getElementById('m-cprice').value)||0;
+    var nelRaw=parseFloat(document.getElementById('m-cnel').value)||0;
+    var nelUnit=document.getElementById('m-cnel-unit').value;
+    var nel=nelUnit==='VEM'?vemToNel(nelRaw):nelRaw;
+    if(price<=0){toast('Podaj cenę surowca (wymagana do kalkulacji)',true);return}
+    var ex=customIngs.find(function(x){return x[0]===nm});
+    if(ex){ex[1]='t';ex[2]=sm;ex[3]=price;ex[4]=prot;ex[5]=st}
+    else customIngs.push([nm,'t',sm,price,prot,st,nel]);
+    saveAll();rebuildSelects();
+    mIngs.push({name:nm,kg:kg});
+  } else {
+    if(!isCompleteIng(v)){toast('Surowiec "'+v+'" nie ma ceny — uzupełnij w "Moje surowce"',true);return}
+    mIngs.push({name:v,kg:kg});
+  }
+  document.getElementById('m-kg').value='';document.getElementById('m-cn')&&(document.getElementById('m-cf').style.display='none');
+  document.getElementById('m-sel').value=mIngs.length?document.getElementById('m-sel').options[0].value:'';
   renderM();
 }
 function rmM(i){mIngs.splice(i,1);renderM()}
