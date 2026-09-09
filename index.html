@@ -14,6 +14,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-TH6XRB2SHV');</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--g:#1D9E75;--gd:#0F6E56;--gk:#085041;--gl:#E1F5EE;--gm:#9FE1CB;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--bg:#fff;--bg2:#f5f5f5;--bg3:#eee;--tx:#111;--tx2:#666;--tx3:#999;--bd:#e0e0e0;--bd2:#ccc;--red:#E24B4A;--r:10px;--rs:7px}
@@ -26,7 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ib{background:none;border:none;cursor:pointer;color:var(--tx2);padding:6px;border-radius:var(--rs);font-size:20px;display:flex;align-items:center}.ib:active{background:var(--bg3)}
 .tabs{display:flex;gap:4px;padding:10px 10px 0}
 .tab{flex:1;padding:8px 3px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
-.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}.tab.ta{background:#185FA5;color:#fff;border-color:#185FA5}.tab.tlocked{opacity:.5;cursor:pointer}.tab.ts{background:#C47B0A;color:#fff;border-color:#C47B0A}
+.tab.tp{background:var(--p);color:#fff;border-color:var(--p)}.tab.tg{background:var(--g);color:#fff;border-color:var(--g)}.tab.ta{background:#185FA5;color:#fff;border-color:#185FA5}.tab.tlocked{opacity:.5;cursor:pointer}.tab.ts{background:#C47B0A;color:#fff;border-color:#C47B0A}.tab.tfe{background:#163d22;color:#fff;border-color:#163d22}
 .tab i{font-size:16px}.tab-sub{font-size:8px;opacity:.8;font-weight:400;line-height:1.15}
 .tab-cnt{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.15);color:inherit;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center}
 .tab.tp .tab-cnt,.tab.tg .tab-cnt{background:rgba(255,255,255,.25);color:#fff}
@@ -130,7 +131,7 @@ input[type=number]{text-align:right}
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openKeyModal()" title="Dostęp / hasło" id="key-btn"><i class="ti ti-key"></i></button><button class="ib" onclick="openSettings()" title="Ustawienia"><i class="ti ti-settings"></i></button><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button><button class="ib" onclick="openPlayStoreModal()" title="Pobierz z Google Play"><i class="ti ti-qrcode"></i></button></div>
+  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openKeyModal()" title="Dostęp / hasło" id="key-btn"><i class="ti ti-key"></i></button><button class="ib" onclick="openSettings()" title="Ustawienia"><i class="ti ti-settings"></i></button><button class="ib" onclick="openIngManager()" title="Moje surowce"><i class="ti ti-database-cog"></i></button><button class="ib" onclick="openNotes()" title="Notatki"><i class="ti ti-notebook"></i></button><button class="ib" onclick="openBackupModal()" title="Kopia danych"><i class="ti ti-arrows-exchange"></i></button><button class="ib" onclick="openPlayStoreModal()" title="Pobierz z Google Play"><i class="ti ti-qrcode"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs">
     <button class="tab tg" id="t-w" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">na sztukę → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
@@ -138,12 +139,14 @@ input[type=number]{text-align:right}
     <button class="tab" id="t-m" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub" id="sub-m">własne mieszanki</span></button>
     <button class="tab" id="t-a" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub" id="sub-a">koszty i wydajność</span></button>
     <button class="tab" id="t-s" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub" id="sub-s">struktura fizyczna</span></button>
+    <button class="tab" id="t-fe" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub" id="sub-fe">laboratorium→FeedExpert</span></button>
   </div>
   <div id="tab-w" style="padding:10px 0"></div>
   <div id="tab-d" style="display:none;padding:10px 0"></div>
   <div id="tab-m" style="display:none;padding:10px 0"></div>
   <div id="tab-a" style="display:none;padding:10px 0"></div>
   <div id="tab-s" style="display:none;padding:10px 0"></div>
+  <div id="tab-fe" style="display:none;padding:10px 0"></div>
 </div>
 
 <div id="scr-d-edit" class="screen">
@@ -281,17 +284,20 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').cat
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function showTab(t){
   if((t==='d'||t==='m'||t==='a'||t==='s')&&!appUnlocked){openKeyModal();return}
+  if(t==='fe'&&!feUnlocked){openKeyModal('fe');return}
   document.getElementById('t-w').className=t==='w'?'tab tg':'tab';
   if(document.getElementById('t-d'))document.getElementById('t-d').className=t==='d'?'tab tp':'tab';
   if(document.getElementById('t-m'))document.getElementById('t-m').className=t==='m'?'tab ta':'tab';
   if(document.getElementById('t-a'))document.getElementById('t-a').className=t==='a'?'tab ta':'tab';
   if(document.getElementById('t-s'))document.getElementById('t-s').className=t==='s'?'tab ts':'tab';
+  if(document.getElementById('t-fe'))document.getElementById('t-fe').className=t==='fe'?'tab tfe':'tab';
   document.getElementById('tab-w').style.display=t==='w'?'block':'none';
   document.getElementById('tab-d').style.display=(t==='d'&&appUnlocked)?'block':'none';
   if(document.getElementById('tab-m'))document.getElementById('tab-m').style.display=(t==='m'&&appUnlocked)?'block':'none';
   if(document.getElementById('tab-a'))document.getElementById('tab-a').style.display=(t==='a'&&appUnlocked)?'block':'none';
   if(document.getElementById('tab-s'))document.getElementById('tab-s').style.display=(t==='s'&&appUnlocked)?'block':'none';
-  if(t==='d'&&appUnlocked)renderDList();else if(t==='w')renderWList();else if(t==='a'&&appUnlocked)renderAnaliza();else if(t==='m'&&appUnlocked)renderMieszanka();else if(t==='s'&&appUnlocked)renderSita();
+  if(document.getElementById('tab-fe'))document.getElementById('tab-fe').style.display=(t==='fe'&&feUnlocked)?'block':'none';
+  if(t==='d'&&appUnlocked)renderDList();else if(t==='w')renderWList();else if(t==='a'&&appUnlocked)renderAnaliza();else if(t==='m'&&appUnlocked)renderMieszanka();else if(t==='s'&&appUnlocked)renderSita();else if(t==='fe'&&feUnlocked)renderFEKonwerter();
 }
 
 // ===== INGREDIENT PICKER =====
@@ -970,6 +976,7 @@ function updateKeyUI(){
   if(tm)tm.style.display=appUnlocked?'flex':'none';
   if(ta)ta.style.display=appUnlocked?'flex':'none';
   if(ts)ts.style.display=appUnlocked?'flex':'none';
+  var tfe=document.getElementById('t-fe');if(tfe)tfe.style.display=feUnlocked?'flex':'none';
   // Kontenery treści - ukryj zablokowane, nie pokazuj automatycznie (showTab to robi)
   if(!appUnlocked){
     var tabd=document.getElementById('tab-d'),tabm=document.getElementById('tab-m'),taba=document.getElementById('tab-a');
@@ -979,21 +986,30 @@ function updateKeyUI(){
     var tabs2=document.getElementById('tab-s');if(tabs2)tabs2.style.display='none';
   }
 }
-function openKeyModal(){
-  if(appUnlocked){
-    var ov=document.createElement('div');ov.className='modal-ov';ov.id='key-modal';
-    ov.innerHTML='<div class="modal-bx"><div class="modal-t" style="color:#1D9E75"><i class="ti ti-lock-open"></i> Aplikacja odblokowana</div>'
-      +'<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:14px">Masz dostęp do wszystkich funkcji: Mieszanka treściwa i Analiza dawki są aktywne.</div>'
-      +'<div class="modal-btns"><button class="btn bp" style="background:#185FA5;width:100%" onclick="document.getElementById(\'key-modal\').remove()"><i class="ti ti-check"></i> OK</button></div></div>';
-    document.body.appendChild(ov);return;
-  }
+function openKeyModal(mode){
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='key-modal';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-key"></i> Odblokuj pełny dostęp</div>'
-    +'<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:12px">Wpisz hasło dostępu, aby odblokować <strong>Mieszankę treściwą</strong> i <strong>Analizę dawki</strong>. Wystarczy raz — urządzenie zapamięta na stałe.</div>'
-    +'<input type="password" id="key-pass" placeholder="Hasło dostępu" style="text-align:center;margin-bottom:8px" onkeydown="if(event.key===\'Enter\')doKeyUnlock()">'
-    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'key-modal\').remove()">Anuluj</button><button class="btn bp" style="background:#185FA5" onclick="doKeyUnlock()"><i class="ti ti-key"></i> Odblokuj</button></div></div>';
+  var isFE=mode==='fe';
+  var titleText=isFE?'Dostęp do Konwertera FE':'Dostęp do funkcji zaawansowanych';
+  var hintText=isFE?'Wpisz hasło do konwertera FeedExpert':'Wpisz hasło BIOFEED aby odblokować wszystkie zakładki';
+  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-key"></i> '+titleText+'</div>'
+    +'<div style="font-size:13px;color:var(--tx2);margin-bottom:12px">'+hintText+'</div>'
+    +'<input type="password" id="key-input" placeholder="Hasło..." style="margin-bottom:12px;text-align:center;font-size:16px" onkeydown="if(event.key===\'Enter\')checkKey(\''+(!isFE?'app':'fe')+'\')">'
+    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'key-modal\').remove()">Anuluj</button><button class="btn bp" style="background:#185FA5" onclick="checkKey(\''+(!isFE?'app':'fe')+'\')"><i class="ti ti-check"></i> Odblokuj</button></div></div>';
   document.body.appendChild(ov);
-  setTimeout(function(){var f=document.getElementById('key-pass');if(f)f.focus()},100);
+  setTimeout(function(){document.getElementById('key-input').focus()},100);
+}
+function checkKey(mode){
+  var v=(document.getElementById('key-input').value||'').trim().toUpperCase();
+  var m=document.getElementById('key-modal');
+  if(mode==='app'){
+    if(v==='BIOFEED'){appUnlocked=true;localStorage.setItem('tmr_unlocked','1');if(m)m.remove();updateKeyUI();toast('Dostęp odblokowany');return}
+    // Sprawdź czy to hasło FE
+    if(v==='FEEDEXPERT'||v==='KONWERTER'){feUnlocked=true;localStorage.setItem('tmr_fe_unlocked','1');if(m)m.remove();updateKeyUI();showTab('fe');toast('Konwerter FE odblokowany');return}
+  } else if(mode==='fe'){
+    if(v==='FEEDEXPERT'||v==='KONWERTER'){feUnlocked=true;localStorage.setItem('tmr_fe_unlocked','1');if(m)m.remove();updateKeyUI();showTab('fe');toast('Konwerter FE odblokowany');return}
+  }
+  toast('Nieprawidłowe hasło',true);
+  document.getElementById('key-input').value='';document.getElementById('key-input').focus();
 }
 function doKeyUnlock(){
   var v=document.getElementById('key-pass').value;
@@ -1877,6 +1893,338 @@ var curSitaClientId = null;
 
 function saveSitaClients(){try{localStorage.setItem('tmr_sita_clients',JSON.stringify(sitaClients))}catch(e){}}
 
+
+// ===== KONWERTER FE (laboratorium → FeedExpert) =====
+function renderFEKonwerter(){
+  var el=document.getElementById('tab-fe');
+  el.innerHTML='<div class="hn"><i class="ti ti-transform" style="color:#163d22"></i> <strong>Konwerter FE</strong> — wrzuć sprawozdanie laboratoryjne (.xls/.xlsx), aplikacja przeliczy wartości do wpisania w FeedExpert</div>'
+    +'<div id="fe-drop" style="background:var(--bg);border:2px dashed var(--bd);border-radius:14px;padding:40px 20px;text-align:center;cursor:pointer" onclick="document.getElementById(\'fe-file-input\').click()">'
+    +'<div style="font-size:28px;margin-bottom:10px">📊</div>'
+    +'<div style="font-size:15px;font-weight:600;margin-bottom:6px">Wrzuć sprawozdanie z laboratorium</div>'
+    +'<div style="font-size:12px;color:var(--tx2)">Kliknij lub przeciągnij plik .xls / .xlsx<br>Biofeed, LODR, OHZ — trawa, lucerna, kukurydza</div>'
+    +'<input type="file" id="fe-file-input" accept=".xls,.xlsx" style="display:none" onchange="feHandleFile(this.files[0])">'
+    +'</div>'
+    +'<div id="fe-loading" style="display:none;text-align:center;padding:30px;color:var(--tx2)"><div style="font-size:14px">Wczytuję i przeliczam…</div></div>'
+    +'<div id="fe-error" style="display:none;margin-top:12px;padding:14px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:10px;color:#A32D2D;font-size:13px"></div>'
+    +'<div id="fe-result" style="display:none;margin-top:16px"></div>';
+  // Drag & drop
+  var dropEl=document.getElementById('fe-drop');
+  dropEl.addEventListener('dragover',function(e){e.preventDefault();dropEl.style.borderColor='#1D9E75'});
+  dropEl.addEventListener('dragleave',function(){dropEl.style.borderColor='var(--bd)'});
+  dropEl.addEventListener('drop',function(e){e.preventDefault();dropEl.style.borderColor='var(--bd)';if(e.dataTransfer.files[0])feHandleFile(e.dataTransfer.files[0])});
+}
+// Event listeners moved to renderFEKonwerter
+
+function feHandleFile(file){
+  if(!file)return;
+  document.getElementById('fe-loading').style.display='block';document.getElementById('fe-drop').style.display='none';document.getElementById('fe-error').style.display='none';document.getElementById('fe-result').style.display='none';
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+      render(convert(parse(rows)),file.name);
+    }catch(err){feShowErr('Błąd odczytu: '+err.message)}
+    document.getElementById('fe-loading').style.display='none';
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function num(v){
+  if(v==null||v==='')return null;
+  const n=parseFloat(String(v).replace(',','.'));
+  return isNaN(n)?null:n;
+}
+
+function parse(rows){
+  let bC=null,sC=null;
+  for(const row of rows){
+    for(let c=0;c<row.length;c++){
+      const t=String(row[c]||'').toLowerCase();
+      if(t.includes('brutto'))bC=c;
+      if(t.includes('s.m'))sC=c;
+    }
+    if(bC!==null&&sC!==null)break;
+  }
+
+  let desc='';
+  for(let i=0;i<Math.min(15,rows.length);i++){
+    const line=rows[i].filter(v=>v!=null).map(v=>String(v)).join(' ');
+    if(/kiszonk|lucern|kukurydz|trawa|koniczyn/i.test(line)&&line.length>5){desc=line.substring(0,100);break}
+  }
+
+  const MAP=[
+    [['sm','sucha masa'],'SM'],
+    [['adf'],'ADF'],[['adl'],'ADL'],
+    [['białko','białko surowe','cp'],'CP'],
+    [['ndf'],'NDF'],[['ph'],'pH'],
+    [['popiół','popiół surowy','ash'],'ASH'],
+    [['tłuszcz surowy','crude fat','ee'],'EE'],
+    [['n-nh3','nh3'],'NH3'],
+    [['włókno surowe','crude fibre','cf'],'CF'],
+    [['skrobia','starch'],'SKR'],
+    [['nel mj/kg','nel'],'NEL'],
+    [['udp g/kg','udp'],'UDP'],
+    [['nxp g/kg','nxp'],'nXP'],
+    [['rnb g/kg','rnb'],'RNB'],
+  ];
+
+  const D={_desc:desc};
+
+  for(const row of rows){
+    let name=null;
+    for(let c=0;c<Math.min(6,row.length);c++){
+      const t=String(row[c]||'').trim();
+      if(t&&isNaN(parseFloat(t))&&t.length>1&&!/^\[/.test(t)){name=t;break}
+    }
+    if(!name)continue;
+    const low=name.toLowerCase().trim();
+
+    for(const[pats,key]of MAP){
+      if(!pats.some(p=>low===p||low.startsWith(p+' ')||low.startsWith(p+'\n')))continue;
+      if(D[key])break;
+
+      let bv=null;
+      if(bC!==null){
+        for(let d=Math.max(1,bC-2);d<=Math.min(row.length-1,bC+2);d++){
+          const x=num(row[d]);if(x!==null){bv=x;break}
+        }
+      }
+      let sv=null;
+      if(sC!==null){
+        for(let d=Math.max(1,sC-1);d<=Math.min(row.length-1,sC+2);d++){
+          const x=num(row[d]);if(x!==null&&x!==bv){sv=x;break}
+        }
+      }
+      if(bv===null){for(let d=1;d<row.length;d++){const x=num(row[d]);if(x!==null){bv=x;break}}}
+      if(sv===null){
+        let found=false;
+        for(let d=1;d<row.length;d++){const x=num(row[d]);if(x!==null){if(!found)found=true;else{sv=x;break}}}
+      }
+      D[key]={b:bv,s:sv};
+      break;
+    }
+  }
+  return D;
+}
+
+function convert(D){
+  const smPct=D.SM?D.SM.b:null;
+  if(!smPct)return{error:'Nie znaleziono SM% w pliku.'};
+
+  const warns=[];
+  const sections=[];
+
+  /*
+   * REGUŁY v8 — zweryfikowane na 17 realnych sprawozdaniach:
+   *
+   * WPISYWANE RĘCZNIE DO FeedExpert (konwerter podaje):
+   *   SM       = brutto% × 10  →  /kg
+   *   VEM      = NEL_SM ÷ 0,00697
+   *   BO cał.  = Białko %SM × 10  →  g/kg SM
+   *   NH3      = N-NH3 SM_col wprost  →  %
+   *   WS       = Włókno %SM × 10  →  g/kg SM
+   *   Popiół   = Popiół %SM × 10  →  g/kg SM
+   *   NDF      = NDF %SM × 10  →  g/kg SM
+   *   ADF      = ADF %SM × 10  →  g/kg SM
+   *   ADL      = ADL %SM × 10  →  g/kg SM
+   *   Tłuszcz  = Tłuszcz %SM × 10  →  g/kg SM
+   *   Skrobia  = Skrobia %SM × 10  →  g/kg SM (jeśli badana)
+   *   pH       = brutto wprost
+   *
+   * FEEDEXPERT LICZY SAM (nie podajemy):
+   *   DVE, OEB  — z formuł CVB (współczynniki tabelaryczne per typ paszy)
+   *   BO        — BO_cał × (1 − NH3/100)
+   *   VOS, FOS, VCOS, StV — z formuł CVB
+   *
+   * INFORMACYJNIE (nie do wpisywania):
+   *   nXP, RNB  — system niemiecki GfE, ≠ DVE/OEB
+   */
+
+  function sm(key){
+    if(!D[key])return null;
+    if(D[key].s!==null)return D[key].s;
+    if(D[key].b!==null&&smPct)return D[key].b/(smPct/100);
+    return null;
+  }
+  function anal(key){const v=sm(key);return v!==null?Math.round(v*10):null}
+  function analPct(key){return sm(key)}
+  function calc(key){return sm(key)}
+
+  // ── Baza — lewa kolumna (wpisywane ręcznie)
+  const sL={title:'Wpisz w FeedExpert — lewa kolumna',rows:[]};
+  sL.rows.push({name:'SM',val:Math.round(smPct*10),unit:'/kg',calc:smPct+'% × 10'});
+
+  const nelSM=calc('NEL');
+  if(nelSM!==null){
+    sL.rows.push({name:'VEM',val:Math.round(nelSM/0.00697),unit:'/kg SM',calc:'NEL '+nelSM.toFixed(3)+' MJ ÷ 0,00697'});
+  }else warns.push('Brak NEL — VEM nie wyliczono. Zostaw z wzorca.');
+
+  const cpPct=analPct('CP');
+  let boCal=null;
+  if(cpPct!==null){boCal=Math.round(cpPct*10);sL.rows.push({name:'BO cał.',val:boCal,unit:'g/kg SM',calc:cpPct.toFixed(2)+'% SM × 10'})}
+
+  // NH3
+  let nh3=null;
+  if(D.NH3&&D.NH3.s!==null){
+    nh3=Math.floor(D.NH3.s*10)/10;
+    sL.rows.push({name:'NH3',val:nh3.toFixed(1),unit:'%',calc:'N-NH3 SM_col wprost'});
+  }else warns.push('Brak N-NH3 — wpisz NH3 = 0 lub zostaw z wzorca.');
+
+  // BO — informacyjnie (FeedExpert liczy sam)
+  if(boCal!==null&&nh3!==null){
+    const bo=Math.round(boCal*(1-nh3/100));
+    sL.rows.push({name:'BO',val:bo,unit:'g/kg SM',calc:'FeedExpert liczy: '+boCal+'×(1−'+nh3+'/100)', auto:true});
+  }
+
+  const cfPct=analPct('CF');
+  if(cfPct!==null)sL.rows.push({name:'WS',val:Math.round(cfPct*10),unit:'g/kg SM',calc:cfPct.toFixed(2)+'% SM × 10'});
+  const ashPct=analPct('ASH');
+  if(ashPct!==null)sL.rows.push({name:'Popiół',val:Math.round(ashPct*10),unit:'g/kg SM',calc:ashPct.toFixed(2)+'% SM × 10'});
+  sections.push(sL);
+
+  // ── Baza — prawa kolumna
+  const sR={title:'Wpisz w FeedExpert — prawa kolumna',rows:[]};
+  const ndfPct=analPct('NDF');
+  if(ndfPct!==null)sR.rows.push({name:'NDF',val:Math.round(ndfPct*10),unit:'g/kg SM',calc:ndfPct.toFixed(2)+'% SM × 10'});
+  const adfPct=analPct('ADF');
+  if(adfPct!==null)sR.rows.push({name:'ADF',val:Math.round(adfPct*10),unit:'g/kg SM',calc:adfPct.toFixed(2)+'% SM × 10'});
+  const adlPct=analPct('ADL');
+  if(adlPct!==null)sR.rows.push({name:'ADL',val:Math.round(adlPct*10),unit:'g/kg SM',calc:adlPct.toFixed(2)+'% SM × 10'});
+  const eePct=analPct('EE');
+  if(eePct!==null)sR.rows.push({name:'Tłuszcz sur.',val:Math.round(eePct*10),unit:'g/kg SM',calc:eePct.toFixed(2)+'% SM × 10'});
+  sections.push(sR);
+
+  // ── Inne
+  const sX={title:'Wpisz w FeedExpert — inne pola',rows:[]};
+  const skrPct=analPct('SKR');
+  if(skrPct!==null)sX.rows.push({name:'Skrobia',val:Math.round(skrPct*10),unit:'g/kg SM',calc:skrPct.toFixed(2)+'% SM × 10'});
+  const phVal=D.pH?D.pH.b:null;
+  if(phVal!==null)sX.rows.push({name:'pH',val:phVal.toFixed(1),unit:'',calc:'bezpośrednio'});
+  if(sX.rows.length)sections.push(sX);
+
+  // ── Referencja GfE (nie do wpisywania)
+  const sRef={title:'Referencja — system niemiecki GfE (nie wpisuj do FeedExpert)',rows:[]};
+  const nxpSM=calc('nXP');
+  if(nxpSM!==null)sRef.rows.push({name:'nXP',val:Math.round(nxpSM),unit:'g/kg SM',calc:'≠ DVE! System GfE',ref:true});
+  const rnbSM=calc('RNB');
+  if(rnbSM!==null)sRef.rows.push({name:'RNB',val:Math.round(rnbSM),unit:'g/kg SM',calc:'≠ OEB! System GfE',ref:true});
+  const udpSM=calc('UDP');
+  if(udpSM!==null)sRef.rows.push({name:'UDP',val:Math.round(udpSM),unit:'g/kg SM',calc:'bypass protein GfE',ref:true});
+  if(sRef.rows.length)sections.push(sRef);
+
+  return{smPct,sections,warns,desc:D._desc};
+}
+
+function render(result,fname){
+  const rw=document.getElementById('fe-result');
+  if(result.error){feShowErr(result.error);return}
+  const{sections,warns,desc,smPct}=result;
+  window._rows=sections.flatMap(s=>s.rows.filter(r=>!r.ref&&!r.auto));
+  window._fname=fname;
+
+  let tbl='<table class="params">';
+  for(const sec of sections){
+    if(!sec.rows.length)continue;
+    const isRef=sec.rows[0]&&sec.rows[0].ref;
+    tbl+='<tr class="sr"><td colspan="4">'+sec.title+'</td></tr>';
+    for(const r of sec.rows){
+      const vs=typeof r.val==='number'?String(Math.round(r.val)):r.val;
+      const style=r.ref?' style="opacity:0.5;font-style:italic"':(r.auto?' style="opacity:0.7"':'');
+      const valStyle=r.ref?' style="font-size:14px;font-weight:500;color:var(--is)"':'';
+      tbl+='<tr class="pr"'+style+'><td class="cn">'+r.name+'</td><td class="cv"'+valStyle+'>'+vs+'</td><td class="cu">'+r.unit+'</td><td class="cc">'+r.calc+'</td></tr>';
+    }
+  }
+  tbl+='</table>';
+
+  let notes='';
+  if(warns.length)notes+='<div class="note w">⚠ '+warns.join('<br>⚠ ')+'</div>';
+  notes+='<div class="note i"><strong>DVE, OEB, VOS, FOS, VCOS, StV</strong> — FeedExpert liczy automatycznie z formuł CVB po wpisaniu powyższych parametrów. Nie wpisuj nXP jako DVE ani RNB jako OEB — to inne systemy!</div>';
+  notes+='<div class="note i">VOS, FOS, VCOS, minerały (Na, K, Mg, Ca, P), Cukier — zostaw z wybranego wzorca kiszonki.</div>';
+
+  rw.innerHTML='<div class="rc"><div class="ch"><div class="ch-l"><h3>Wartości do wpisania w FeedExpert</h3><p>'+(desc||fname)+' · SM = '+smPct+'%</p></div><div class="ca"><button class="btn" onclick="copyAll()">📋 Kopiuj</button><button class="btn" onclick="window.print()">🖨 Drukuj</button></div></div>'+tbl+'<div class="notes">'+notes+'</div></div><div class="nfr"><button class="nfb" onclick="newFile()">📂 Wczytaj nowy plik</button></div>';
+  rw.style.display='block';
+  rw.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copyAll(){
+  const rows=window._rows;if(!rows)return;
+  const lines=['=== FeedExpert — '+(window._fname||'')+' ===',''];
+  for(const r of rows){
+    const vs=typeof r.val==='number'?String(Math.round(r.val)):r.val;
+    lines.push(r.name+': '+vs+(r.unit?' '+r.unit:''));
+  }
+  lines.push('','DVE, OEB → FeedExpert liczy sam (formuły CVB)');
+  const text=lines.join('\n');
+  const btn=document.querySelector('.ca .btn');
+
+  function ok(){ if(btn){btn.textContent='✓ Skopiowano!';setTimeout(()=>btn.textContent='📋 Kopiuj',1800);} }
+  function fail(){ showCopyFallback(text); }
+
+  // Try modern Clipboard API (requires https:// or localhost)
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(ok).catch(()=>legacyCopy(text,ok,fail));
+  } else {
+    legacyCopy(text,ok,fail);
+  }
+}
+
+function legacyCopy(text,ok,fail){
+  // Fallback for file:// or non-secure context: hidden textarea + execCommand
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    ta.style.top='0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const success=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(success) ok(); else fail();
+  }catch(e){ fail(); }
+}
+
+function showCopyFallback(text){
+  // Last resort: show a selectable textarea in a modal so user can copy manually (Ctrl+C)
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.onclick=e=>{ if(e.target===overlay) overlay.remove(); };
+  const box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:10px;padding:20px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)';
+  box.innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#192e1d">Kopiowanie automatyczne niedostępne (plik otwarty lokalnie)</div>'+
+    '<div style="font-size:12px;color:#6a8a72;margin-bottom:10px">Zaznacz poniższy tekst i skopiuj ręcznie (Ctrl+C / Cmd+C):</div>';
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='width:100%;height:220px;font-family:Consolas,monospace;font-size:12px;padding:10px;border:1px solid #c5deca;border-radius:6px;resize:vertical';
+  box.appendChild(ta);
+  const closeBtn=document.createElement('button');
+  closeBtn.textContent='Zamknij';
+  closeBtn.style.cssText='margin-top:10px;font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #c5deca;background:#eaf4ed;color:#2a7a42;cursor:pointer';
+  closeBtn.onclick=()=>overlay.remove();
+  box.appendChild(closeBtn);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  ta.focus();
+  ta.select();
+}
+function newFile(){
+  document.getElementById('fe-result').style.display='none';
+  document.getElementById('err').style.display='none';
+  document.getElementById('fi').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showLoad(on){
+  document.getElementById('loading').style.display=on?'block':'none';
+  document.getElementById('drop').style.display=on?'none':'block';
+  if(on){document.getElementById('fe-result').style.display='none';document.getElementById('err').style.display='none'}
+}
+function feShowErr(msg){
+  const el=document.getElementById('err');el.innerHTML='❌ '+msg;el.style.display='block';
+  document.getElementById('drop').style.display='block';
+}
 function renderSita(){
   var el = document.getElementById('tab-s');
   if(!appUnlocked){el.innerHTML=lockScreen('ti-stack-2','Sita TMR');return}
@@ -2267,23 +2615,112 @@ function pdfSitaTest(idx){
     toast('PDF zapisany w Pobranych');
   });
 }
-function openSettings(){
-  var keys=[['tmr_dd','Dawki (Ustalanie)'],['tmr_wd','Dawki (Wóz)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie surowców'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza efektywności'],['tmr_df','Foldery dawek D'],['tmr_wf','Foldery dawek W'],['tmr_favs','Ulubione surowce']];
-  var rows=keys.map(function(k){
-    var v=localStorage.getItem(k[0]);
-    var status,preview,color;
-    if(v===null){status='brak danych';color='var(--tx3)';preview='—'}
-    else if(v==='undefined'){status='⚠️ USZKODZONE';color='var(--red)';preview='zawiera dosłowny tekst "undefined"'}
-    else{
-      try{var parsed=JSON.parse(v);var cnt=Array.isArray(parsed)?parsed.length:Object.keys(parsed).length;status='OK — '+cnt+' pozycji';color='var(--g)';preview=v.length>80?v.slice(0,80)+'…':v}
-      catch(e){status='⚠️ BŁĄD ODCZYTU';color='var(--red)';preview=v.slice(0,80)}
-    }
-    return '<div style="padding:9px 0;border-bottom:1px solid var(--bd)"><div style="display:flex;justify-content:space-between"><b style="font-size:13px">'+k[1]+'</b><span style="font-size:12px;font-weight:600;color:'+color+'">'+status+'</span></div><div style="font-size:10px;color:var(--tx3);word-break:break-all;margin-top:2px">'+preview+'</div></div>';
-  }).join('');
-  var ov=document.createElement('div');ov.className='modal-ov';ov.id='settings-modal';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t">Diagnostyka danych</div><div style="max-height:60vh;overflow-y:auto">'+rows+'</div><div class="modal-btns"><button class="btn bp bpg" style="width:100%" onclick="closeSettingsModal()">Zamknij</button></div></div>';
+
+// ===== KOPIA DANYCH (Import/Export) =====
+var BACKUP_KEYS=[['tmr_dd','Dawki (Ustalanie)'],['tmr_wd','Dawki (Wóz)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza efektywności'],['tmr_df','Foldery dawek D'],['tmr_wf','Foldery dawek W'],['tmr_favs','Ulubione surowce'],['tmr_sita_clients','Sita TMR'],['tmr_sita_type','Typ sit'],['tmr_unlocked','Dostęp'],['tmr_seen','Ekran powitalny']];
+function openBackupModal(){
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='backup-modal';
+  ov.innerHTML='<div class="modal-bx" style="max-height:90vh;overflow-y:auto">'
+    +'<div class="modal-t"><i class="ti ti-arrows-exchange"></i> Kopia danych</div>'
+    +'<div style="font-size:13px;color:var(--tx2);margin-bottom:16px">Przenieś dane między urządzeniami lub utwórz kopię bezpieczeństwa</div>'
+    +'<button class="btn bp" style="background:#1D9E75;width:100%;padding:16px;font-size:15px;margin-bottom:10px" onclick="exportBackup()"><i class="ti ti-upload" style="font-size:18px"></i><br><span style="font-size:13px;font-weight:400;opacity:.8">Zapisz wszystkie dawki, mieszanki i ustawienia do pliku</span><br>Wyślij kopię danych</button>'
+    +'<button class="btn bp" style="background:#185FA5;width:100%;padding:16px;font-size:15px;margin-bottom:10px" onclick="importBackupPick()"><i class="ti ti-download" style="font-size:18px"></i><br><span style="font-size:13px;font-weight:400;opacity:.8">Wczytaj dane z pliku otrzymanego z innego urządzenia</span><br>Wczytaj kopię danych</button>'
+    +'<input type="file" id="backup-file-input" accept=".json" style="display:none" onchange="importBackupFile(this)">'
+    +'<div class="modal-btns" style="margin-top:8px"><button class="btn" style="width:100%" onclick="closeBackupModal()">Zamknij</button></div></div>';
   document.body.appendChild(ov);
 }
+function closeBackupModal(){var m=document.getElementById('backup-modal');if(m)m.remove()}
+function exportBackup(){
+  var data={_format:'tmr_mixer_backup',_version:1,_date:new Date().toISOString(),_device:navigator.userAgent.substring(0,60)};
+  var count=0;
+  BACKUP_KEYS.forEach(function(k){var v=localStorage.getItem(k[0]);if(v!==null&&v!=='undefined'){data[k[0]]=v;try{var p=JSON.parse(v);if(Array.isArray(p))count+=p.length}catch(e){}}});
+  var json=JSON.stringify(data,null,2);
+  var blob=new Blob([json],{type:'application/json'});
+  var fname='TMR_Mixer_kopia_'+new Date().toISOString().slice(0,10)+'.json';
+  // Spróbuj natywne udostępnianie (mobilne)
+  if(navigator.share&&navigator.canShare){
+    var file=new File([blob],fname,{type:'application/json'});
+    if(navigator.canShare({files:[file]})){
+      navigator.share({title:'Kopia danych TMR Mixer',files:[file]}).then(function(){toast('Kopia wysłana!')}).catch(function(){fallbackDownload(blob,fname)});
+      return;
+    }
+  }
+  fallbackDownload(blob,fname);
+}
+function fallbackDownload(blob,fname){
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Kopia zapisana w Pobranych');
+}
+function importBackupPick(){document.getElementById('backup-file-input').click()}
+function importBackupFile(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(!data._format||data._format!=='tmr_mixer_backup'){toast('To nie jest plik kopii TMR Mixer',true);return}
+      // Podsumowanie zawartości
+      var summary=[];
+      BACKUP_KEYS.forEach(function(k){
+        if(data[k[0]]){try{var p=JSON.parse(data[k[0]]);var cnt=Array.isArray(p)?p.length:(typeof p==='object'?Object.keys(p).length:1);if(cnt>0)summary.push(k[1]+': '+cnt)}catch(e){}}
+      });
+      var dateStr=data._date?new Date(data._date).toLocaleDateString('pl')+' '+new Date(data._date).toLocaleTimeString('pl',{hour:'2-digit',minute:'2-digit'}):'nieznana data';
+      closeBackupModal();
+      var ov2=document.createElement('div');ov2.className='modal-ov';ov2.id='backup-confirm';
+      window._backupData=data;
+      ov2.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-alert-triangle" style="color:#C47B0A"></i> Wczytać kopię danych?</div>'
+        +'<div style="font-size:13px;color:var(--tx2);margin-bottom:8px">Data kopii: <strong>'+escapeHtml(dateStr)+'</strong></div>'
+        +'<div style="font-size:12px;color:var(--tx2);margin-bottom:12px;padding:10px;background:var(--bg2);border-radius:8px">'+summary.join('<br>')+'</div>'
+        +'<div style="font-size:12px;color:#A32D2D;margin-bottom:12px"><i class="ti ti-alert-circle"></i> Uwaga: obecne dane na tym urządzeniu zostaną zastąpione danymi z kopii</div>'
+        +'<div class="modal-btns" style="flex-direction:column;gap:8px">'
+        +'<button class="btn bp" style="background:#185FA5;width:100%" onclick="confirmImportBackup()"><i class="ti ti-check"></i> Tak, wczytaj kopię</button>'
+        +'<button class="btn" style="width:100%" onclick="document.getElementById(\'backup-confirm\').remove();window._backupData=null">Anuluj</button></div></div>';
+      document.body.appendChild(ov2);
+    }catch(ex){toast('Błąd odczytu pliku',true)}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+function confirmImportBackup(){
+  var data=window._backupData;if(!data)return;
+  BACKUP_KEYS.forEach(function(k){if(data[k[0]]!==undefined)localStorage.setItem(k[0],data[k[0]])});
+  window._backupData=null;
+  var m=document.getElementById('backup-confirm');if(m)m.remove();
+  toast('Dane wczytane! Odświeżam...');
+  setTimeout(function(){location.reload()},800);
+}
+function openSettings(){
+  var sitaInfo=typeof sitaType!=='undefined'&&sitaType&&typeof SITA_TYPES!=='undefined'&&SITA_TYPES[sitaType]?SITA_TYPES[sitaType].name:'nie wybrano';
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='settings-modal';
+  // Diagnostyka — zwięzłe podsumowanie
+  var keys=[['tmr_dd','Dawki (Ustalanie)'],['tmr_wd','Dawki (Wóz)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza'],['tmr_df','Foldery D'],['tmr_wf','Foldery W'],['tmr_favs','Ulubione'],['tmr_sita_clients','Sita TMR']];
+  var diagRows=keys.map(function(k){
+    var v=localStorage.getItem(k[0]);
+    if(v===null||v==='undefined')return '';
+    try{var p=JSON.parse(v);var cnt=Array.isArray(p)?p.length:1;if(cnt===0)return '';return '<span style="font-size:11px;color:var(--tx2)">'+k[1]+': <strong>'+cnt+'</strong></span>'}catch(e){return '<span style="font-size:11px;color:#A32D2D">'+k[1]+': ⚠️</span>'}
+  }).filter(function(r){return r}).join(' · ');
+  ov.innerHTML='<div class="modal-bx" style="max-height:90vh;overflow-y:auto">'
+    +'<div class="modal-t"><i class="ti ti-settings"></i> Ustawienia</div>'
+    // Typ sit
+    +'<div style="padding:12px 0;border-bottom:0.5px solid var(--bd)">'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:4px">Typ sit</div>'
+    +'<div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Aktualnie: '+sitaInfo+'</div>'
+    +'<button class="btn" style="width:100%" onclick="changeSitaType()"><i class="ti ti-stack-2"></i> Zmień typ sit</button></div>'
+    // Diagnostyka
+    +'<div style="padding:12px 0;border-bottom:0.5px solid var(--bd)">'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:4px">Twoje dane</div>'
+    +'<div style="line-height:1.8">'+diagRows+'</div></div>'
+    // Wyczyść dane
+    +'<div style="padding:12px 0">'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:4px;color:#A32D2D">Strefa zagrożenia</div>'
+    +'<button class="btn" style="width:100%;border-color:#A32D2D;color:#A32D2D" onclick="if(confirm(\'UWAGA: Czy na pewno chcesz usunąć WSZYSTKIE dane? Tej operacji nie można cofnąć!\')){localStorage.clear();toast(\'Dane usunięte\');setTimeout(function(){location.reload()},500)}"><i class="ti ti-trash"></i> Wyczyść wszystkie dane</button></div>'
+    +'<div class="modal-btns"><button class="btn bp" style="background:#185FA5;width:100%" onclick="closeSettingsModal()"><i class="ti ti-check"></i> Zamknij</button></div></div>';
+  document.body.appendChild(ov);
+}
+function closeSettingsModal(){var m=document.getElementById('settings-modal');if(m)m.remove()}
+function changeSitaType(){closeSettingsModal();if(typeof sitaType!=='undefined'){sitaType=null;localStorage.removeItem('tmr_sita_type');if(typeof showTab==='function')showTab('s')}}
 function closeSettingsModal(){var m=document.getElementById('settings-modal');if(m)m.remove()}
 function changeSitaType(){
   document.getElementById('settings-modal').remove();
