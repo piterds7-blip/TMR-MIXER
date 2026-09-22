@@ -963,6 +963,8 @@ function pdfDoseW(id){syncDerivedDoses();var d=wDoses.find(function(x){return x.
 // Jedno wspólne odblokowanie, zapamiętane na stałe (localStorage)
 var appUnlocked=false;
 try{if(localStorage.getItem('tmr_unlocked')==='1')appUnlocked=true}catch(e){}
+var feUnlocked=false;
+try{if(localStorage.getItem('tmr_fe_unlocked')==='1')feUnlocked=true}catch(e){}
 
 function updateKeyUI(){
   var btn=document.getElementById('key-btn');
