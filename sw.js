@@ -1,42 +1,50 @@
-var CACHE = 'tmr-v8';
-var ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
-var EXTERNAL = [
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css'
+// TMR Mixer — service worker: aplikacja działa offline.
+// Wszystkie pliki są w repozytorium; nic nie jest pobierane z zewnętrznych serwerów.
+var CACHE = 'tmr-v9';
+var ASSETS = [
+  './', './index.html', './privacy.html', './manifest.json', './icon-192.png', './icon-512.png',
+  './vendor/icons.css', './vendor/jspdf.umd.min.js', './vendor/qrcode.min.js', './vendor/xlsx.full.min.js'
 ];
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) {
-    return c.addAll(ASSETS).catch(function(){}).then(function(){
-      return Promise.all(EXTERNAL.map(function(u){
-        return fetch(u,{mode:'no-cors'}).then(function(r){return c.put(u,r)}).catch(function(){});
-      }));
-    });
+    return Promise.all(ASSETS.map(function(u) { return c.add(u).catch(function() {}); }));
   }));
   self.skipWaiting();
 });
 self.addEventListener('activate', function(e) {
   e.waitUntil(caches.keys().then(function(keys) {
-    return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}));
+    return Promise.all(keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); }));
   }));
   self.clients.claim();
 });
 self.addEventListener('fetch', function(e) {
-  var req=e.request;
-  var isHTML=req.mode==='navigate'||(req.headers.get('accept')||'').indexOf('text/html')!==-1;
-  if(isHTML){
-    e.respondWith(
-      Promise.race([
-        fetch(req).then(function(r){if(r&&r.status===200){var c=r.clone();caches.open(CACHE).then(function(cache){cache.put(req,c)})}return r}),
-        new Promise(function(resolve){setTimeout(function(){caches.match(req).then(function(c){if(c)resolve(c)})},3000)})
-      ]).catch(function(){return caches.match(req).then(function(c){return c||caches.match('./index.html')})})
-    );
+  var req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  var isHTML = req.mode === 'navigate' || (req.headers.get('accept') || '').indexOf('text/html') !== -1;
+  if (isHTML) {
+    // Strona: najpierw sieć (świeża wersja), po 3 s lub bez sieci — kopia z pamięci
+    e.respondWith(new Promise(function(resolve) {
+      var done = false;
+      function finish(r) { if (!done && r) { done = true; resolve(r); } }
+      var timer = setTimeout(function() {
+        caches.match(req, { ignoreSearch: true }).then(finish);
+      }, 3000);
+      fetch(req).then(function(r) {
+        clearTimeout(timer);
+        if (r && r.status === 200) { var c = r.clone(); caches.open(CACHE).then(function(cache) { cache.put(req.url.split('?')[0], c); }); }
+        finish(r);
+      }).catch(function() {
+        clearTimeout(timer);
+        caches.match(req, { ignoreSearch: true }).then(function(c) { return c || caches.match('./index.html'); }).then(finish);
+      });
+    }));
   } else {
-    e.respondWith(
-      caches.match(req).then(function(cached){
-        if(cached)return cached;
-        return fetch(req).then(function(r){if(r&&r.status===200){var c=r.clone();caches.open(CACHE).then(function(cache){cache.put(req,c)})}return r}).catch(function(){return cached});
-      })
-    );
+    // Pozostałe pliki: najpierw pamięć, potem sieć
+    e.respondWith(caches.match(req).then(function(cached) {
+      return cached || fetch(req).then(function(r) {
+        if (r && r.status === 200) { var c = r.clone(); caches.open(CACHE).then(function(cache) { cache.put(req, c); }); }
+        return r;
+      });
+    }));
   }
 });
