@@ -1,0 +1,42 @@
+name: Deploy TMR Mixer to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-hosting
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zapisz klucz konta serwisowego
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "Brak sekretu FIREBASE_SERVICE_ACCOUNT w ustawieniach repozytorium." >&2
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> "$GITHUB_ENV"
+
+      - name: Utwórz witrynę hostingową (jeśli nie istnieje)
+        run: |
+          npx --yes firebase-tools@13.29.1 hosting:sites:create fermapps-tmrmixer --project fermapps-tmrmixer --non-interactive || echo "Witryna już istnieje — pomijam."
+
+      - name: Wdróż na Firebase Hosting
+        run: |
+          npx --yes firebase-tools@13.29.1 deploy --only hosting:fermapps-tmrmixer --project fermapps-tmrmixer --non-interactive
+
+      - name: Usuń klucz z maszyny
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"

@@ -1,10 +1,10 @@
 {
-  "id": "/TMR-MIXER/",
+  "id": "./",
   "name": "TMR Mixer",
   "short_name": "TMR Mixer",
   "description": "Aplikacja do tworzenia i zarządzania dawkami TMR dla bydła mlecznego",
-  "start_url": "/TMR-MIXER/",
-  "scope": "/TMR-MIXER/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#1D9E75",
   "theme_color": "#1D9E75",
