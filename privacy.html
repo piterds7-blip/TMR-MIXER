@@ -53,15 +53,15 @@
 <p>Wszystkie elementy aplikacji (w tym biblioteki do PDF, kodów QR i plików Excel) są pobierane z tej samej strony. Wyjątkiem jest logowanie opisane niżej. Po pierwszym uruchomieniu aplikacja działa też bez internetu.</p>
 
 <h2>Konto i logowanie (tylko dla funkcji dodatkowych)</h2>
-<p>Obliczanie wozu, załadunek i notatki działają bez konta. Funkcje dodatkowe (Ustalanie dawki, Mieszanka treściwa, Sita TMR, Konwerter FE) wymagają konta, które zakłada twórca aplikacji na Twoją prośbę.</p>
+<p>Obliczanie wozu, załadunek, Ustalanie dawki, Mieszanka treściwa i notatki działają bez konta. Funkcje dodatkowe (Sita TMR, Konwerter FE, Mieszalnik) wymagają konta, które zakłada twórca aplikacji na Twoją prośbę.</p>
 <ul>
-  <li><strong>Jakie dane konta są przechowywane:</strong> adres e-mail, hasło (przechowuje je Google w formie zaszyfrowanej — twórca aplikacji go nie zna), lista funkcji, do których masz dostęp, informacja, czy konto jest aktywne, i opcjonalnie Twoje imię.</li>
+  <li><strong>Jakie dane konta są przechowywane:</strong> adres e-mail, hasło (przechowuje je Google w formie zaszyfrowanej — twórca aplikacji go nie zna), lista funkcji, do których masz dostęp, informacja, czy konto jest aktywne, i opcjonalnie Twoje imię. Jeśli w Mieszalniku zapiszesz własne pasze (nazwa, parametry, cena, skład), są one przechowywane na Twoim koncie, żeby były widoczne na każdym urządzeniu. Widzisz je tylko Ty.</li>
   <li><strong>Gdzie:</strong> w usługach Firebase Authentication i Cloud Firestore firmy Google, w projekcie TMR Mixer. Google może przetwarzać te dane także poza Europejskim Obszarem Gospodarczym, na zasadach opisanych w dokumentacji Firebase.</li>
   <li><strong>Po co:</strong> żeby sprawdzić, kim jesteś, i udostępnić Ci funkcje, do których masz dostęp (podstawa: realizacja usługi, o którą prosisz — art. 6 ust. 1 lit. b RODO).</li>
   <li><strong>Na urządzeniu:</strong> po zalogowaniu przeglądarka zapamiętuje sesję i kod odblokowanych funkcji, żeby działały także bez internetu. Po wylogowaniu są one usuwane.</li>
   <li><strong>Jak długo:</strong> do czasu usunięcia konta. Możesz w każdej chwili poprosić o wgląd w dane konta, ich poprawienie lub usunięcie konta — napisz na adres podany w sekcji Kontakt.</li>
 </ul>
-<p>Logowanie łączy się z serwerami Google tylko wtedy, gdy korzystasz z konta. Twoje dawki, mieszanki, notatki i badania sit nie są przy tym wysyłane — zostają na urządzeniu.</p>
+<p>Logowanie łączy się z serwerami Google tylko wtedy, gdy korzystasz z konta. Twoje dawki, mieszanki, notatki i badania sit nie są przy tym wysyłane — zostają na urządzeniu. Na konto trafiają wyłącznie własne pasze zapisane w Mieszalniku.</p>
 
 <h2>Udostępnianie dawki</h2>
 <p>Możesz wysłać komuś pojedynczą dawkę jako link lub kod QR. Link zawiera nazwę dawki, liczbę sztuk i listę surowców; notatka dawki jest dołączana tylko wtedy, gdy ją zaznaczysz. Dane dawki są zapisane w samym linku, w części po znaku „#”, której przeglądarka nie wysyła do serwera. To Ty wybierasz, komu i jak wysyłasz link (np. SMS, komunikator) — wtedy obowiązują zasady wybranej usługi.</p>
