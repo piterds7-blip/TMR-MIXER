@@ -1,0 +1,30 @@
+rules_version = '2';
+// Reguły bazy TMR Mixer.
+// users/{uid}   — profil konta: features (lista funkcji), active (true/false), name. Zmienia tylko administrator w konsoli Firebase.
+// modules/{id}  — kod funkcji dodatkowych. Wgrywa go workflow GitHub (konto serwisowe omija reguły).
+//                 Czytać może tylko zalogowany użytkownik z aktywnym kontem, który ma tę funkcję na liście features.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function hasFeature(f) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && profile().get('active', true) == true
+        && profile().get('features', []) is list
+        && f in profile().get('features', []);
+    }
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /modules/{id} {
+      allow read: if hasFeature(id);
+      allow write: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

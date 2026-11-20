@@ -25,10 +25,10 @@
 
 <a class="back" href="./">← Wróć do aplikacji</a>
 <h1>Polityka prywatności — TMR Mixer</h1>
-<div class="updated">Ostatnia aktualizacja: 14 listopada 2026</div>
+<div class="updated">Ostatnia aktualizacja: 20 listopada 2026</div>
 
 <div class="box">
-  <strong>W skrócie:</strong> wszystko, co wpisujesz w TMR Mixer, zostaje na Twoim urządzeniu. Aplikacja nie ma kont użytkowników ani własnego serwera, nie używa narzędzi analitycznych, plików cookie ani reklam. Twórca aplikacji nie widzi Twoich danych.
+  <strong>W skrócie:</strong> wszystko, co wpisujesz w TMR Mixer (dawki, mieszanki, notatki, badania sit), zostaje na Twoim urządzeniu i twórca aplikacji tego nie widzi. Konto jest potrzebne tylko do funkcji dodatkowych — wtedy przechowywany jest Twój adres e-mail i lista funkcji, do których masz dostęp. Aplikacja nie używa narzędzi analitycznych, plików cookie ani reklam.
 </div>
 
 <h2>Czym jest TMR Mixer</h2>
@@ -49,8 +49,19 @@
 <p>Jeśli wpisujesz w aplikacji dane swoich klientów (np. nazwisko hodowcy w notatkach), to Ty decydujesz, jakie dane wpisujesz i do czego ich używasz — w rozumieniu RODO to Ty jesteś administratorem tych danych. Twórca aplikacji nie ma do nich dostępu. Zalecamy wpisywać tylko to, co potrzebne do pracy (np. nazwę gospodarstwa), i chronić telefon blokadą ekranu.</p>
 
 <h2>Strona, na której działa aplikacja</h2>
-<p>Aplikacja jest udostępniana z serwisu GitHub Pages (GitHub, Inc.). Jak przy otwieraniu każdej strony internetowej, serwer GitHub otrzymuje podstawowe informacje techniczne potrzebne do wyświetlenia strony, np. adres IP i typ przeglądarki, i może je przez krótki czas przechowywać w celach bezpieczeństwa. Zasady GitHub opisuje <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub General Privacy Statement</a>.</p>
-<p>Wszystkie elementy aplikacji (w tym biblioteki do PDF, kodów QR i plików Excel) są pobierane z tej samej strony — aplikacja nie łączy się z innymi serwerami. Po pierwszym uruchomieniu działa też bez internetu.</p>
+<p>Aplikacja jest udostępniana z usługi Firebase Hosting firmy Google pod adresem tmr.fermapps.pl. Jak przy otwieraniu każdej strony internetowej, serwer otrzymuje podstawowe informacje techniczne potrzebne do wyświetlenia strony, np. adres IP i typ przeglądarki, i może je przez krótki czas przechowywać w celach bezpieczeństwa. Zasady Google dotyczące Firebase opisuje strona <a href="https://firebase.google.com/support/privacy" rel="noopener">Privacy and Security in Firebase</a>.</p>
+<p>Wszystkie elementy aplikacji (w tym biblioteki do PDF, kodów QR i plików Excel) są pobierane z tej samej strony. Wyjątkiem jest logowanie opisane niżej. Po pierwszym uruchomieniu aplikacja działa też bez internetu.</p>
+
+<h2>Konto i logowanie (tylko dla funkcji dodatkowych)</h2>
+<p>Obliczanie wozu, załadunek i notatki działają bez konta. Funkcje dodatkowe (Ustalanie dawki, Mieszanka treściwa, Sita TMR, Konwerter FE) wymagają konta, które zakłada twórca aplikacji na Twoją prośbę.</p>
+<ul>
+  <li><strong>Jakie dane konta są przechowywane:</strong> adres e-mail, hasło (przechowuje je Google w formie zaszyfrowanej — twórca aplikacji go nie zna), lista funkcji, do których masz dostęp, informacja, czy konto jest aktywne, i opcjonalnie Twoje imię.</li>
+  <li><strong>Gdzie:</strong> w usługach Firebase Authentication i Cloud Firestore firmy Google, w projekcie TMR Mixer. Google może przetwarzać te dane także poza Europejskim Obszarem Gospodarczym, na zasadach opisanych w dokumentacji Firebase.</li>
+  <li><strong>Po co:</strong> żeby sprawdzić, kim jesteś, i udostępnić Ci funkcje, do których masz dostęp (podstawa: realizacja usługi, o którą prosisz — art. 6 ust. 1 lit. b RODO).</li>
+  <li><strong>Na urządzeniu:</strong> po zalogowaniu przeglądarka zapamiętuje sesję i kod odblokowanych funkcji, żeby działały także bez internetu. Po wylogowaniu są one usuwane.</li>
+  <li><strong>Jak długo:</strong> do czasu usunięcia konta. Możesz w każdej chwili poprosić o wgląd w dane konta, ich poprawienie lub usunięcie konta — napisz na adres podany w sekcji Kontakt.</li>
+</ul>
+<p>Logowanie łączy się z serwerami Google tylko wtedy, gdy korzystasz z konta. Twoje dawki, mieszanki, notatki i badania sit nie są przy tym wysyłane — zostają na urządzeniu.</p>
 
 <h2>Udostępnianie dawki</h2>
 <p>Możesz wysłać komuś pojedynczą dawkę jako link lub kod QR. Link zawiera nazwę dawki, liczbę sztuk i listę surowców; notatka dawki jest dołączana tylko wtedy, gdy ją zaznaczysz. Dane dawki są zapisane w samym linku, w części po znaku „#”, której przeglądarka nie wysyła do serwera. To Ty wybierasz, komu i jak wysyłasz link (np. SMS, komunikator) — wtedy obowiązują zasady wybranej usługi.</p>
@@ -65,7 +76,7 @@
 <p>Aplikacja nie używa plików cookie, narzędzi analitycznych (np. Google Analytics) ani reklam i nie śledzi użytkowników.</p>
 
 <h2>Usuwanie danych</h2>
-<p>Dane możesz usunąć w każdej chwili: w aplikacji (Menu → Ustawienia → Usuń wszystkie dane), przez wyczyszczenie danych tej strony w przeglądarce albo przez odinstalowanie aplikacji. Ponieważ twórca nie przechowuje Twoich danych, nie musisz o to nikogo prosić.</p>
+<p>Dane zapisane na urządzeniu możesz usunąć w każdej chwili: w aplikacji (Menu → Ustawienia → Usuń wszystkie dane), przez wyczyszczenie danych tej strony w przeglądarce albo przez odinstalowanie aplikacji. Jeśli masz konto, o jego usunięcie poproś twórcę aplikacji (adres w sekcji Kontakt).</p>
 
 <h2>Licencje</h2>
 <p>Aplikacja korzysta z bibliotek open source: jsPDF (MIT), SheetJS (Apache 2.0), QRCode.js (MIT) i Tabler Icons (MIT). Pełne treści licencji: <a href="vendor/LICENSES.txt">vendor/LICENSES.txt</a>.</p>

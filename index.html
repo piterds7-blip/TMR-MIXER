@@ -6,17 +6,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TMR Mixer">
-<meta name="theme-color" content="#1D9E75">
+<meta name="theme-color" content="#138A3A">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
 <title>TMR Mixer</title>
 <meta name="description" content="TMR Mixer — dawki TMR dla bydła mlecznego. Dane zostają na Twoim urządzeniu.">
 <link rel="stylesheet" href="vendor/icons.css">
 <script src="vendor/jspdf.umd.min.js" defer></script>
 <script src="vendor/qrcode.min.js" defer></script>
+<script src="firebase-config.js"></script>
 <style>
-:root{--g:#1D9E75;--gd:#0F6E56;--gk:#085041;--gl:#E1F5EE;--gm:#9FE1CB;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--b:#185FA5;--bl:#E6F1FB;--o:#C47B0A;--ol:#FFF4E0;--fe:#2D6A3E;--bg:#fff;--bg0:#F2F4F3;--bg2:#F4F5F7;--bg3:#E8EAED;--tx:#14181B;--tx2:#5F6670;--tx3:#8C939C;--bd:#E3E6EA;--bd2:#CBD0D6;--red:#D93B3A;--r:14px;--rs:10px;--sh:0 1px 2px rgba(16,24,40,.05),0 1px 4px rgba(16,24,40,.07);--sh2:0 10px 30px rgba(16,24,40,.22)}
-@media(prefers-color-scheme:dark){:root{--bg:#1C1F22;--bg0:#121416;--bg2:#24282C;--bg3:#30353A;--tx:#EEF0F2;--tx2:#A6ADB5;--tx3:#7A828B;--bd:#2F3439;--bd2:#434A51;--gl:#0D3329;--pl:#221D4A;--bl:#13283F;--ol:#3A2A0E;--sh:0 0 0 1px #2A2F34;--sh2:0 10px 30px rgba(0,0,0,.6)}}
+:root{--g:#138A3A;--gd:#0B6B2C;--gk:#064A1E;--gl:#E4F5E8;--gm:#9FDDAE;--p:#534AB7;--pd:#3C3489;--pl:#EEEDFE;--pm:#AFA9EC;--b:#185FA5;--bl:#E6F1FB;--o:#C47B0A;--ol:#FFF4E0;--fe:#2D6A3E;--bg:#fff;--bg0:#F2F4F3;--bg2:#F4F5F7;--bg3:#E8EAED;--tx:#14181B;--tx2:#5F6670;--tx3:#8C939C;--bd:#E3E6EA;--bd2:#CBD0D6;--red:#D93B3A;--r:14px;--rs:10px;--sh:0 1px 2px rgba(16,24,40,.05),0 1px 4px rgba(16,24,40,.07);--sh2:0 10px 30px rgba(16,24,40,.22)}
+@media(prefers-color-scheme:dark){:root{--bg:#1C1F22;--bg0:#121416;--bg2:#24282C;--bg3:#30353A;--tx:#EEF0F2;--tx2:#A6ADB5;--tx3:#7A828B;--bd:#2F3439;--bd2:#434A51;--gl:#0B3318;--pl:#221D4A;--bl:#13283F;--ol:#3A2A0E;--sh:0 0 0 1px #2A2F34;--sh2:0 10px 30px rgba(0,0,0,.6)}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg0)}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg0);color:var(--tx);max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -24,6 +27,7 @@ button{font-family:inherit}
 .screen{display:none;min-height:100vh;padding-bottom:28px}.screen.active{display:block;animation:scrIn .18s ease-out}
 @keyframes scrIn{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
 .topbar{display:flex;align-items:center;gap:4px;padding:10px 10px 10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:var(--bg);position:sticky;top:0;z-index:10;box-shadow:0 1px 0 var(--bd)}
+.topbar-t.brand{display:flex;align-items:center;gap:9px}.topbar-t.brand img{width:30px;height:30px;flex-shrink:0}
 .topbar-t{flex:1;font-size:17px;font-weight:650;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .ib{background:none;border:none;cursor:pointer;color:var(--tx2);padding:9px;border-radius:12px;font-size:21px;display:flex;align-items:center;justify-content:center;min-width:42px;min-height:42px}.ib:active{background:var(--bg3)}
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 12px 2px}
@@ -111,17 +115,6 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
 .woz-hdr{background:var(--gd);color:#fff;padding:12px 12px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
 .woz-hdr-t{flex:1;font-size:18px;font-weight:650;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .woz-hdr button{background:none;border:none;cursor:pointer;color:#fff;font-size:23px;padding:8px;display:flex;border-radius:10px}.woz-hdr button:active{background:rgba(255,255,255,.15)}
-.woz-tot{background:var(--gk);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;color:var(--gm)}
-.woz-tot-l{font-size:13px;line-height:1.8}.woz-tot-l strong{color:#fff;font-size:14px}
-.woz-tot-rv{font-size:32px;font-weight:700;color:#fff;line-height:1}
-.wi{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;background:var(--bg);cursor:pointer;transition:opacity .15s}
-.wi.done{opacity:.4}.wi.done .winm{text-decoration:line-through}.wi.done .win{background:var(--g);color:#fff}
-.win{width:32px;height:32px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gd);flex-shrink:0}
-.winm{flex:1;font-size:17px;font-weight:650;color:var(--tx);min-width:0;word-break:break-word}
-.wirk{font-size:24px;font-weight:700;color:var(--tx);line-height:1.1}.wiru{font-size:11px;color:var(--tx2);margin-bottom:4px}.wirc{font-size:22px;color:var(--g);font-weight:700;line-height:1.1}.wircu{font-size:11px;color:var(--g)}
-.woz-ft{padding:12px 16px;display:flex;justify-content:space-between;background:var(--bg2);border-top:1px solid var(--bd)}
-.woz-ft-l{font-size:12px;color:var(--tx2)}.woz-ft-v{font-size:17px;font-weight:700;color:var(--tx)}
-.woz-hint{font-size:12px;color:var(--tx2);text-align:center;padding:10px 16px 0}
 .install-bar{display:none;background:var(--gl);border:1px solid var(--gm);border-radius:var(--r);margin:12px 12px 0;padding:10px 12px;align-items:center;gap:8px}
 .install-bar.show{display:flex}.install-txt{flex:1;font-size:13px;color:var(--gk);font-weight:600}
 .install-btn{padding:8px 14px;background:var(--g);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600}
@@ -176,31 +169,73 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
 #fe-result .nfr{padding:12px 16px}
 #fe-result .nfb{width:100%;padding:14px;border-radius:var(--rs);border:1.5px dashed var(--bd2);background:var(--bg);font-size:15px;font-weight:600;color:var(--tx);cursor:pointer}
 @media print{body *{visibility:hidden}#fe-result,#fe-result *{visibility:visible}#fe-result{position:absolute;left:0;top:0;width:100%}#fe-result .ca,#fe-result .nfr{display:none}}
+.ld-head{position:sticky;top:0;z-index:10}.ld-head .woz-hdr{position:static}
+.ld-top{background:var(--gk);color:#fff;padding:12px 16px 14px}
+.ld-row{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.ld-cnt{font-size:15px;font-weight:600;color:var(--gm)}.ld-cnt strong{font-size:26px;color:#fff;font-weight:800}
+.ld-kg{text-align:right;font-size:12px;color:var(--gm)}.ld-kg strong{display:block;font-size:22px;color:#fff;font-weight:800;line-height:1.1}
+.ld-bar{height:10px;border-radius:10px;background:rgba(255,255,255,.18);margin-top:10px;overflow:hidden}
+.ld-bar i{display:block;height:100%;width:0;background:#F5B800;border-radius:10px;transition:width .3s}
+.ld-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;color:var(--gm)}
+.ld-wake{display:inline-flex;align-items:center;gap:5px}.ld-wake.off{color:#FFC9A3}
+.ld-list{padding:10px 12px 4px}
+.ld-it{display:flex;align-items:center;gap:12px;background:var(--bg);border:2px solid var(--bd);border-radius:16px;padding:12px 12px 12px 14px;margin-bottom:10px;box-shadow:var(--sh);transition:opacity .2s,border-color .2s}
+.ld-it.cur{border-color:#F5B800;box-shadow:0 0 0 3px rgba(245,184,0,.25)}
+.ld-it.done{opacity:.55}.ld-it.done .ld-nm{text-decoration:line-through}
+.ld-it.extra{border-left:6px solid var(--o)}
+.ld-no{width:34px;height:34px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.ld-it.cur .ld-no{background:#F5B800;color:#3A2A00}
+.ld-tx{flex:1;min-width:0}
+.ld-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.05em;color:#3A2A00;background:#F5B800;border-radius:6px;padding:1px 7px;margin-bottom:3px}
+.ld-nm{font-size:17px;font-weight:700;color:var(--tx);word-break:break-word;line-height:1.25}
+.ld-am{font-size:30px;font-weight:800;color:var(--tx);line-height:1.1;margin-top:2px}.ld-am small{font-size:14px;font-weight:600;color:var(--tx2);margin-left:3px}
+.ld-sc{font-size:13px;color:var(--tx2);margin-top:2px}.ld-sc strong{color:var(--gd)}
+@media(prefers-color-scheme:dark){.ld-sc strong{color:var(--gm)}}
+.ld-ck{width:68px;height:68px;border-radius:18px;border:3px solid var(--bd2);background:var(--bg);color:var(--bd2);font-size:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.ld-ck:active{transform:scale(.95)}
+.ld-it.cur .ld-ck{border-color:var(--g);color:var(--g)}
+.ld-it.done .ld-ck{background:var(--g);border-color:var(--g);color:#fff}
+.ld-sep{padding:6px 4px 8px;font-size:12px;font-weight:800;color:var(--o);text-transform:uppercase;letter-spacing:.05em}
+.ld-fin{margin:6px 12px 12px;background:var(--gl);border:2px solid var(--g);border-radius:16px;padding:16px;text-align:center}
+.ld-fin-t{font-size:20px;font-weight:800;color:var(--gd)}.ld-fin-s{font-size:14px;color:var(--tx2);margin-top:4px}
+@media(prefers-color-scheme:dark){.ld-fin-t{color:var(--gm)}}
+.ld-act{display:flex;gap:8px;padding:4px 12px 16px}
+.tab .tab-lock{position:absolute;top:8px;left:9px;font-size:14px;color:var(--tx3)}
+#t-w{grid-column:span 2}.tab.tg .tab-lock,.tab.tp .tab-lock,.tab.tm .tab-lock,.tab.ts .tab-lock,.tab.tfe .tab-lock{color:rgba(255,255,255,.85)}
+.lock-card{margin:8px 16px 16px;background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:26px 20px 22px;text-align:center}
+.lock-ic{position:relative;display:inline-flex;width:72px;height:72px;border-radius:22px;background:var(--gl);color:var(--gd);font-size:36px;align-items:center;justify-content:center;margin-bottom:12px}
+.lock-badge{position:absolute;right:-6px;bottom:-6px;font-size:18px;background:var(--bg);color:var(--tx2);border-radius:50%;padding:5px;box-shadow:var(--sh)}
+.lock-t{font-size:20px;font-weight:750;margin-bottom:6px}.lock-d{font-size:14px;color:var(--tx2);line-height:1.5}
+.lock-note{font-size:14px;color:var(--tx);background:var(--bg2);border-radius:var(--rs);padding:10px 12px;margin:16px 0 14px;line-height:1.45}
+.lock-btn{width:100%;text-decoration:none}
+.lock-link{display:block;margin:12px auto 0;font-size:14px;color:var(--b);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:inherit}
+@media(prefers-color-scheme:dark){.lock-ic{color:var(--gm)}.lock-link{color:#9CC6F0}}
+.pw-wrap{position:relative}.pw-wrap input{padding-right:78px}.pw-show{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:var(--bg2);color:var(--tx2);font-size:13px;font-weight:600;padding:7px 10px;border-radius:8px;cursor:pointer}
+.lg-err{min-height:20px;font-size:14px;color:#C62828;margin:2px 0 0;line-height:1.4}
+@media(prefers-color-scheme:dark){.lg-err{color:#F3A9A9}}
 </style>
 </head>
 <body>
 
 <div id="scr-main" class="screen active">
-  <div class="topbar"><div class="topbar-t">🐄 TMR Mixer</div><button class="ib" onclick="openNotes()" title="Notatki" aria-label="Notatki"><i class="ti ti-notebook"></i></button><button class="ib" onclick="openMainMenu()" title="Menu" aria-label="Menu"><i class="ti ti-menu-2"></i></button></div>
+  <div class="topbar"><div class="topbar-t brand"><img src="icon-192.png" alt="" width="30" height="30">TMR Mixer</div><button class="ib" onclick="openNotes()" title="Notatki" aria-label="Notatki"><i class="ti ti-notebook"></i></button><button class="ib" onclick="openMainMenu()" title="Menu" aria-label="Menu"><i class="ti ti-menu-2"></i></button></div>
   <div class="install-bar" id="install-bar"><div class="install-txt">📲 Zainstaluj aplikację na telefonie</div><button class="install-btn" onclick="installPWA()">Zainstaluj</button></div>
   <div class="tabs" role="tablist">
     <button class="tab tg" id="t-w" role="tab" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">kg/szt → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-d" role="tab" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → kg/szt</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-m" role="tab" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">własne mieszanki</span></button>
-    <button class="tab" id="t-a" role="tab" onclick="showTab('a')"><i class="ti ti-chart-line"></i><span>Analiza dawki</span><span class="tab-sub">koszty i wydajność</span></button>
     <button class="tab" id="t-s" role="tab" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub">struktura fizyczna</span></button>
     <button class="tab" id="t-fe" role="tab" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub">laboratorium → FeedExpert</span></button>
   </div>
   <div id="tab-w" style="padding:12px 0"></div>
   <div id="tab-d" style="display:none;padding:12px 0"></div>
   <div id="tab-m" style="display:none;padding:12px 0"></div>
-  <div id="tab-a" style="display:none;padding:12px 0"></div>
   <div id="tab-s" style="display:none;padding:12px 0"></div>
   <div id="tab-fe" style="display:none;padding:12px 0"></div>
 </div>
 
 <div id="scr-d-edit" class="screen">
-  <div class="topbar"><button class="ib" onclick="backD()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="d-topbar">Nowa dawka</div><button class="ib" onclick="exportToAnaliza('d')" title="Przenieś do Analizy dawki" aria-label="Przenieś do Analizy dawki"><i class="ti ti-chart-line"></i></button><button class="ib" onclick="pdfD()" title="PDF" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
+  <div class="topbar"><button class="ib" onclick="backD()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="d-topbar">Nowa dawka</div><button class="ib" onclick="pdfD()" title="PDF" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
   <div class="sec-top">Informacje</div><div class="spacer"></div>
   <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="d-title" placeholder="np. Krowy — nowy klient" oninput="markDirtyD()"></div>
   <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="d-szt" value="50" min="1" inputmode="numeric" oninput="renderD();markDirtyD()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="d-note" placeholder="np. stado A" oninput="markDirtyD()"></div></div>
@@ -219,7 +254,7 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
 </div>
 
 <div id="scr-w-edit" class="screen">
-  <div class="topbar"><button class="ib" onclick="backW()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="w-topbar">Nowa dawka</div><button class="ib" onclick="exportToAnaliza('w')" title="Przenieś do Analizy dawki" aria-label="Przenieś do Analizy dawki"><i class="ti ti-chart-line"></i></button><button class="ib" onclick="pdfW()" title="PDF" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
+  <div class="topbar"><button class="ib" onclick="backW()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="w-topbar">Nowa dawka</div><button class="ib" onclick="pdfW()" title="PDF" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
   <div class="sec-top">Informacje</div><div class="spacer"></div>
   <div class="fl"><div class="fl-l">Tytuł dawki</div><input type="text" id="w-title" placeholder="np. Krowy laktujące — szczyt" oninput="markDirtyW()"></div>
   <div class="ir"><div class="fw"><div class="fl-l">Liczba sztuk</div><input type="number" id="w-szt" value="40" min="1" inputmode="numeric" oninput="renderW();markDirtyW()"></div><div class="fw"><div class="fl-l">Notatka</div><input type="text" id="w-note" placeholder="np. po 100 dniu" oninput="markDirtyW()"></div></div>
@@ -229,16 +264,18 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
   <div id="w-ing-list"></div>
   <div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><button class="pick-btn" onclick="openPicker('w')"><span class="pick-name" id="w-pick-label">Wybierz surowiec…</span><i class="ti ti-chevron-down pick-arrow"></i></button><input type="number" id="w-kg" placeholder="kg/szt" min="0" step="0.01" inputmode="decimal"><button class="addb" style="background:var(--g)" onclick="addW()"><i class="ti ti-plus"></i></button></div><input type="hidden" id="w-sel-val"></div>
   <div class="br"><button class="btn" onclick="dupW()"><i class="ti ti-copy"></i> Duplikuj</button><button class="btn bp bpg" id="w-save-btn" onclick="saveW()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>
-  <div class="br"><button class="btn" style="border-color:var(--g);color:var(--gd)" onclick="wozView()"><i class="ti ti-truck"></i> Tryb wozu — załadunek krok po kroku</button></div>
+  <div class="br"><button class="btn" style="border-color:var(--g);color:var(--gd)" onclick="wozView()"><i class="ti ti-truck"></i> Załadunek — odhaczanie krok po kroku</button></div>
   <button class="btn bdd" id="w-del-btn" style="display:none;width:calc(100% - 32px);margin:0 16px 10px" onclick="delW()"><i class="ti ti-trash"></i> Usuń dawkę</button>
 </div>
 
 <div id="scr-woz" class="screen">
-  <div class="woz-hdr"><button onclick="show('scr-w-edit')" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="woz-hdr-t" id="woz-t">Tryb wozu</div><button onclick="pdfW()" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
-  <div class="woz-tot"><div class="woz-tot-l">Sztuk: <strong id="wz-szt">—</strong><br>kg/szt: <strong id="wz-ph">—</strong></div><div style="text-align:right"><div style="font-size:11px">Łącznie w wozie</div><div class="woz-tot-rv" id="wz-tot">0</div><div style="font-size:12px">kg</div></div></div>
-  <div class="woz-hint" id="woz-hint">Dotknij surowca po załadowaniu, żeby go odhaczyć.</div>
-  <div id="woz-items" style="margin-top:8px"></div>
-  <div class="woz-ft"><div><div class="woz-ft-l">Surowców</div><div class="woz-ft-v" id="wz-cnt">0</div></div><div style="text-align:right"><div class="woz-ft-l">Razem kg/szt</div><div class="woz-ft-v" id="wz-ph2">0</div></div></div>
+  <div class="ld-head">
+    <div class="woz-hdr"><button onclick="ldBack()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="woz-hdr-t" id="woz-t">Załadunek</div><button onclick="ldRestart()" aria-label="Zacznij od nowa" title="Zacznij od nowa"><i class="ti ti-refresh"></i></button><button onclick="pdfW()" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>
+    <div class="ld-top"><div class="ld-row"><div class="ld-cnt" id="ld-cnt"></div><div class="ld-kg" id="ld-kg"></div></div><div class="ld-bar"><i id="ld-bar"></i></div><div class="ld-meta"><span id="ld-szt"></span><span class="ld-wake" id="ld-wake"></span></div></div>
+  </div>
+  <div class="ld-list" id="woz-items"></div>
+  <div class="ld-fin" id="ld-fin" style="display:none"></div>
+  <div class="ld-act"><button class="btn" onclick="ldRestart()"><i class="ti ti-refresh"></i> Zacznij od nowa</button></div>
 </div>
 
 <div id="scr-m-edit" class="screen"></div>
@@ -312,6 +349,8 @@ function actionSheet(title,items){
 }
 function openMainMenu(){
   actionSheet('',[
+    ACC.user?{icon:'ti-user-check',label:'Konto',sub:ACC.user.email,fn:openAccount}:{icon:'ti-login',label:'Zaloguj się',sub:'dostęp do dodatkowych funkcji',fn:openLogin},
+    'sep',
     {icon:'ti-database-cog',label:'Moje surowce',sub:'własne surowce i mieszanki w bazie',fn:openIngManager},
     {icon:'ti-arrows-exchange',label:'Kopia danych',sub:'zapisz lub wczytaj plik z danymi',fn:openBackupModal},
     {icon:'ti-settings',label:'Ustawienia',fn:openSettings},
@@ -339,7 +378,7 @@ function updateCounters(){var dc=document.getElementById('tab-d-cnt'),wc=documen
 // Migrate renamed ingredients v6 (dDoses/wDoses only — mDoses fixed after its own definition below)
 (function(){var rn={'Śruta sojowa':'Śruta sojowa 44%','Śruta jęczmienna':'Jęczmień ziarno','Tłuszcz paszowy (palmowy)':'Tłuszcz paszowy palmowy'};function fixIngs(arr){arr.forEach(function(d){if(d.ings)d.ings.forEach(function(i){if(rn[i.name])i.name=rn[i.name]});if(d.extraIngs)d.extraIngs.forEach(function(i){if(rn[i.name])i.name=rn[i.name]})})}fixIngs(dDoses);fixIngs(wDoses);localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses))})();
 
-function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_ad',JSON.stringify(aDoses));localStorage.setItem('tmr_md',JSON.stringify(mDoses));localStorage.setItem('tmr_df',JSON.stringify(dFolders));localStorage.setItem('tmr_wf',JSON.stringify(wFolders))}catch(e){}}
+function saveAll(){try{localStorage.setItem('tmr_dd',JSON.stringify(dDoses));localStorage.setItem('tmr_wd',JSON.stringify(wDoses));localStorage.setItem('tmr_custom',JSON.stringify(customIngs));localStorage.setItem('tmr_md',JSON.stringify(mDoses));localStorage.setItem('tmr_df',JSON.stringify(dFolders));localStorage.setItem('tmr_wf',JSON.stringify(wFolders))}catch(e){}}
 // Pomocnicza — zwraca SM% składnika (z danych lub z bazy), używana w zakładce 3
 function getSM(ing){var name=typeof ing==='string'?ing:ing.name;var found=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)found=it[2]})});if(found!==null)return found;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[2])return ci[2];if(ing.sm)return ing.sm;return 88;}
 // Wczytaj wyeksportowane mieszanki do bazy (kategoria Moje mieszanki)
@@ -357,12 +396,6 @@ function fmtEnergy(nel){
   return nel.toFixed(2)+' MJ / '+nelToVem(nel)+' VEM';
 }
 function getNEL(name){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[6]||0})});if(f!==null)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci&&ci[6]!==undefined)return ci[6]||0;return 0}
-// Cena: jeśli aktywna receptura analizy ma własne nadpisanie -> użyj go; inaczej cena bazowa (sztywna)
-function getPrice(name){
-  var d=aDoses.find(function(x){return x.id===aDoseId});
-  if(d&&d.prices&&d.prices[name]!==undefined)return d.prices[name];
-  return getBasePrice(name);
-}
 // Ceny bieżącej mieszanki (nadpisania per mieszanka)
 var mPrices={};
 
@@ -381,6 +414,7 @@ function navState(){return !!(history.state&&history.state.tmr)}
 function ensureNavState(){if(!navState()&&_navIgnore===0){try{history.pushState({tmr:1},'')}catch(e){}}}
 function dropNavState(){if(navState()&&_navIgnore===0){_navIgnore++;history.back()}}
 function show(id){
+  if(id!=='scr-woz')wakeOff();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
   document.getElementById(id).classList.add('active');window.scrollTo(0,0);
   if(id!=='scr-main')ensureNavState();
@@ -396,7 +430,7 @@ function closeOverlay(ov){
   else ov.remove();
 }
 var BACK_HANDLERS={
-  'scr-d-edit':function(){backD()},'scr-w-edit':function(){backW()},'scr-woz':function(){show('scr-w-edit')},
+  'scr-d-edit':function(){backD()},'scr-w-edit':function(){backW()},'scr-woz':function(){ldBack()},
   'scr-m-edit':function(){backM()},'scr-sita-client':function(){backSita()},'scr-ingmgr':function(){show('scr-main')},
   'scr-notes':function(){show('scr-main')},'scr-note-client':function(){backNotes()}
 };
@@ -419,7 +453,7 @@ new MutationObserver(function(muts){
   else if(removed&&curScreen()==='scr-main'&&!topOverlay())dropNavState();
 }).observe(document.body,{childList:true});
 
-var TAB_CLASS={w:'tg',d:'tp',m:'tm',a:'ta',s:'ts',fe:'tfe'};
+var TAB_CLASS={w:'tg',d:'tp',m:'tm',s:'ts',fe:'tfe'};
 var curTab='w';
 function showTab(t){
   if(!TAB_CLASS[t])t='w';
@@ -428,7 +462,215 @@ function showTab(t){
     var b=document.getElementById('t-'+k);if(b){b.className=k===t?'tab '+TAB_CLASS[k]:'tab';b.setAttribute('aria-selected',k===t?'true':'false')}
     var c=document.getElementById('tab-'+k);if(c)c.style.display=k===t?'block':'none';
   });
-  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='a')renderAnaliza();else if(t==='m')renderMieszanka();else if(t==='s')renderSita();else if(t==='fe')renderFEKonwerter();
+  var fk=TAB_FEATURE[t];
+  if(fk&&!ACC.loaded[fk]){renderLockedTab(t);return}
+  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='m')renderMieszanka();else if(t==='s')renderSita();else if(t==='fe')renderFEKonwerter();
+}
+
+// ===== KONTO I DOSTĘP DO DODATKOWYCH FUNKCJI =====
+// Kod funkcji dodatkowych nie jest częścią tej strony. Po zalogowaniu aplikacja pobiera go z Firestore,
+// a reguły bazy wydają go tylko kontom, które mają daną funkcję w swoim profilu (users/{uid}.features).
+var CONTACT_EMAIL='piterds7@gmail.com';
+var FEATURES={
+  dawka:{tab:'d',name:'Ustalanie dawki',icon:'ti-adjustments',desc:'Liczysz dawkę od strony wozu: ile kg każdego surowca trafia do wozu i ile wychodzi na sztukę. Do tego niedojady, raport pobrania paszy i dawki pochodne dla grup.'},
+  mieszanka:{tab:'m',name:'Mieszanka treściwa',icon:'ti-blender',desc:'Własne mieszanki treściwe z wyliczeniem białka, skrobi, energii, suchej masy i ceny. Gotową mieszankę dodasz do bazy surowców.'},
+  sita:{tab:'s',name:'Sita TMR',icon:'ti-stack-2',desc:'Badania struktury fizycznej TMR sitami, porównanie kilku próbek, historia dla każdego klienta i raport PDF.'},
+  fe:{tab:'fe',name:'Konwerter FE',icon:'ti-transform',desc:'Przeliczanie sprawozdań laboratoryjnych (Excel) na wartości do wpisania w programie FeedExpert.'}
+};
+var TAB_FEATURE={};Object.keys(FEATURES).forEach(function(k){TAB_FEATURE[FEATURES[k].tab]=k});
+var ACC={user:null,features:[],loaded:{},checking:false};
+function accHint(){try{return JSON.parse(localStorage.getItem('tmr_acc')||'null')}catch(e){return null}}
+function accSetHint(h){try{if(h)localStorage.setItem('tmr_acc',JSON.stringify(h));else localStorage.removeItem('tmr_acc')}catch(e){}}
+function modCache(id){try{return JSON.parse(localStorage.getItem('tmr_mod_'+id)||'null')}catch(e){return null}}
+function modCacheSet(id,m){try{if(m)localStorage.setItem('tmr_mod_'+id,JSON.stringify({v:m.v,code:m.code}));else localStorage.removeItem('tmr_mod_'+id)}catch(e){}}
+function accClearCaches(){Object.keys(FEATURES).forEach(function(k){modCacheSet(k,null)});accSetHint(null)}
+function featureName(k){return FEATURES[k]?FEATURES[k].name:k}
+
+// Wczytanie skryptu z tej samej strony (raz)
+var _scripts={};
+function loadScript(src){
+  if(_scripts[src])return _scripts[src];
+  _scripts[src]=new Promise(function(res,rej){
+    var sc=document.createElement('script');sc.src=src;
+    sc.onload=function(){res()};sc.onerror=function(){delete _scripts[src];sc.remove();rej(new Error('load '+src))};
+    document.head.appendChild(sc);
+  });
+  return _scripts[src];
+}
+function withTimeout(p,ms){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},ms)})])}
+
+// Połączenie z Firebase (Auth + Firestore). W testach można podstawić window.TMR_TEST_BACKEND o tym samym interfejsie.
+var _backend=null;
+function getBackend(){
+  if(window.TMR_TEST_BACKEND)return Promise.resolve(window.TMR_TEST_BACKEND);
+  if(_backend)return _backend;
+  var cfg=window.TMR_FIREBASE_CONFIG;
+  if(!cfg||!cfg.apiKey||/WKLEJ/.test(cfg.apiKey)||!cfg.appId||/WKLEJ/.test(cfg.appId))return Promise.reject(new Error('not-configured'));
+  _backend=loadScript('vendor/firebase/firebase-app-compat.js')
+    .then(function(){return loadScript('vendor/firebase/firebase-auth-compat.js')})
+    .then(function(){return loadScript('vendor/firebase/firebase-firestore-compat.js')})
+    .then(function(){
+      var app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
+      var auth=firebase.auth(),db=firebase.firestore();
+      var first=new Promise(function(res){var un=auth.onAuthStateChanged(function(u){un();res(u)})});
+      return {
+        init:function(){return first},
+        signIn:function(e,p){return auth.signInWithEmailAndPassword(e,p).then(function(c){return c.user})},
+        signOut:function(){return auth.signOut()},
+        resetPassword:function(e){return auth.sendPasswordResetEmail(e)},
+        profile:function(){var u=auth.currentUser;if(!u)return Promise.resolve(null);return withTimeout(db.collection('users').doc(u.uid).get(),9000).then(function(s){return s.exists?s.data():null})},
+        module:function(id){return withTimeout(db.collection('modules').doc(id).get(),12000).then(function(s){return s.exists?s.data():null})}
+      };
+    });
+  _backend.catch(function(){_backend=null});
+  return _backend;
+}
+function runModule(id,code){
+  if(ACC.loaded[id])return true;
+  try{
+    var s=document.createElement('script');
+    s.textContent=code+'\n//# sourceURL=modul-'+id+'.js';
+    document.head.appendChild(s);
+    ACC.loaded[id]=true;return true;
+  }catch(e){return false}
+}
+function allowedFeatures(profile){
+  if(!profile||profile.active===false||!Array.isArray(profile.features))return [];
+  return profile.features.filter(function(f){return !!FEATURES[f]});
+}
+// Po zalogowaniu (albo przy starcie, gdy sesja istnieje): pobierz uprawnienia i moduły
+function accSync(user,opts){
+  opts=opts||{};
+  return getBackend().then(function(b){
+    return b.profile().then(function(profile){
+      var feats=allowedFeatures(profile);
+      ACC.user={email:user.email,uid:user.uid};ACC.features=feats;
+      // funkcje odebrane od ostatniego razu: usuń z urządzenia i przeładuj
+      var revoked=Object.keys(ACC.loaded).filter(function(k){return feats.indexOf(k)<0});
+      Object.keys(FEATURES).forEach(function(k){if(feats.indexOf(k)<0)modCacheSet(k,null)});
+      accSetHint({email:user.email,features:feats});
+      if(revoked.length){toast('Dostęp do funkcji został zmieniony — odświeżam');setTimeout(function(){location.reload()},900);return feats}
+      return Promise.all(feats.map(function(k){
+        return b.module(k).then(function(m){
+          if(!m||!m.code)return;
+          var c=modCache(k);
+          if(!c||c.v!==m.v)modCacheSet(k,m);
+          runModule(k,m.code);
+        }).catch(function(){var c=modCache(k);if(c)runModule(k,c.code)});
+      })).then(function(){updateTabLocks();return feats});
+    });
+  });
+}
+// Start aplikacji: jeśli na tym urządzeniu ktoś był zalogowany, od razu włącz zapamiętane moduły (działa też bez internetu),
+// a w tle sprawdź sesję i uprawnienia.
+function accStart(){
+  var h=accHint();
+  if(!h){updateTabLocks();return}
+  ACC.user={email:h.email};ACC.features=h.features||[];
+  ACC.features.forEach(function(k){var c=modCache(k);if(c&&c.code)runModule(k,c.code)});
+  updateTabLocks();
+  ACC.checking=true;
+  getBackend().then(function(b){return b.init()}).then(function(u){
+    if(!u){accClearCaches();ACC.user=null;ACC.features=[];toast('Sesja wygasła — zaloguj się ponownie',true);setTimeout(function(){location.reload()},1200);return}
+    return accSync(u);
+  }).catch(function(){/* brak internetu: zostają zapamiętane moduły */}).then(function(){ACC.checking=false;rerenderLockedTab()});
+}
+function rerenderLockedTab(){if(curScreen()==='scr-main'&&TAB_FEATURE[curTab])showTab(curTab)}
+function updateTabLocks(){
+  Object.keys(FEATURES).forEach(function(k){
+    var b=document.getElementById('t-'+FEATURES[k].tab);if(!b)return;
+    var lock=b.querySelector('.tab-lock');
+    if(ACC.loaded[k]){if(lock)lock.remove()}
+    else if(!lock){lock=document.createElement('i');lock.className='ti ti-lock tab-lock';lock.setAttribute('aria-label','wymaga logowania');b.appendChild(lock)}
+  });
+}
+// Ekran w zakładce, gdy funkcja nie jest dostępna
+function renderLockedTab(t){
+  var k=TAB_FEATURE[t],f=FEATURES[k],el=document.getElementById('tab-'+t);
+  var logged=!!ACC.user,has=logged&&ACC.features.indexOf(k)>=0;
+  var h='<div class="lock-card"><div class="lock-ic"><i class="ti '+f.icon+'"></i><i class="ti ti-lock lock-badge"></i></div>'
+    +'<div class="lock-t">'+f.name+'</div><div class="lock-d">'+f.desc+'</div>';
+  if(has&&ACC.checking){
+    h+='<div class="lock-note"><i class="ti ti-loader"></i> Wczytuję funkcję…</div>';
+  } else if(has){
+    h+='<div class="lock-note">Nie udało się wczytać tej funkcji. Sprawdź połączenie z internetem.</div>'
+      +'<button class="btn bp bpg lock-btn" onclick="accRetry()"><i class="ti ti-refresh"></i> Spróbuj ponownie</button>';
+  } else if(logged){
+    h+='<div class="lock-note">Twoje konto (<strong>'+esc(ACC.user.email)+'</strong>) nie ma dostępu do tej funkcji.</div>'
+      +'<a class="btn bp bpg lock-btn" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — dostęp do funkcji: '+f.name)+'"><i class="ti ti-mail"></i> Poproś o dostęp</a>';
+  } else {
+    h+='<div class="lock-note">Funkcja dla użytkowników z kontem. Konta zakłada administrator aplikacji.</div>'
+      +'<button class="btn bp bpg lock-btn" onclick="openLogin()"><i class="ti ti-login"></i> Zaloguj się</button>'
+      +'<a class="lock-link" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — prośba o konto')+'">Nie masz konta? Napisz do nas</a>';
+  }
+  el.innerHTML=h+'</div>';
+}
+function loginErr(e){
+  var c=(e&&(e.code||e.message))||'';
+  if(/not-configured/.test(c))return 'Logowanie nie jest jeszcze włączone w tej aplikacji.';
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login|invalid-email/.test(c))return 'Nieprawidłowy e-mail lub hasło.';
+  if(/too-many-requests/.test(c))return 'Za dużo prób logowania. Spróbuj ponownie za kilka minut.';
+  if(/user-disabled/.test(c))return 'To konto jest zablokowane.';
+  if(/network|timeout|load /.test(c))return 'Brak połączenia z internetem. Logowanie wymaga internetu.';
+  return 'Nie udało się zalogować. Spróbuj ponownie.';
+}
+function openLogin(){
+  var ov=document.createElement('div');ov.className='modal-ov';ov.id='login-modal';
+  ov.innerHTML='<div class="modal-bx" role="dialog" aria-modal="true" aria-labelledby="lg-t">'
+    +'<div class="modal-t" id="lg-t"><i class="ti ti-login"></i> Zaloguj się</div>'
+    +'<div class="modal-m">Konto daje dostęp do dodatkowych funkcji: Ustalanie dawki, Mieszanka treściwa, Sita TMR i Konwerter FE.</div>'
+    +'<form id="lg-form" autocomplete="on" novalidate>'
+    +'<div class="fl" style="margin-top:12px"><label class="fl-l" for="lg-email">E-mail</label><input type="email" id="lg-email" autocomplete="username" inputmode="email" required></div>'
+    +'<div class="fl"><label class="fl-l" for="lg-pass">Hasło</label><div class="pw-wrap"><input type="password" id="lg-pass" autocomplete="current-password" required><button type="button" class="pw-show" id="lg-show">Pokaż</button></div></div>'
+    +'<div class="lg-err" id="lg-err" role="alert"></div>'
+    +'<div class="modal-btns"><button type="button" class="btn" id="lg-cancel">Anuluj</button><button type="submit" class="btn bp bpg" id="lg-go"><i class="ti ti-login"></i> Zaloguj</button></div>'
+    +'</form>'
+    +'<button type="button" class="lock-link" id="lg-reset" style="margin-top:12px">Nie pamiętasz hasła?</button>'
+    +'</div>';
+  document.body.appendChild(ov);
+  var em=document.getElementById('lg-email'),pw=document.getElementById('lg-pass'),err=document.getElementById('lg-err'),go=document.getElementById('lg-go');
+  var h=accHint();if(h&&h.email)em.value=h.email;
+  setTimeout(function(){(em.value?pw:em).focus()},60);
+  function close(){ov.remove()}
+  ov.addEventListener('click',function(e){if(e.target===ov)close()});
+  document.getElementById('lg-cancel').onclick=close;
+  document.getElementById('lg-show').onclick=function(){pw.type=pw.type==='password'?'text':'password';this.textContent=pw.type==='password'?'Pokaż':'Ukryj'};
+  document.getElementById('lg-reset').onclick=function(){
+    var e=em.value.trim();if(!e){err.textContent='Wpisz e-mail, a wyślemy link do ustawienia nowego hasła.';em.focus();return}
+    getBackend().then(function(b){return b.resetPassword(e)}).then(function(){err.textContent='';toast('Jeśli konto istnieje, wysłaliśmy e-mail z linkiem do nowego hasła')}).catch(function(x){err.textContent=loginErr(x)});
+  };
+  document.getElementById('lg-form').onsubmit=function(ev){
+    ev.preventDefault();
+    var e=em.value.trim(),p=pw.value;
+    if(!e||!p){err.textContent='Wpisz e-mail i hasło.';return}
+    err.textContent='';go.disabled=true;go.innerHTML='<i class="ti ti-loader"></i> Loguję…';
+    getBackend().then(function(b){return b.signIn(e,p)}).then(function(u){
+      return accSync(u).then(function(feats){
+        close();
+        if(feats.length)toast('Zalogowano. Dostępne: '+feats.map(featureName).join(', '));
+        else toast('Zalogowano, ale konto nie ma jeszcze przypisanych funkcji',true);
+        rerenderLockedTab();
+      });
+    }).catch(function(x){err.textContent=loginErr(x);go.disabled=false;go.innerHTML='<i class="ti ti-login"></i> Zaloguj';pw.select()});
+  };
+}
+function openAccount(){
+  if(!ACC.user){openLogin();return}
+  actionSheet('Zalogowano: '+ACC.user.email,[
+    {icon:'ti-lock-open',label:'Dostępne funkcje',sub:ACC.features.length?ACC.features.map(featureName).join(', '):'brak — poproś administratora o dostęp',fn:function(){}},
+    'sep',
+    {icon:'ti-logout',label:'Wyloguj się',danger:true,fn:accSignOut}
+  ]);
+}
+function accSignOut(){
+  ask({title:'Wylogować się?',msg:'Dodatkowe funkcje zostaną zablokowane na tym urządzeniu. Twoje zapisane dawki, mieszanki i badania zostają w telefonie.',ok:'Wyloguj',danger:true,onOk:function(){
+    accClearCaches();
+    getBackend().then(function(b){return b.signOut()}).catch(function(){}).then(function(){toast('Wylogowano');setTimeout(function(){location.reload()},600)});
+  }});
+}
+function accRetry(){
+  ACC.checking=true;rerenderLockedTab();
+  getBackend().then(function(b){return b.init()}).then(function(u){if(u)return accSync(u)}).catch(function(x){toast(loginErr(x),true)}).then(function(){ACC.checking=false;rerenderLockedTab()});
 }
 
 // ===== INGREDIENT PICKER =====
@@ -558,151 +800,10 @@ function renderPicker(){
 function badge(c){if(c==='t')return '<span class="badge bt">treściwa</span>';if(c==='tm')return '<span class="badge btm">treściwa mokra</span>';return '<span class="badge bo">objętościowa</span>'}
 var esc=escapeHtml;
 function isTresciwa(c){return c==='t'||c==='tm'}
+function sb(color,val,lbl){return '<div class="sb"><div class="sv" style="color:'+color+'">'+val+'</div><div class="sl">'+lbl+'</div></div>'}
 function flash(id){var b=document.getElementById(id);var o=b.innerHTML;b.innerHTML='<i class="ti ti-check"></i> Zapisano!';setTimeout(function(){b.innerHTML=o},1400)}
 
-// ====== DAWKA (Ustalanie) ======
-function resetNiedojady(){document.getElementById('d-niedojady').value='';document.getElementById('d-niedojady-result').innerHTML='';document.getElementById('d-niedojady-pdf-btn').style.display='none'}
-function newD(){dId=null;dIngs=[];dParentId=null;dExtraIngs=[];document.getElementById('d-title').value='';document.getElementById('d-note').value='';document.getElementById('d-szt').value='50';document.getElementById('d-topbar').textContent='Nowa dawka';document.getElementById('d-del-btn').style.display='none';resetNiedojady();renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit');setTimeout(function(){document.getElementById('d-title').focus()},50)}
-function openD(id){
-  var d=dDoses.find(function(x){return x.id===id});if(!d)return;
-  dId=id;dParentId=d.parentId||null;
-  if(dParentId&&!dDoses.find(function(x){return x.id===dParentId})){dParentId=null;d.parentId=null;d.extraIngs=[];saveAll()}
-  dExtraIngs=dParentId?JSON.parse(JSON.stringify(d.extraIngs||[])):[];
-  dIngs=dParentId?[]:stripExtra(d.ings);
-  document.getElementById('d-title').value=d.title;document.getElementById('d-note').value=d.note||'';document.getElementById('d-szt').value=d.szt;document.getElementById('d-topbar').textContent=d.title;document.getElementById('d-del-btn').style.display='flex';
-  resetNiedojady();renderD();dOrig=snapshotD();dIsDirty=false;show('scr-d-edit');
-}
 function stripExtra(ings){return JSON.parse(JSON.stringify(ings||[])).map(function(s){delete s.isExtra;return s})}
-function backD(){markDirtyD();if(dIsDirty){ask({title:'Niezapisane zmiany',msg:'Masz niezapisane zmiany w tej dawce.',ok:'Wyjdź bez zapisu',cancel:'Zostań',danger:true,onOk:leaveD});return}leaveD()}
-function leaveD(){dIsDirty=false;show('scr-main');showTab('d')}
-function saveD(){
-  var t=document.getElementById('d-title').value.trim()||'Bez nazwy';
-  var dup=findDuplicateTitle(dDoses,t,dId);
-  if(dup){var nt=uniqueTitle(dDoses,t,dId);ask({title:'Taka nazwa już istnieje',msg:'Dawka „'+t+'” już jest na liście. Zapisać jako „'+nt+'”?',ok:'Zapisz jako „'+nt+'”',onOk:function(){document.getElementById('d-title').value=nt;doSaveD(nt)}});return}
-  doSaveD(t);
-}
-function doSaveD(t){
-  var n=document.getElementById('d-note').value.trim(),s=parseInt(document.getElementById('d-szt').value)||50;
-  if(dId){var d=dDoses.find(function(x){return x.id===dId});if(d){d.title=t;d.note=n;d.szt=s;d.updatedAt=Date.now();if(dParentId){d.parentId=dParentId;d.extraIngs=JSON.parse(JSON.stringify(dExtraIngs));d.ings=getDDoseIngs(d,{})}else{d.parentId=null;d.extraIngs=[];d.ings=JSON.parse(JSON.stringify(dIngs))}}}
-  else{dId='dd'+Date.now();dDoses.push({id:dId,title:t,note:n,szt:s,parentId:dParentId||null,extraIngs:dParentId?JSON.parse(JSON.stringify(dExtraIngs)):[],ings:JSON.parse(JSON.stringify(dParentId?getResolvedDIngs():dIngs)),createdAt:Date.now()});document.getElementById('d-del-btn').style.display='flex'}
-  document.getElementById('d-topbar').textContent=t;syncDerivedDDoses();saveAll();dOrig=snapshotD();dIsDirty=false;flash('d-save-btn');toast('Zapisano dawkę');
-}
-function delD(){if(!dId){leaveD();return}deleteDose('d',dId,leaveD)}
-function dupD(){dId=null;var t=uniqueTitle(dDoses,(document.getElementById('d-title').value||'Dawka')+' (kopia)',null);document.getElementById('d-title').value=t;document.getElementById('d-topbar').textContent=t;document.getElementById('d-del-btn').style.display='none';markDirtyD();dIsDirty=true;toast('Utworzono kopię — zapisz, aby ją zachować')}
-function addD(){var v=document.getElementById('d-sel-val').value;if(!v){toast('Wybierz surowiec',true);return}var kg=parseFloat(document.getElementById('d-kg').value);if(!kg||kg<=0){toast('Podaj kg na wóz',true);return}var p=v.split('|'),nm=p[0],ct=p[1],sm=parseFloat(p[2])||88;if(dParentId){dExtraIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}else{dIngs.push({name:nm,cat:ct,sm:sm,kgWoz:kg})}document.getElementById('d-kg').value='';document.getElementById('d-sel-val').value='';document.getElementById('d-pick-label').textContent='Wybierz surowiec\u2026';markDirtyD();renderD()}
-function rmD(i){dIngs.splice(i,1);markDirtyD();renderD()}
-function mvD(i,d){var j=i+d;if(j<0||j>=dIngs.length)return;var t=dIngs[i];dIngs[i]=dIngs[j];dIngs[j]=t;markDirtyD();renderD()}
-function ukD(i,v){dIngs[i].kgWoz=parseFloat(v)||0;markDirtyD();renderD()}
-// ===== NIEDOJADY - realne pobranie paszy =====
-function calcNiedojady(){
-  var el=document.getElementById('d-niedojady-result');
-  var pdfBtn=document.getElementById('d-niedojady-pdf-btn');
-  var niedojadyVal=parseFloat(document.getElementById('d-niedojady').value);
-  var ings=getResolvedDIngs();
-  var tw=ings.reduce(function(a,s){return a+s.kgWoz},0);
-  var szt=parseInt(document.getElementById('d-szt').value)||0;
-  if(!niedojadyVal||niedojadyVal<=0||tw<=0){el.innerHTML='';pdfBtn.style.display='none';return}
-  if(niedojadyVal>=tw){el.innerHTML='<div class="hn warn"><i class="ti ti-alert-triangle"></i><div>Niedojady nie mogą być większe niż cała dawka ('+tw.toFixed(0)+' kg).</div></div>';pdfBtn.style.display='none';return}
-  var pobranePct=(tw-niedojadyVal)/tw*100;
-  var niedopadySzt=szt>0?(niedojadyVal/szt).toFixed(2):'—';
-  var zjedzoneTotal=tw-niedojadyVal;
-  var zjedzoneNaSzt=szt>0?(zjedzoneTotal/szt).toFixed(2):'—';
-  var rows=ings.map(function(s){
-    var zjedzone=s.kgWoz*pobranePct/100;
-    var zjedzNaSzt=szt>0?(zjedzone/szt).toFixed(2):'—';
-    var zadanoNaSzt=szt>0?(s.kgWoz/szt).toFixed(2):'—';
-    return '<div class="rw"><div style="flex:1"><div class="rname">'+esc(s.name)+'</div><div class="cp cv">zadano: '+s.kgWoz.toFixed(1)+' kg ('+zadanoNaSzt+' kg/szt)</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:700;color:var(--gd)">'+zjedzone.toFixed(1)+' kg</div><div style="font-size:11px;color:var(--gd);font-weight:600">'+zjedzNaSzt+' kg/szt</div></div></div>';
-  }).join('');
-  el.innerHTML='<div class="s2">'
-    +sb('var(--gd)',pobranePct.toFixed(1)+'%','pobranie dawki')
-    +sb('#A32D2D',niedojadyVal.toFixed(1)+' kg','niedojady łącznie')
-    +'</div><div class="s2">'
-    +sb('var(--gd)',zjedzoneNaSzt+' kg','zjedzone / szt')
-    +sb('#A32D2D',niedopadySzt+' kg','niedojady / szt')
-    +'</div><div class="ls">'+rows+'</div>';
-  pdfBtn.style.display='flex';
-}
-function pdfNiedojady(){
-  var title=document.getElementById('d-title').value.trim()||'Dawka';
-  var niedojadyVal=parseFloat(document.getElementById('d-niedojady').value)||0;
-  var dIngsAll=getResolvedDIngs();
-  var tw=dIngsAll.reduce(function(a,s){return a+s.kgWoz},0);
-  var szt=parseInt(document.getElementById('d-szt').value)||0;
-  if(tw<=0||niedojadyVal<=0){toast('Wpisz niedojady',true);return}
-  var pobranePct=(tw-niedojadyVal)/tw*100;
-  var zjedzoneTotal=tw-niedojadyVal;
-  var rows=dIngsAll.map(function(s){var zjedzone=s.kgWoz*pobranePct/100;return {name:s.name,zadano:s.kgWoz,zjedzone:zjedzone,zadanoSzt:szt>0?s.kgWoz/szt:0,zjedzSzt:szt>0?zjedzone/szt:0}});
-  var rowsHtml=rows.map(function(r,i){return '<tr><td style="padding:8px 12px"><strong>'+(i+1)+'. '+esc(r.name)+'</strong></td><td style="padding:8px 12px;text-align:right">'+r.zadano.toFixed(1)+'</td><td style="padding:8px 12px;text-align:right">'+(szt>0?r.zadanoSzt.toFixed(2):'—')+'</td><td style="padding:8px 12px;text-align:right;color:#0F6E56;font-weight:700">'+r.zjedzone.toFixed(1)+'</td><td style="padding:8px 12px;text-align:right;color:#0F6E56;font-weight:700">'+(szt>0?r.zjedzSzt.toFixed(2):'—')+'</td></tr>'}).join('');
-  var previewHtml='<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111}.hdr{background:#3C3489;color:#fff;padding:14px 16px}.kpis{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}table{width:100%;border-collapse:collapse;font-size:13px}tr{border-bottom:1px solid #eee}th{padding:8px 12px;text-align:left;background:#f0f0f0;font-size:11px}</style></head><body>'
-    +'<div class="hdr"><h1 style="font-size:18px">Raport pobrania — '+escapeHtml(title)+'</h1><div style="font-size:12px;opacity:.8;margin-top:3px">'+szt+' szt · '+new Date().toLocaleDateString('pl')+'</div></div>'
-    +'<div class="kpis"><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#0F6E56">'+pobranePct.toFixed(1)+'%</div><div style="font-size:11px;color:#666">pobranie</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#A32D2D">'+niedojadyVal.toFixed(1)+'</div><div style="font-size:11px;color:#666">niedojady kg</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#0F6E56">'+(szt>0?(zjedzoneTotal/szt).toFixed(2):'—')+'</div><div style="font-size:11px;color:#666">zjedzone/szt</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:80px"><div style="font-size:20px;font-weight:700;color:#A32D2D">'+(szt>0?(niedojadyVal/szt).toFixed(2):'—')+'</div><div style="font-size:11px;color:#666">niedojady/szt</div></div></div>'
-    +'<table><thead><tr><th>Surowiec</th><th style="text-align:right">zadano kg</th><th style="text-align:right">zadano/szt</th><th style="text-align:right">zjedzone kg</th><th style="text-align:right">zjedzone/szt</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></body></html>';
-  showPdfPreview(previewHtml,function(){
-    closePdfPreview();
-    var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
-    var W=210,H=297,M=14;
-    doc.setFillColor(60,52,137);doc.rect(0,0,W,22,'F');
-    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
-    doc.text(plchars('Raport pobrania - '+title),M,12);
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(210,210,230);
-    doc.text(plchars(new Date().toLocaleDateString('pl')),M,18);
-    var kpis=[['pobranie dawki',pobranePct.toFixed(1)+'%',[15,110,86]],['niedojady',niedojadyVal.toFixed(1)+' kg',[163,45,45]],['dawka łącznie',tw.toFixed(1)+' kg',[30,30,30]]];
-    var ky=28,kw=(W-2*M)/3,kh=20;
-    kpis.forEach(function(k,i){var kx=M+i*kw;doc.setFillColor(245,245,247);doc.roundedRect(kx,ky,kw-3,kh-3,2,2,'F');doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(k[1],kx+4,ky+9);doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(plchars(k[0]),kx+4,ky+15)});
-    var ty=ky+kh+4;
-    doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
-    doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('SUROWIEC',M+2,ty+4.7);doc.text('ZADANO',M+130,ty+4.7,{align:'right'});doc.text('ZJEDZONE',W-M-1,ty+4.7,{align:'right'});
-    var ry=ty+7,n=rows.length,rowH=Math.min(10,(H-ry-20)/n);if(rowH<6)rowH=6;
-    rows.forEach(function(r,i){var yy=ry+i*rowH;if(yy>H-22)return;doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);doc.setTextColor(25,25,25);doc.setFont('helvetica','bold');doc.setFontSize(Math.min(10,rowH*0.85));doc.text(plchars((i+1)+'. '+r.name).substring(0,40),M+2,yy+rowH*0.65);doc.setFont('helvetica','normal');doc.text(r.zadano.toFixed(1)+' kg',M+130,yy+rowH*0.65,{align:'right'});doc.setFont('helvetica','bold');doc.setTextColor(15,110,86);doc.text(r.zjedzone.toFixed(1)+' kg',W-M-1,yy+rowH*0.65,{align:'right'})});
-    doc.save(sanitize('Pobranie_'+title)+'.pdf');
-    toast('PDF zapisany w Pobranych');
-  });
-}
-function renderD(){
-  var szt=parseInt(document.getElementById('d-szt').value)||0;
-  var el=document.getElementById('d-ing-list');
-  if(dParentId){
-    var parent=dDoses.find(function(x){return x.id===dParentId});
-    if(!parent){dIngs=stripExtra(getResolvedDIngs());dParentId=null;dExtraIngs=[];renderD();return}
-    var baseIngs=getDDoseIngs(parent,{});
-    var extraTotal=dExtraIngs.reduce(function(a,e){return a+(parseFloat(e.kgWoz)||0)},0);
-    var tw=baseIngs.reduce(function(a,s){return a+s.kgWoz},0)+extraTotal;
-    var ph=szt>0?tw/szt:0;
-    document.getElementById('d-ph').textContent=ph.toFixed(2);
-    document.getElementById('d-woz').textContent=tw.toFixed(0);
-    document.getElementById('d-cnt').textContent=(baseIngs.length+dExtraIngs.length);
-    var baseRows=baseIngs.map(function(s){var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw" style="opacity:.75"><div class="rn"><i class="ti ti-lock" style="font-size:13px"></i></div><div style="flex:1"><div class="rname">'+esc(s.name)+'</div>'+badge(s.cat)+'<div class="cp cv">'+s.kgWoz.toFixed(1)+' kg/wóz → '+p+' kg/szt</div></div></div>'}).join('');
-    var extraRows=dExtraIngs.map(function(e,i){var kw=parseFloat(e.kgWoz)||0;var p=szt>0?(kw/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">+</div><div style="flex:1"><div class="rname">'+esc(e.name)+'</div>'+badge(e.cat)+'<div class="cp cv">→ '+p+' kg/szt</div></div><div class="rr"><div class="kw"><input type="number" value="'+kw+'" min="0" step="1" inputmode="numeric" onchange="ukDExtra('+i+',this.value)" aria-label="kg na wóz"><span>kg/wóz</span></div><button class="dl" onclick="rmDExtra('+i+')" aria-label="Usuń"><i class="ti ti-x"></i></button></div></div>'}).join('');
-    var lockHdr='<div class="hn"><i class="ti ti-git-branch"></i><div>Dawka pochodna. Surowce z bazy <strong>'+esc(parent.title)+'</strong> zmieniają się razem z bazą. Poniżej dodaj surowce dorzucane dla tej grupy.</div></div>';
-    var extraHdr='<div class="sec-top">Dodatki dla tej grupy (kg na wóz)</div>';
-    el.innerHTML=lockHdr+'<div class="ls">'+baseRows+'</div>'+extraHdr+(dExtraIngs.length?'<div class="ls">'+extraRows+'</div>':'<div class="em" style="padding:6px 16px 12px"><div class="em-s">Brak dodatków — dodaj surowiec poniżej (np. dodatkowa śruta).</div></div>');
-    return;
-  }
-  var tw=dIngs.reduce(function(a,s){return a+s.kgWoz},0),ph=szt>0?tw/szt:0;
-  document.getElementById('d-ph').textContent=ph.toFixed(2);document.getElementById('d-woz').textContent=tw.toFixed(0);document.getElementById('d-cnt').textContent=dIngs.length;
-  if(!dIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:var(--pm)"><i class="ti ti-adjustments"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj surowiec poniżej i wpisz, ile kg trafia do wozu.</div></div>';return}
-  var cum=0;
-  el.innerHTML='<div class="ls">'+dIngs.map(function(s,i){cum+=s.kgWoz;var p=szt>0?(s.kgWoz/szt).toFixed(2):'—';return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1;min-width:0"><div class="rname">'+esc(s.name)+'</div>'+badge(s.cat)+'<div class="cp cv">→ '+p+' kg/szt</div><div class="cp" style="font-weight:400;color:var(--tx3)">w wozie: '+cum.toFixed(0)+' kg</div></div><div class="rr"><div class="ra"><button class="arb" onclick="mvD('+i+',-1)" aria-label="W górę"><i class="ti ti-chevron-up"></i></button><button class="arb" onclick="mvD('+i+',1)" aria-label="W dół"><i class="ti ti-chevron-down"></i></button></div><div class="kw"><input type="number" value="'+s.kgWoz+'" min="0" step="1" inputmode="numeric" onchange="ukD('+i+',this.value)" aria-label="kg na wóz"><span>kg/wóz</span></div><button class="dl" onclick="rmD('+i+')" aria-label="Usuń"><i class="ti ti-x"></i></button></div></div>'}).join('')+'</div>';
-}
-function migrateD(){
-  var ings=getResolvedDIngs();if(!ings.length){toast('Brak surowców do przeniesienia',true);return}
-  var szt=parseInt(document.getElementById('d-szt').value)||1,title=document.getElementById('d-title').value.trim()||'Dawka',note=document.getElementById('d-note').value.trim();
-  ask({title:'Przenieść do Obliczania wozu?',msg:'Powstanie nowa dawka „'+uniqueTitle(wDoses,title,null)+'” z wartościami w kg na sztukę.',ok:'Przenieś',onOk:function(){toWozDose(title,note,szt,ings)}});
-}
-function toWozDose(title,note,szt,ings){
-  var finalTitle=uniqueTitle(wDoses,title,null);
-  var w=ings.map(function(s){return{name:s.name,cat:s.cat,sm:s.sm,kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});
-  var id='wd'+Date.now();
-  wDoses.push({id:id,title:finalTitle,note:(note?note+' | ':'')+'z ustalania dawki',szt:szt,ings:w,createdAt:Date.now()});
-  saveAll();toast('Przeniesiono do Obliczania wozu');
-  dIsDirty=false;show('scr-main');showTab('w');
-}
-function migrateFromList(id){
-  var d=dDoses.find(function(x){return x.id===id});if(!d)return;
-  var ings=getDDoseIngs(d,{});if(!ings.length){toast('Dawka nie ma surowców',true);return}
-  ask({title:'Przenieść do Obliczania wozu?',msg:'Powstanie nowa dawka „'+uniqueTitle(wDoses,d.title,null)+'” z wartościami w kg na sztukę.',ok:'Przenieś',onOk:function(){toWozDose(d.title,d.note,d.szt,ings)}});
-}
 function doseCardHtml(d,tab,nested){
   var isW=tab==='w',id=d.id,stats;
   if(isW){var t=(d.ings||[]).reduce(function(a,s){return a+(s.kg||0)},0),w=t*(d.szt||0);stats=[[d.szt||0,'sztuk',''],[t.toFixed(1),'kg/szt',''],[w.toFixed(0),'kg w wozie','color:var(--gd)']]}
@@ -710,7 +811,7 @@ function doseCardHtml(d,tab,nested){
   var ts=fmtTs(d),parent=d.parentId?getDoses(tab).find(function(x){return x.id===d.parentId}):null;
   var meta=[];if(d.note)meta.push(esc(d.note));if(parent)meta.push('<i class="ti ti-git-branch"></i> z: '+esc(parent.title));if(ts)meta.push(ts);
   var btns=isW
-    ?'<button class="dab op" onclick="openW(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+id+'\')"><i class="ti ti-truck"></i> Tryb wozu</button>'
+    ?'<button class="dab op" onclick="openW(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="wozDose(\''+id+'\')"><i class="ti ti-truck"></i> Załadunek</button>'
     :'<button class="dab opv" onclick="openD(\''+id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="migrateFromList(\''+id+'\')"><i class="ti ti-arrow-right"></i> Do wozu</button>';
   btns+='<button class="dab more" onclick="doseMenu(\''+tab+'\',\''+id+'\')" aria-label="Więcej opcji"><i class="ti ti-dots"></i></button>';
   return '<div class="dc"'+(nested?' style="margin:0 0 8px"':'')+'><div class="dch"><div class="dct">'+esc(d.title)+'</div>'+(meta.length?'<div class="dcm">'+meta.join(' · ')+'</div>':'')+'</div>'
@@ -723,7 +824,6 @@ function doseMenu(tab,id){
   actionSheet(d.title,[
     {icon:'ti-file-type-pdf',label:'Eksport PDF',fn:function(){isW?pdfDoseW(id):pdfDoseD(id)}},
     isW?{icon:'ti-share',label:'Udostępnij',sub:'link lub kod QR z tą dawką',fn:function(){shareDose(id)}}:null,
-    {icon:'ti-chart-line',label:'Przenieś do Analizy dawki',sub:'koszty i wydajność',fn:function(){isW?exportDoseW(id):exportDoseD(id)}},
     {icon:'ti-git-branch',label:'Utwórz dawkę pochodną',sub:'ta dawka jako baza + dodatki dla grupy',fn:function(){isW?newDerivedDoseModal(id):newDerivedDDoseModal(id)}},
     {icon:'ti-folder',label:folder?'Zmień folder ('+folder.name+')':'Przenieś do folderu',fn:function(){showFolderModal(tab,id)}},
     {icon:'ti-copy',label:'Duplikuj',fn:function(){duplicateDose(tab,id)}},
@@ -909,44 +1009,6 @@ function getDDoseIngs(d,visited){
   });
   return base.concat(extras);
 }
-function syncDerivedDDoses(){
-  dDoses.forEach(function(d){
-    if(d.parentId)d.ings=getDDoseIngs(d,{});
-  });
-}
-function getResolvedDIngs(){
-  if(!dParentId)return dIngs;
-  var parent=dDoses.find(function(x){return x.id===dParentId});
-  if(!parent){var own=dDoses.find(function(x){return x.id===dId});return own?own.ings||[]:dExtraIngs}
-  var base=getDDoseIngs(parent,{}); 
-  var szt=parseInt(document.getElementById('d-szt').value)||1;
-  var extras=dExtraIngs.map(function(e){
-    return {name:e.name,cat:e.cat||'t',sm:e.sm||88,kgWoz:parseFloat(e.kgWoz)||0,isExtra:true};
-  });
-  return base.concat(extras);
-}
-function newDerivedDDoseModal(parentId){
-  var parent=dDoses.find(function(x){return x.id===parentId});if(!parent)return;
-  var ov=document.createElement('div');ov.className='modal-ov';ov.id='derived-d-modal';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-git-branch"></i> Dawka pochodna</div>'
-    +'<div class="modal-m" style="margin-bottom:12px">Baza: <strong>'+escapeHtml(parent.title)+'</strong>. Surowce z bazy przejdą automatycznie i będą się aktualizować razem z nią. Dodatki dla tej grupy wpiszesz w kg na wóz.</div>'
-    +'<div class="fl"><div class="fl-l">Nazwa nowej dawki</div><input type="text" id="derived-d-title" placeholder="np. Grupa 1" value="'+escapeHtml(parent.title)+' — grupa"></div>'
-    +'<div class="fl"><div class="fl-l">Liczba sztuk</div><input type="number" id="derived-d-szt" placeholder="0" min="1" value="'+Math.max(1,Math.round((parent.szt||1)/2))+'"></div>'
-    +'<div class="modal-btns"><button class="btn" onclick="document.getElementById(\'derived-d-modal\').remove()">Anuluj</button><button class="btn bp" style="background:var(--p)" onclick="confirmNewDerivedDDose(\''+parentId+'\')"><i class="ti ti-check"></i> Utwórz</button></div></div>';
-  document.body.appendChild(ov);
-}
-function confirmNewDerivedDDose(parentId){
-  var title=document.getElementById('derived-d-title').value.trim()||'Nowa dawka';
-  var szt=parseInt(document.getElementById('derived-d-szt').value)||1;
-  var m=document.getElementById('derived-d-modal');if(m)m.remove();
-  var ft=uniqueTitle(dDoses,title,null);
-  var id='dd'+Date.now();
-  dDoses.push({id:id,title:ft,note:'',szt:szt,parentId:parentId,extraIngs:[],ings:[],createdAt:Date.now()});
-  syncDerivedDDoses();saveAll();
-  openD(id);
-}
-function rmDExtra(i){dExtraIngs.splice(i,1);markDirtyD();renderD()}
-function ukDExtra(i,val){dExtraIngs[i].kgWoz=parseFloat(val)||0;markDirtyD();renderD()}
 function newDerivedDoseModal(parentId){
   var parent=wDoses.find(function(x){return x.id===parentId});if(!parent)return;
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='derived-modal';
@@ -1039,23 +1101,101 @@ function getResolvedWIngs(){
   });
   return base.concat(extras);
 }
+// ===== TRYB ZAŁADUNKU (odhaczanie surowców, ekran nie gaśnie) =====
+var LD=null; // {sig, items:[{name,kg,isExtra}], done:{idx:ts}, started, szt, title}
+var _ldLastTap=0, _wakeLock=null;
+function ldSig(title,szt,ings){return JSON.stringify([wId||'',title,szt,ings.map(function(s){return [s.name,Math.round(s.kg*1000)]})])}
+function ldSave(){try{localStorage.setItem('tmr_load',JSON.stringify(LD))}catch(e){}}
+function ldClear(){try{localStorage.removeItem('tmr_load')}catch(e){}}
 function wozView(){
   var t=document.getElementById('w-title').value||'Dawka',szt=parseInt(document.getElementById('w-szt').value)||0;
-  var allIngs=getResolvedWIngs();
-  if(!allIngs.length){toast('Dodaj najpierw surowce',true);return}
-  var tot=allIngs.reduce(function(a,s){return a+s.kg},0);
-  document.getElementById('woz-t').textContent=t;document.getElementById('wz-szt').textContent=szt+' szt';document.getElementById('wz-ph').textContent=tot.toFixed(2)+' kg';document.getElementById('wz-tot').textContent=(tot*szt).toFixed(0);document.getElementById('wz-cnt').textContent=allIngs.length;document.getElementById('wz-ph2').textContent=tot.toFixed(2);
-  var cum=0,seenExtra=false;
-  document.getElementById('woz-items').innerHTML=allIngs.map(function(s,i){
-    var kw=s.kg*szt;cum+=kw;
-    var extraStyle=s.isExtra?'background:rgba(196,123,10,0.1);border-left:4px solid var(--o)':'';
-    var sep=(!seenExtra&&s.isExtra)?'<div style="padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.04em;border-top:2px dashed var(--o)">Dodatki dla tej grupy</div>':'';
-    if(s.isExtra)seenExtra=true;
-    return sep+'<div class="wi" role="button" style="'+extraStyle+'" onclick="this.classList.toggle(\'done\')"><div class="win">'+(i+1)+'</div><div class="winm">'+esc(s.name)+'</div><div style="text-align:right"><div class="wirk">'+kw.toFixed(1)+'</div><div class="wiru">kg do załadunku</div><div class="wirc">'+cum.toFixed(0)+'</div><div class="wircu">kg na wadze</div></div></div>';
-  }).join('');
+  var ings=getResolvedWIngs().filter(function(s){return s.kg>0});
+  if(!ings.length){toast('Dodaj najpierw surowce',true);return}
+  if(szt<=0){toast('Podaj liczbę sztuk',true);return}
+  var sig=ldSig(t,szt,ings),saved=null;
+  try{saved=JSON.parse(localStorage.getItem('tmr_load')||'null')}catch(e){}
+  var fresh=saved&&saved.sig===sig&&(Date.now()-saved.started)<16*3600*1000&&Object.keys(saved.done||{}).length;
+  LD=fresh?saved:{sig:sig,title:t,szt:szt,items:ings.map(function(s){return{name:s.name,kg:s.kg*szt,isExtra:!!s.isExtra}}),done:{},started:Date.now()};
+  if(!fresh)ldSave();
+  document.getElementById('woz-t').textContent=t;
   show('scr-woz');
+  ldRender(true);
+  wakeOn();
+  if(fresh)toast('Wznowiono załadunek ('+Object.keys(LD.done).length+' z '+LD.items.length+')');
 }
 function wozDose(id){openW(id);wozView()}
+function ldNext(){for(var i=0;i<LD.items.length;i++){if(!LD.done[i])return i}return -1}
+function ldRender(scroll){
+  if(!LD)return;
+  var n=LD.items.length,cnt=Object.keys(LD.done).length,next=ldNext();
+  var total=LD.items.reduce(function(a,s){return a+s.kg},0);
+  var loaded=LD.items.reduce(function(a,s,i){return a+(LD.done[i]?s.kg:0)},0);
+  document.getElementById('ld-cnt').innerHTML='Załadowano <strong>'+cnt+'</strong> z '+n;
+  document.getElementById('ld-kg').innerHTML='na wadze<strong>'+loaded.toFixed(0)+' / '+total.toFixed(0)+' kg</strong>';
+  document.getElementById('ld-bar').style.width=(n?cnt/n*100:0)+'%';
+  document.getElementById('ld-szt').textContent=LD.szt+' szt';
+  var cum=0,seenExtra=false,h='';
+  LD.items.forEach(function(s,i){
+    cum+=s.kg;
+    if(s.isExtra&&!seenExtra){seenExtra=true;h+='<div class="ld-sep">Dodatki dla tej grupy</div>'}
+    var done=!!LD.done[i],cur=i===next;
+    h+='<div class="ld-it'+(done?' done':'')+(cur?' cur':'')+(s.isExtra?' extra':'')+'" id="ld-it-'+i+'">'
+      +'<div class="ld-no">'+(i+1)+'</div>'
+      +'<div class="ld-tx">'+(cur?'<span class="ld-tag">TERAZ</span>':'')+'<div class="ld-nm">'+esc(s.name)+'</div>'
+      +'<div class="ld-am">'+s.kg.toFixed(1)+'<small>kg</small></div>'
+      +'<div class="ld-sc">po załadunku na wadze: <strong>'+cum.toFixed(0)+' kg</strong></div></div>'
+      +'<button class="ld-ck" onclick="ldTap('+i+')" aria-label="'+(done?'Załadowano: ':'Odhacz: ')+esc(s.name)+'"><i class="ti ti-check"></i></button>'
+      +'</div>';
+  });
+  document.getElementById('woz-items').innerHTML=h;
+  var fin=document.getElementById('ld-fin');
+  if(next<0){
+    var mins=Math.max(1,Math.round((Math.max.apply(null,Object.keys(LD.done).map(function(k){return LD.done[k]}))-LD.started)/60000));
+    fin.innerHTML='<div class="ld-fin-t"><i class="ti ti-check"></i> Załadunek zakończony</div><div class="ld-fin-s">'+n+' surowców · '+total.toFixed(0)+' kg · około '+mins+' min</div>'
+      +'<div class="br" style="padding:0;margin:12px 0 0"><button class="btn bp bpg" onclick="ldFinish()"><i class="ti ti-check"></i> Zakończ</button></div>';
+    fin.style.display='block';
+  } else fin.style.display='none';
+  if(scroll){var el=document.getElementById(next<0?'ld-fin':'ld-it-'+next);if(el)setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'})},60)}
+}
+function ldTap(i){
+  if(!LD)return;
+  var now=Date.now();if(now-_ldLastTap<700)return;_ldLastTap=now;
+  var s=LD.items[i];
+  if(LD.done[i]){
+    ask({title:'Cofnąć odhaczenie?',msg:'„'+s.name+'” ('+s.kg.toFixed(1)+' kg) zostanie oznaczony jako niezaładowany.',ok:'Cofnij',danger:true,onOk:function(){delete LD.done[i];ldSave();ldRender(false)}});
+    return;
+  }
+  var skipped=LD.items.filter(function(x,j){return j<i&&!LD.done[j]}).map(function(x){return x.name});
+  if(skipped.length){
+    ask({title:'Pominąć wcześniejsze surowce?',msg:'Nieodhaczone wcześniej: '+skipped.join(', ')+'.\n\nOdhaczyć teraz „'+s.name+'”?',ok:'Odhacz',onOk:function(){ldMark(i)}});
+    return;
+  }
+  ldMark(i);
+}
+function ldMark(i){
+  LD.done[i]=Date.now();ldSave();
+  try{if(navigator.vibrate)navigator.vibrate(40)}catch(e){}
+  ldRender(true);
+}
+function ldRestart(){
+  if(!LD)return;
+  if(!Object.keys(LD.done).length){toast('Załadunek dopiero się zaczął');return}
+  ask({title:'Zacząć od nowa?',msg:'Wszystkie odhaczenia zostaną wyczyszczone.',ok:'Zacznij od nowa',danger:true,onOk:function(){LD.done={};LD.started=Date.now();ldSave();ldRender(true)}});
+}
+function ldFinish(){ldClear();LD=null;wakeOff();show('scr-w-edit');toast('Załadunek zakończony')}
+function ldBack(){wakeOff();show('scr-w-edit')}
+// Ekran nie gaśnie w trakcie załadunku (Wake Lock API)
+function wakeOn(){
+  var el=document.getElementById('ld-wake');
+  if(!('wakeLock' in navigator)){if(el){el.className='ld-wake off';el.innerHTML='<i class="ti ti-alert-triangle"></i> ekran może zgasnąć'}return}
+  navigator.wakeLock.request('screen').then(function(l){
+    _wakeLock=l;if(el){el.className='ld-wake';el.innerHTML='<i class="ti ti-bulb"></i> ekran nie zgaśnie'}
+    l.addEventListener('release',function(){if(_wakeLock===l)_wakeLock=null});
+  }).catch(function(){if(el){el.className='ld-wake off';el.innerHTML='<i class="ti ti-alert-triangle"></i> ekran może zgasnąć'}});
+}
+function wakeOff(){if(_wakeLock){try{_wakeLock.release()}catch(e){}_wakeLock=null}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&curScreen()==='scr-woz'&&!_wakeLock)wakeOn()});
+
 // PDF
 // ===== Generowanie PDF przez jsPDF (natywne rysowanie, polskie znaki, 1 strona) =====
 function hexToRgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
@@ -1075,7 +1215,7 @@ function showPdfPreview(htmlContent, saveFn){
   frame.srcdoc=htmlContent;
   var btns=document.createElement('div');
   btns.style.cssText='display:flex;gap:10px;padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));background:#0C447C;flex-shrink:0';
-  btns.innerHTML='<button id="pdf-save-btn" style="flex:2;padding:14px;background:#1D9E75;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ti ti-download"></i> Zapisz PDF</button>'
+  btns.innerHTML='<button id="pdf-save-btn" style="flex:2;padding:14px;background:#138A3A;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ti ti-download"></i> Zapisz PDF</button>'
     +'<button onclick="closePdfPreview()" style="flex:1;padding:14px;background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer">Zamknij</button>';
   ov.appendChild(top);ov.appendChild(frame);ov.appendChild(btns);
   document.body.appendChild(ov);
@@ -1087,8 +1227,8 @@ function showPdfPreview(htmlContent, saveFn){
 function closePdfPreview(){var m=document.getElementById('pdf-preview-ov');if(m)m.remove()}
 
 function buildDosePreviewHTML(title,note,szt,ings,mode){
-  var hdrBg=mode==='d'?'#3C3489':'#085041';
-  var cumClr=mode==='d'?'#534AB7':'#1D9E75';
+  var hdrBg=mode==='d'?'#3C3489':'#064A1E';
+  var cumClr=mode==='d'?'#534AB7':'#138A3A';
   var cum=0,total=0,tw=0,ph=0,woz=0;
   if(mode==='d'){tw=ings.reduce(function(a,s){return a+s.kgWoz},0);ph=szt>0?tw/szt:0}
   else{total=ings.reduce(function(a,s){return a+s.kg},0);woz=total*szt}
@@ -1121,7 +1261,7 @@ function genDosePDF(title,note,szt,ings,mode){
     var W=210,H=297,M=14;
     var hdrBg,barBg,cumClr;
     if(mode==='d'){hdrBg='#3C3489';barBg='#534AB7';cumClr='#534AB7'}
-    else{hdrBg='#085041';barBg='#0F6E56';cumClr='#1D9E75'}
+    else{hdrBg='#064A1E';barBg='#0B6B2C';cumClr='#138A3A'}
     var n=ings.length;
     var cum=0,total=0,tw=0,ph=0,woz=0;
     if(mode==='d'){tw=ings.reduce(function(a,s){return a+s.kgWoz},0);ph=szt>0?tw/szt:0}
@@ -1189,471 +1329,20 @@ function genDosePDF(title,note,szt,ings,mode){
 // Zamiana polskich znakow na ASCII (helvetica w jsPDF nie ma UTF-8)
 function plchars(s){if(s===undefined||s===null)return '';var m={'\u0105':'a','\u0107':'c','\u0119':'e','\u0142':'l','\u0144':'n','\u00f3':'o','\u015b':'s','\u017a':'z','\u017c':'z','\u0104':'A','\u0106':'C','\u0118':'E','\u0141':'L','\u0143':'N','\u00d3':'O','\u015a':'S','\u0179':'Z','\u017b':'Z'};return (''+s).replace(/[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]/g,function(ch){return m[ch]||ch})}
 function sanitize(s){return plchars(s).replace(/[^a-zA-Z0-9 _-]/g,'').replace(/\s+/g,'_').substring(0,40)||'dawka'}
-function pdfD(){genDosePDF(document.getElementById('d-title').value||'Dawka',document.getElementById('d-note').value,parseInt(document.getElementById('d-szt').value)||0,getResolvedDIngs(),'d')}
 function pdfW(){genDosePDF(document.getElementById('w-title').value||'Dawka',document.getElementById('w-note').value,parseInt(document.getElementById('w-szt').value)||0,getResolvedWIngs(),'w')}
-function pdfDoseD(id){syncDerivedDDoses();var d=dDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'d')}
 function pdfDoseW(id){syncDerivedDoses();var d=wDoses.find(function(x){return x.id===id});if(d)genDosePDF(d.title,d.note,d.szt,d.ings,'w')}
 
-var aDoses=[];try{aDoses=JSON.parse(localStorage.getItem('tmr_ad')||'[]')}catch(e){}
-var aDoseId=null,aMilk=32,aPrice=1.8;
-function renderAnaliza(){
-  var el=document.getElementById('tab-a');
-  el.innerHTML=analizaContent();
-}
 var mDoses=[];try{mDoses=JSON.parse(localStorage.getItem('tmr_md')||'[]')}catch(e){}
 var mId=null,mIngs=[];
 
-function renderMieszanka(){
-  var el=document.getElementById('tab-m');
-  el.innerHTML=mListView();
-}
-function mListView(){
-  var h='';
-  if(!mDoses.length){
-    h+='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-blender"></i></div><div class="em-t">Brak mieszanek</div><div class="em-s">Utwórz własną mieszankę z pasz treściwych i dodatków.</div></div>';
-  }
-  h+='<div class="hn"><i class="ti ti-info-circle"></i><div>Aplikacja policzy białko, skrobię, energię, suchą masę i cenę mieszanki. Gotową mieszankę możesz dodać do bazy surowców i używać w dawkach.</div></div>';
-  h+=mDoses.map(function(d){
-    var r=mCalc(d.ings,d.prices||{});
-    return '<div class="dc"><div class="dch"><div class="dct">'+esc(d.title)+'</div><div class="dcm">'+(d.note?esc(d.note)+' · ':'')+d.ings.length+' surowców · '+r.totalKg.toFixed(0)+' kg · '+r.price.toFixed(0)+' zł/t</div></div>'
-      +'<div class="dcs" style="grid-template-columns:repeat(4,1fr)"><div class="dss"><div class="dsv">'+r.protein.toFixed(1)+'%</div><div class="dsl">białko</div></div><div class="dss"><div class="dsv">'+r.starch.toFixed(1)+'%</div><div class="dsl">skrobia</div></div><div class="dss"><div class="dsv" style="color:#B8860B">'+(r.nel>0?r.nel.toFixed(2):'—')+'</div><div class="dsl">MJ NEL</div></div><div class="dss"><div class="dsv" style="color:var(--b)">'+r.sm.toFixed(1)+'%</div><div class="dsl">SM</div></div></div>'
-      +'<div class="dca"><button class="dab" style="color:var(--b);font-weight:650" onclick="openM(\''+d.id+'\')"><i class="ti ti-edit"></i> Edytuj</button><button class="dab" onclick="pdfMieszanka(\''+d.id+'\')"><i class="ti ti-file-type-pdf"></i> PDF</button><button class="dab" onclick="exportMieszanka(\''+d.id+'\')"><i class="ti ti-database-import"></i> Do bazy</button></div></div>';
-  }).join('');
-  h+='<button class="fab" style="background:var(--b)" onclick="newM()"><i class="ti ti-plus"></i> Nowa mieszanka</button>';
-  return h;
-}
 // Oblicza parametry mieszanki: SM%, białko% w SM, skrobia% w SM, NEL MJ/kg SM, cena zł/t
-function mCalc(ings,priceMap){
-  var totalKg=0,smKg=0,protKg=0,starchKg=0,costSum=0,nelSum=0;
-  ings.forEach(function(s){
-    var sm=getSM(s.name),pr=getProtein(s.name),st=getStarch(s.name),nel=getNEL(s.name);
-    var price=(priceMap&&priceMap[s.name]!==undefined)?priceMap[s.name]:getBasePrice(s.name);
-    var dm=s.kg*sm/100;
-    totalKg+=s.kg;smKg+=dm;
-    protKg+=dm*pr/100;starchKg+=dm*st/100;nelSum+=dm*nel;
-    costSum+=s.kg*price;
-  });
-  return {
-    totalKg:totalKg,
-    sm:totalKg>0?smKg/totalKg*100:0,
-    protein:smKg>0?protKg/smKg*100:0,
-    starch:smKg>0?starchKg/smKg*100:0,
-    nel:smKg>0?nelSum/smKg:0,
-    price:totalKg>0?costSum/totalKg:0
-  };
-}
-var mOrig='';
-function mSnapshot(){var t=document.getElementById('m-title'),n=document.getElementById('m-note');return JSON.stringify({t:t?t.value:'',n:n?n.value:'',i:mIngs,p:mPrices})}
-function newM(){mId=null;mIngs=[];mPrices={};show('scr-m-edit');renderMEdit('Nowa mieszanka','');mOrig=mSnapshot()}
-function openM(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;mId=id;mIngs=JSON.parse(JSON.stringify(d.ings));mPrices=d.prices?JSON.parse(JSON.stringify(d.prices)):{};show('scr-m-edit');renderMEdit(d.title,d.note||'');mOrig=mSnapshot()}
-function backM(){if(mSnapshot()!==mOrig){ask({title:'Niezapisane zmiany',msg:'Masz niezapisane zmiany w tej mieszance.',ok:'Wyjdź bez zapisu',cancel:'Zostań',danger:true,onOk:leaveM});return}leaveM()}
-function leaveM(){mOrig='';show('scr-main');showTab('m')}
-function renderMEdit(title,note){
-  var sc=document.getElementById('scr-m-edit');
-  sc.innerHTML='<div class="topbar"><button class="ib" onclick="backM()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t" id="m-topbar">'+esc(title)+'</div><button class="ib" onclick="pdfMieszankaLive()" title="PDF" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button></div>'
-    +'<div class="sec-top">Informacje</div><div class="spacer"></div>'
-    +'<div class="fl"><div class="fl-l">Nazwa mieszanki</div><input type="text" id="m-title" placeholder="np. Mieszanka produkcyjna 20%" value="'+(title==='Nowa mieszanka'?'':esc(title))+'"></div>'
-    +'<div class="fl"><div class="fl-l">Notatka</div><input type="text" id="m-note" placeholder="np. dla krów w szczycie" value="'+esc(note||'')+'"></div>'
-    +'<div class="divider"></div><div class="sec-top">Parametry mieszanki</div><div class="spacer"></div>'
-    +'<div id="m-stats"></div>'
-    +'<div id="m-ing-list"></div>'
-    +'<div class="ac"><div class="at2"><i class="ti ti-plus"></i> Dodaj surowiec</div><div class="ar"><button class="pick-btn" onclick="openPicker(\'m\',true)"><span class="pick-name" id="m-pick-label">Wybierz surowiec…</span><i class="ti ti-chevron-down pick-arrow"></i></button><input type="number" id="m-kg" placeholder="kg" min="0" step="1" inputmode="numeric" aria-label="kg"><button class="addb" style="background:var(--b)" onclick="addM()" aria-label="Dodaj"><i class="ti ti-plus"></i></button></div><input type="hidden" id="m-sel-val"></div>'
-    +'<div class="br"><button class="btn" onclick="editMixPrices()"><i class="ti ti-coin"></i> Ceny surowców</button><button class="btn" onclick="dupM()"><i class="ti ti-copy"></i> Duplikuj</button></div>'
-    +'<div class="br"><button class="btn bp" style="background:var(--b)" id="m-save-btn" onclick="saveM()"><i class="ti ti-device-floppy"></i> Zapisz</button></div>'
-    +'<div class="br"><button class="btn" style="border-color:var(--g);color:var(--gd)" onclick="exportMieszankaLive()"><i class="ti ti-database-import"></i> Dodaj do bazy surowców</button></div>'
-    +'<button class="btn bdd" id="m-del-btn" style="display:'+(mId?'flex':'none')+';width:calc(100% - 32px);margin:0 16px 10px" onclick="delM()"><i class="ti ti-trash"></i> Usuń mieszankę</button>';
-  renderM();
-}
-function addM(){
-  var val=document.getElementById('m-sel-val').value;
-  if(!val){toast('Wybierz surowiec',true);return}
-  var kg=parseFloat(document.getElementById('m-kg').value);
-  if(!kg||kg<=0){toast('Podaj ilość w kg',true);return}
-  var p=val.split('|'),nm=p[0];
-  if(getSM(nm)<=0){toast('Surowiec „'+nm+'” nie ma suchej masy — uzupełnij go w „Moje surowce”',true);return}
-  var ex=mIngs.find(function(x){return x.name===nm});
-  if(ex){ex.kg+=kg;toast('Zwiększono ilość: '+nm)}else mIngs.push({name:nm,kg:kg});
-  document.getElementById('m-kg').value='';
-  document.getElementById('m-sel-val').value='';
-  document.getElementById('m-pick-label').textContent='Wybierz surowiec…';
-  renderM();
-}
-function rmM(i){mIngs.splice(i,1);renderM()}
-function ukM(i,v){mIngs[i].kg=parseFloat(v)||0;renderM()}
-function renderM(){
-  var r=mCalc(mIngs,mPrices);
-  var st=document.getElementById('m-stats');
-  if(st){st.innerHTML='<div class="s2">'
-    +sb('var(--b)',r.protein.toFixed(1)+'%','białko (w SM)')
-    +sb('#993C1D',r.starch.toFixed(1)+'%','skrobia (w SM)')
-    +'</div><div class="s2">'
-    +sb('#B8860B',(r.nel>0?r.nel.toFixed(2)+' MJ':'—'),'energia NEL'+(r.nel>0?' · '+nelToVem(r.nel)+' VEM':''))
-    +sb('var(--gd)',r.price.toFixed(0)+' zł','cena za tonę')
-    +'</div><div class="s2">'
-    +sb('var(--tx)',r.totalKg.toFixed(0)+' kg','suma mieszanki')
-    +sb('var(--tx)',r.sm.toFixed(1)+'%','sucha masa')
-    +'</div>';}
-  var el=document.getElementById('m-ing-list');if(!el)return;
-  var noPrice=mIngs.filter(function(s){var p=mPrices[s.name]!==undefined?mPrices[s.name]:getBasePrice(s.name);return !(p>0)});
-  var warn=noPrice.length?'<div class="hn warn"><i class="ti ti-alert-triangle"></i><div>Bez ceny: '+noPrice.map(function(s){return esc(s.name)}).join(', ')+'. Uzupełnij w „Ceny surowców”, inaczej cena mieszanki będzie zaniżona.</div></div>':'';
-  if(!mIngs.length){el.innerHTML='<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-flask"></i></div><div class="em-t">Brak surowców</div><div class="em-s">Dodaj pasze treściwe lub dodatki poniżej.</div></div>';return}
-  el.innerHTML=warn+'<div class="ls">'+mIngs.map(function(s,i){
-    var pct=r.totalKg>0?(s.kg/r.totalKg*100):0;
-    return '<div class="rw"><div class="rn">'+(i+1)+'</div><div style="flex:1;min-width:0"><div class="rname">'+esc(s.name)+'</div><div class="cp" style="color:var(--b)">'+pct.toFixed(1)+'% składu</div></div><div class="rr"><div class="kw"><input type="number" value="'+s.kg+'" min="0" step="1" inputmode="numeric" onchange="ukM('+i+',this.value)" aria-label="kg"><span>kg</span></div><button class="dl" onclick="rmM('+i+')" aria-label="Usuń"><i class="ti ti-x"></i></button></div></div>';
-  }).join('')+'</div>';
-}
-function saveM(){
-  var t=document.getElementById('m-title').value.trim()||'Mieszanka';
-  if(!mIngs.length){toast('Dodaj surowce',true);return}
-  var dup=findDuplicateTitle(mDoses,t,mId);
-  if(dup){var nt=uniqueTitle(mDoses,t,mId);ask({title:'Taka nazwa już istnieje',msg:'Mieszanka „'+t+'” już jest na liście. Zapisać jako „'+nt+'”?',ok:'Zapisz jako „'+nt+'”',onOk:function(){document.getElementById('m-title').value=nt;doSaveM(nt)}});return}
-  doSaveM(t);
-}
-function doSaveM(t){
-  var n=document.getElementById('m-note').value.trim();
-  if(mId){var d=mDoses.find(function(x){return x.id===mId});if(d){d.title=t;d.note=n;d.ings=JSON.parse(JSON.stringify(mIngs));d.prices=JSON.parse(JSON.stringify(mPrices))}}
-  else{mId='md'+Date.now();mDoses.push({id:mId,title:t,note:n,ings:JSON.parse(JSON.stringify(mIngs)),prices:JSON.parse(JSON.stringify(mPrices))});document.getElementById('m-del-btn').style.display='flex'}
-  document.getElementById('m-topbar').textContent=t;saveAll();mOrig=mSnapshot();flash('m-save-btn');toast('Zapisano mieszankę');
-}
-function delM(){
-  var d=mDoses.find(function(x){return x.id===mId});if(!d){leaveM();return}
-  ask({title:'Usunąć mieszankę?',msg:'„'+d.title+'” zostanie usunięta. Kopia dodana wcześniej do bazy surowców zostaje.',ok:'Usuń',danger:true,onOk:function(){mDoses=mDoses.filter(function(x){return x.id!==mId});saveAll();toast('Mieszanka usunięta');leaveM()}});
-}
-function dupM(){mId=null;var t=uniqueTitle(mDoses,(document.getElementById('m-title').value||'Mieszanka')+' (kopia)',null);document.getElementById('m-title').value=t;document.getElementById('m-topbar').textContent=t;document.getElementById('m-del-btn').style.display='none';toast('Utworzono kopię — zapisz, aby ją zachować')}
-function editMixPrices(){
-  if(!mIngs.length){toast('Najpierw dodaj surowce',true);return}
-  var rows=mIngs.map(function(s){
-    var p=mPrices[s.name]!==undefined?mPrices[s.name]:getBasePrice(s.name);
-    var base=getBasePrice(s.name);
-    var isOverride=mPrices[s.name]!==undefined;
-    return '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd)"><div style="flex:1;font-size:14px;min-width:0">'+esc(s.name)+'<div style="font-size:11px;color:'+(isOverride?'var(--b)':'var(--tx3)')+'">'+(isOverride?'cena własna dla tej mieszanki':'cena z bazy: '+(base||'brak'))+'</div></div><input type="number" value="'+(p>0?p:'')+'" placeholder="'+(base||0)+'" min="0" step="1" inputmode="numeric" style="width:96px;text-align:right" onchange="setMixPrice(\''+jsArg(s.name)+'\',this.value)" aria-label="Cena zł/t"><span style="font-size:12px;color:var(--tx3)">zł/t</span></div>';
-  }).join('');
-  var ov=document.createElement('div');ov.className='modal-ov';ov.id='mixprice-modal';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-coin"></i> Ceny surowców (zł/t netto)</div><div class="modal-m">Ceny zapisane tylko dla tej mieszanki. Puste pole = cena z bazy.</div>'+rows+'<div class="modal-btns"><button class="btn bp" style="background:var(--b)" onclick="closeMixPrices()"><i class="ti ti-check"></i> Gotowe</button></div></div>';
-  document.body.appendChild(ov);
-}
-function setMixPrice(name,val){
-  var v=val.trim();
-  if(v===''){delete mPrices[name]}
-  else{mPrices[name]=parseFloat(v)||0}
-}
-function closeMixPrices(){var m=document.getElementById('mixprice-modal');if(m)m.remove();renderM()}
-function exportMieszankaLive(){
-  if(!mIngs.length){toast('Dodaj surowce',true);return}
-  var t=document.getElementById('m-title').value.trim()||'Mieszanka';
-  doExportMieszanka(t,mIngs,mPrices);
-}
-function exportMieszanka(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;doExportMieszanka(d.title,d.ings,d.prices||{})}
-function doExportMieszanka(title,ings,priceMap){
-  var r=mCalc(ings,priceMap);
-  var item=[null,'t',Math.round(r.sm*10)/10,Math.round(r.price),Math.round(r.protein*10)/10,Math.round(r.starch*10)/10,Math.round(r.nel*100)/100];
-  var grp=BASE.find(function(g){return g.g==='Moje mieszanki'});
-  var existing=grp&&grp.items.find(function(it){return it[0]===title});
-  function store(name,replace){
-    item[0]=name;
-    var g=BASE.find(function(x){return x.g==='Moje mieszanki'});if(!g){g={g:'Moje mieszanki',items:[]};BASE.push(g)}
-    var i=g.items.findIndex(function(it){return it[0]===name});if(i>=0&&replace)g.items[i]=item.slice();else g.items.push(item.slice());
-    var savedMix=[];try{savedMix=JSON.parse(localStorage.getItem('tmr_mixbase')||'[]')}catch(e){}
-    var j=savedMix.findIndex(function(x){return x[0]===name});if(j>=0)savedMix[j]=item.slice();else savedMix.push(item.slice());
-    try{localStorage.setItem('tmr_mixbase',JSON.stringify(savedMix))}catch(e){}
-    toast(replace?'Zaktualizowano „'+name+'” w bazie surowców':'„'+name+'” dodana do bazy surowców');
-  }
-  function freeName(){var fname=title,n=2;while(nameInBase(fname)){fname=title+' ('+n+')';n++}return fname}
-  if(existing){
-    actionSheet('„'+title+'” jest już w bazie surowców',[
-      {icon:'ti-refresh',label:'Zaktualizuj parametry w bazie',sub:'białko, skrobia, energia, cena',fn:function(){store(title,true)}},
-      {icon:'ti-plus',label:'Dodaj jako nową pozycję',fn:function(){store(freeName(),false)}},
-      {icon:'ti-x',label:'Anuluj'}
-    ]);
-    return;
-  }
-  store(nameInBase(title)?freeName():title,false);
-}
-function nameInBase(n){var f=false;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===n)f=true})});return f||!!customIngs.find(function(c){return c[0]===n})}
-function pdfMieszankaLive(){
-  if(!mIngs.length){toast('Dodaj surowce',true);return}
-  var t=document.getElementById('m-title').value.trim()||'Mieszanka';
-  doPdfMieszanka(t,mIngs,mPrices);
-}
-function pdfMieszanka(id){var d=mDoses.find(function(x){return x.id===id});if(!d)return;doPdfMieszanka(d.title,d.ings,d.prices||{})}
-function doPdfMieszanka(title,ings,priceMap){
-  var r=mCalc(ings,priceMap);
-  // Podgląd HTML
-  var prows=ings.map(function(s,i){var pct=r.totalKg>0?(s.kg/r.totalKg*100):0;var pr=(priceMap&&priceMap[s.name]!==undefined)?priceMap[s.name]:getBasePrice(s.name);return '<tr><td style="padding:8px 12px"><strong>'+(i+1)+'. '+esc(s.name)+'</strong></td><td style="padding:8px 12px;text-align:right">'+s.kg+' kg</td><td style="padding:8px 12px;text-align:right;color:#185FA5">'+pct.toFixed(1)+'%</td><td style="padding:8px 12px;text-align:right">'+(pr>0?pr:'—')+'</td></tr>'}).join('');
-  var previewHtml='<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111}.hdr{background:#185FA5;color:#fff;padding:14px 16px}.kpis{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}table{width:100%;border-collapse:collapse;font-size:13px}tr{border-bottom:1px solid #eee}th{padding:8px 12px;text-align:left;background:#f0f0f0;font-size:11px}</style></head><body>'
-    +'<div class="hdr"><h1 style="font-size:18px">Mieszanka: '+esc(title)+'</h1><div style="font-size:12px;opacity:.8;margin-top:3px">'+ings.length+' surowców · '+r.totalKg.toFixed(0)+' kg · '+new Date().toLocaleDateString('pl')+'</div></div>'
-    +'<div class="kpis"><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:100px"><div style="font-size:20px;font-weight:700;color:#185FA5">'+r.protein.toFixed(1)+'%</div><div style="font-size:11px;color:#666">białko (w SM)</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:100px"><div style="font-size:20px;font-weight:700;color:#993C1D">'+r.starch.toFixed(1)+'%</div><div style="font-size:11px;color:#666">skrobia (w SM)</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:100px"><div style="font-size:20px;font-weight:700">'+r.totalKg.toFixed(0)+' kg</div><div style="font-size:11px;color:#666">suma · SM '+r.sm.toFixed(1)+'%</div></div><div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:100px"><div style="font-size:20px;font-weight:700;color:#0F6E56">'+r.price.toFixed(0)+'</div><div style="font-size:11px;color:#666">cena (zł/t)</div></div></div>'
-    +'<table><thead><tr><th>Surowiec</th><th style="text-align:right">kg</th><th style="text-align:right">% składu</th><th style="text-align:right">zł/t</th></tr></thead><tbody>'+prows+'</tbody></table></body></html>';
-  showPdfPreview(previewHtml,function(){
-    closePdfPreview();
-    var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
-    var W=210,H=297,M=14;
-    doc.setFillColor(24,95,165);doc.rect(0,0,W,22,'F');
-    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
-    doc.text(plchars('Mieszanka: '+title),M,12);
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(200,220,245);
-    doc.text(plchars(ings.length+' surowcow  |  '+r.totalKg.toFixed(0)+' kg  |  '+new Date().toLocaleDateString('pl')),M,18);
-    var kpis=[['bialko (w SM)',r.protein.toFixed(1)+'%',[24,95,165]],['skrobia (w SM)',r.starch.toFixed(1)+'%',[153,60,29]],['suma kg (SM '+r.sm.toFixed(1)+'%)',r.totalKg.toFixed(0)+' kg',[30,30,30]],['cena (zl/t)',r.price.toFixed(0),[15,110,86]]];
-    var ky=28,kw=(W-2*M)/2,kh=18;
-    kpis.forEach(function(k,i){var col=i%2,row=Math.floor(i/2);var kx=M+col*kw,kyy=ky+row*kh;doc.setFillColor(245,245,247);doc.roundedRect(kx,kyy,kw-3,kh-3,2,2,'F');doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text(k[1],kx+4,kyy+8);doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(plchars(k[0]),kx+4,kyy+13.5)});
-    var ty=ky+2*kh+4;
-    doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
-    doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('SUROWIEC',M+2,ty+4.7);doc.text('kg',M+105,ty+4.7,{align:'right'});doc.text('% skladu',M+145,ty+4.7,{align:'right'});doc.text('zl/t',W-M-1,ty+4.7,{align:'right'});
-    var ry=ty+7,n=ings.length,rowH=Math.min(8,(H-ry-16)/n);if(rowH<5)rowH=5;
-    doc.setFont('helvetica','normal');
-    ings.forEach(function(s,i){var pct=r.totalKg>0?(s.kg/r.totalKg*100):0;var pr=(priceMap&&priceMap[s.name]!==undefined)?priceMap[s.name]:getBasePrice(s.name);var yy=ry+i*rowH;if(yy>H-18)return;doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);doc.setTextColor(25,25,25);doc.setFontSize(Math.min(10,rowH*0.95));doc.text(plchars((i+1)+'. '+s.name).substring(0,40),M+2,yy+rowH*0.65);doc.text(''+s.kg,M+105,yy+rowH*0.65,{align:'right'});doc.setTextColor(24,95,165);doc.text(pct.toFixed(1)+'%',M+145,yy+rowH*0.65,{align:'right'});doc.setTextColor(25,25,25);doc.text(pr>0?''+pr:'-',W-M-1,yy+rowH*0.65,{align:'right'})});
-    doc.save(sanitize('Mieszanka_'+title)+'.pdf');
-    toast('PDF zapisany w Pobranych');
-  });
-}
-
-function analizaContent(){
-  if(!aDoses.length){
-    return '<div class="em"><div class="em-i" style="color:#85B7EB"><i class="ti ti-chart-line"></i></div><div class="em-t">Brak receptur do analizy</div><div class="em-s">Otwórz dawkę w zakładce Obliczanie wozu lub Ustalanie dawki i wybierz <strong>⋯ → Przenieś do Analizy dawki</strong> (albo ikonę <i class="ti ti-chart-line"></i> w edycji dawki).</div></div>'
-      +'<div class="hn"><i class="ti ti-info-circle"></i><div>Tutaj policzysz koszt dawki, koszt paszy treściwej na litr mleka i przychód z mleka pomniejszony o koszt paszy.</div></div>'
-      +'<div class="br"><button class="btn bp bpg" onclick="showTab(\'w\')"><i class="ti ti-truck"></i> Przejdź do dawek</button></div>';
-  }
-  if(!aDoseId||!aDoses.find(function(d){return d.id===aDoseId}))aDoseId=aDoses[0].id;
-  var cur=aDoses.find(function(d){return d.id===aDoseId});
-  // wczytaj zapisane wartości receptury (lub domyślne)
-  var milkVal=(cur&&cur.milk!==undefined)?cur.milk:32;
-  var priceVal=(cur&&cur.milkPrice!==undefined)?cur.milkPrice:1.80;
-  aMilk=milkVal;aPrice=priceVal;
-  var opts=aDoses.map(function(d){return '<option value="'+d.id+'"'+(d.id===aDoseId?' selected':'')+'>'+esc(d.title)+'</option>'}).join('');
-  var h='<div class="fl"><div class="fl-l">Receptura</div><div style="display:flex;gap:6px"><select id="a-sel" style="flex:1" onchange="aDoseId=this.value;renderAnaliza()">'+opts+'</select><button class="ib" onclick="delAnalizaDose()" title="Usuń recepturę z Analizy" aria-label="Usuń recepturę z Analizy"><i class="ti ti-trash"></i></button></div>'
-    +'<div style="font-size:12px;color:var(--tx3);margin-top:4px">'+(cur.szt||0)+' szt · '+cur.ings.length+' surowców · kopia dawki z chwili przeniesienia</div></div>';
-  h+='<div class="ir"><div class="fw"><div class="fl-l">Mleko (l/szt/dzień)</div><input type="number" id="a-milk" value="'+milkVal+'" min="0" step="0.1" inputmode="decimal" oninput="setMilk(this.value)"></div><div class="fw"><div class="fl-l">Cena mleka (zł/l)</div><input type="number" id="a-price" value="'+priceVal+'" min="0" step="0.01" inputmode="decimal" oninput="setMilkPrice(this.value)"></div></div>';
-  h+='<div id="a-results"></div>';
-  h+='<div class="br" style="margin-top:10px"><button class="btn" onclick="editPrices()"><i class="ti ti-coin"></i> Ceny surowców</button><button class="btn" onclick="pdfAnaliza()"><i class="ti ti-file-type-pdf"></i> PDF</button></div>';
-  setTimeout(calcAnaliza,10);
-  return h;
-}
-function setMilk(v){aMilk=parseFloat(v)||0;var d=aDoses.find(function(x){return x.id===aDoseId});if(d){d.milk=aMilk;saveAll()}calcAnaliza()}
-function setMilkPrice(v){aPrice=parseFloat(v)||0;var d=aDoses.find(function(x){return x.id===aDoseId});if(d){d.milkPrice=aPrice;saveAll()}calcAnaliza()}
-function delAnalizaDose(){if(!aDoseId)return;var d=aDoses.find(function(x){return x.id===aDoseId});ask({title:'Usunąć z Analizy?',msg:'Receptura „'+(d?d.title:'')+'” zniknie z Analizy dawki. Sama dawka zostaje bez zmian.',ok:'Usuń',danger:true,onOk:function(){aDoses=aDoses.filter(function(x){return x.id!==aDoseId});aDoseId=null;saveAll();toast('Receptura usunięta z Analizy');renderAnaliza()}})}
-function exportToAnaliza(src){
-  var ings,title,szt;
-  if(src==='w'){title=document.getElementById('w-title').value.trim()||'Dawka';szt=parseInt(document.getElementById('w-szt').value)||0;ings=getResolvedWIngs().map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:s.kg}})}
-  else{title=document.getElementById('d-title').value.trim()||'Dawka';szt=parseInt(document.getElementById('d-szt').value)||1;ings=getResolvedDIngs().map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}})}
-  if(!ings.length){toast('Brak surowców do analizy',true);return}
-  pushAnaliza(title,szt,ings);
-}
-function exportDoseW(id){var d=wDoses.find(function(x){return x.id===id});if(!d)return;var ings=getWDoseIngs(d,{}).map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:s.kg}});pushAnaliza(d.title,d.szt,ings)}
-function exportDoseD(id){var d=dDoses.find(function(x){return x.id===id});if(!d)return;var szt=d.szt||1;var ings=getDDoseIngs(d,{}).map(function(s){return{name:s.name,cat:s.cat,sm:s.sm||getSM(s),kg:szt>0?Math.round(s.kgWoz/szt*100)/100:0}});pushAnaliza(d.title,szt,ings)}
-function pushAnaliza(title,szt,ings){
-  // sprawdź czy istnieje już analiza o tej nazwie (bazowej)
-  var existing=aDoses.find(function(x){return x.title===title});
-  if(existing){
-    showAnalizaConflict(title,szt,ings,existing);
-    return;
-  }
-  var id='ad'+Date.now();aDoses.push({id:id,title:title,szt:szt,ings:ings});aDoseId=id;saveAll();afterAnaliza('Receptura dodana do Analizy dawki');
-}
-// Na ekranie głównym przejdź do zakładki Analiza; w edycji dawki zostań (niezapisane zmiany) i tylko poinformuj
-function afterAnaliza(msg){if(curScreen()==='scr-main'){showTab('a');toast(msg)}else{curTab='a';try{localStorage.setItem('tmr_tab','a')}catch(e){}toast(msg+' — zobaczysz ją po powrocie')}}
-function showAnalizaConflict(title,szt,ings,existing){
-  var ov=document.createElement('div');ov.className='modal-ov';ov.id='conflict-modal';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t">Analiza "'+escapeHtml(title)+'" już istnieje</div>'
-    +'<div class="modal-m">Zaktualizować istniejącą recepturę (ceny i dane o mleku zostaną zachowane) czy dodać nową?</div>'
-    +'<div class="modal-btns" style="flex-direction:column"><button class="btn bp" style="background:var(--b);width:100%" onclick="resolveConflict(\'overwrite\')"><i class="ti ti-refresh"></i> Zaktualizuj istniejącą</button>'
-    +'<button class="btn" style="width:100%" onclick="resolveConflict(\'new\')"><i class="ti ti-plus"></i> Utwórz nową (kopię)</button>'
-    +'<button class="btn" style="width:100%" onclick="resolveConflict(\'cancel\')">Anuluj</button></div></div>';
-  document.body.appendChild(ov);
-  window._conflictData={title:title,szt:szt,ings:ings,existing:existing};
-}
-function resolveConflict(action){
-  var m=document.getElementById('conflict-modal');if(m)m.remove();
-  var d=window._conflictData;if(!d)return;
-  if(action==='cancel')return;
-  if(action==='overwrite'){
-    // zachowaj ceny/mleko z istniejącej receptury
-    d.existing.szt=d.szt;d.existing.ings=d.ings;
-    aDoseId=d.existing.id;saveAll();afterAnaliza('Analiza zaktualizowana');
-  } else if(action==='new'){
-    var ft=uniqueTitle(aDoses,d.title,null);var id='ad'+Date.now();
-    aDoses.push({id:id,title:ft,szt:d.szt,ings:d.ings});aDoseId=id;saveAll();afterAnaliza('Utworzono nową analizę');
-  }
-  window._conflictData=null;
-}
-
-function getCat(name,fallback){var f=null;BASE.forEach(function(g){g.items.forEach(function(it){if(it[0]===name)f=it[1]})});if(f)return f;var ci=customIngs.find(function(x){return x[0]===name});if(ci)return ci[1];return fallback||'obj'}
-function calcData(){
-  var d=aDoses.find(function(x){return x.id===aDoseId});if(!d)return null;
-  var szt=d.szt||0,kgT=0,costT=0,costTotal=0;
-  d.ings.forEach(function(s){
-    var price=getPrice(s.name);
-    var cat=getCat(s.name,s.cat);
-    costTotal+=s.kg*price/1000;
-    if(cat==='t'||cat==='tm'){
-      var sm=getSM(s);kgT+=s.kg*sm/100;costT+=s.kg*price/1000;
-    }
-  });
-  return {dose:d,szt:szt,kgT:kgT,costT:costT,costTotal:costTotal};
-}
-function calcAnaliza(){
-  var c=calcData();if(!c)return;
-  var effT=aMilk>0?c.kgT/aMilk:0;
-  var costPerL=aMilk>0?c.costT/aMilk:0;
-  var costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
-  var przychod=aMilk*aPrice;
-  var iofc=przychod-c.costTotal;
-  var el=document.getElementById('a-results');if(!el)return;
-  var missing=c.dose.ings.filter(function(s){return getPrice(s.name)<=0});
-  var priceWarn='';
-  if(missing.length){
-    priceWarn='<div style="background:#FAEEDA;border:1px solid #EF9F27;border-radius:8px;padding:11px 13px;margin-top:10px"><div style="font-size:12px;color:#633806;line-height:1.5"><i class="ti ti-alert-triangle"></i> Dawka z nowym surowcem bez podanej ceny — kliknij <strong>Edytuj ceny</strong>, aby dodać dane do kalkulacji.</div></div>';
-  }
-  el.innerHTML='<div class="s2" style="padding:0;margin-bottom:8px">'
-    +sb('#0F6E56',effT.toFixed(3),'kg treściwej / litr mleka')
-    +sb('#993C1D',costPerL.toFixed(2),'koszt treściwej / litr (zł)')
-    +'</div><div class="s2" style="padding:0;margin-bottom:8px">'
-    +sb('#185FA5',c.kgT.toFixed(2),'kg SM treściwej / szt')
-    +sb('var(--tx)',c.costT.toFixed(2),'koszt treściwych (zł/szt)')
-    +'</div><div class="s2" style="padding:0;margin-bottom:8px">'
-    +sb('var(--tx)',c.costTotal.toFixed(2),'koszt całej dawki (zł/szt)')
-    +sb('var(--tx)',costTotalPerL.toFixed(2),'koszt na litr — cała dawka (zł)')
-    +'</div><div class="s2" style="padding:0">'
-    +sb('#185FA5',przychod.toFixed(2),'przychód z mleka (zł/szt)')
-    +sb(iofc>=0?'#0F6E56':'#A32D2D',iofc.toFixed(2),'przychód − koszt dawki (zł/szt)')
-    +'</div>'+priceWarn;
-}
-function sb(color,val,lbl){return '<div class="sb"><div class="sv" style="color:'+color+'">'+val+'</div><div class="sl">'+lbl+'</div></div>'}
-
-function editPrices(){
-  var c=calcData();if(!c)return;
-  var rows=c.dose.ings.map(function(s){
-    var p=getPrice(s.name);
-    var warn=p<=0?'border-color:#EF9F27;':'';
-    return '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd)"><div style="flex:1;font-size:14px;min-width:0">'+esc(s.name)+(p<=0?' <span style="color:#BA7517;font-size:11px">(brak ceny)</span>':'')+'</div><input type="number" value="'+(p>0?p:'')+'" placeholder="0" min="0" step="1" inputmode="numeric" style="'+warn+'width:96px;text-align:right" onchange="setPrice(\''+jsArg(s.name)+'\',this.value)" aria-label="Cena zł/t"><span style="font-size:12px;color:var(--tx3)">zł/t</span></div>';
-  }).join('');
-  var ov=document.createElement('div');ov.id='price-modal';ov.className='modal-ov';
-  ov.innerHTML='<div class="modal-bx"><div class="modal-t"><i class="ti ti-coin"></i> Ceny surowców (zł/t netto)</div><div class="modal-m">Ceny zapisują się tylko w tej recepturze.</div>'+rows+'<div class="modal-btns"><button class="btn bp" style="background:var(--b)" onclick="closePrices()"><i class="ti ti-check"></i> Gotowe</button></div></div>';
-  document.body.appendChild(ov);
-}
-function setPrice(name,val){
-  var p=parseFloat(val)||0;
-  var d=aDoses.find(function(x){return x.id===aDoseId});
-  if(!d)return;
-  if(!d.prices)d.prices={};
-  d.prices[name]=p;
-  saveAll();
-}
-function closePrices(){var m=document.getElementById('price-modal');if(m)m.remove();calcAnaliza()}
-
-function buildAnalizaPreviewHTML(c,effT,costPerL,costTotalPerL,przychod,iofc){
-  var kpis=[
-    {l:'kg treściwej / litr mleka',v:effT.toFixed(3),col:'#0F6E56'},
-    {l:'koszt treściwej / litr (zł)',v:costPerL.toFixed(2),col:'#993C1D'},
-    {l:'kg SM treściwej / szt',v:c.kgT.toFixed(2),col:'#185FA5'},
-    {l:'koszt treściwych (zł/szt)',v:c.costT.toFixed(2),col:'#333'},
-    {l:'koszt całej dawki (zł/szt)',v:c.costTotal.toFixed(2),col:'#333'},
-    {l:'koszt na litr — cała dawka (zł)',v:costTotalPerL.toFixed(2),col:'#333'},
-    {l:'przychód z mleka (zł/szt)',v:przychod.toFixed(2),col:'#185FA5'},
-    {l:'przychód − koszt dawki (zł/szt)',v:iofc.toFixed(2),col:iofc>=0?'#0F6E56':'#A32D2D'}
-  ];
-  var kpiHtml=kpis.map(function(k){return '<div style="background:#f7f7f9;border-radius:8px;padding:10px;flex:1;min-width:120px"><div style="font-size:20px;font-weight:700;color:'+k.col+'">'+k.v+'</div><div style="font-size:11px;color:#666;margin-top:3px">'+k.l+'</div></div>'}).join('');
-  var rows=c.dose.ings.map(function(s,i){
-    var cat=getCat(s.name,s.cat),pr=getPrice(s.name),cost=(s.kg*pr/1000).toFixed(2);
-    var tag=cat==='tm'?'treściwa mokra':(cat==='t'?'treściwa':'objętościowa');
-    var kgEq=cat==='t'?s.kg.toFixed(2):(cat==='tm'?(s.kg*getSM(s)/88).toFixed(2):'—');
-    return '<tr><td style="padding:8px 12px"><strong>'+(i+1)+'. '+esc(s.name)+'</strong><br><span style="font-size:11px;color:#888">'+tag+'</span></td>'
-      +'<td style="padding:8px 12px;text-align:right">'+s.kg+'</td>'
-      +'<td style="padding:8px 12px;text-align:right;color:#185FA5">'+kgEq+'</td>'
-      +'<td style="padding:8px 12px;text-align:right">'+(pr>0?pr:'—')+'</td>'
-      +'<td style="padding:8px 12px;text-align:right">'+cost+'</td></tr>';
-  }).join('');
-  return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111}.hdr{background:#0C447C;color:#fff;padding:14px 16px}.kpis{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}table{width:100%;border-collapse:collapse;font-size:13px}tr{border-bottom:1px solid #eee}th{padding:8px 12px;text-align:left;background:#f0f0f0;font-size:11px}td{vertical-align:middle}</style></head><body>'
-    +'<div class="hdr"><h1 style="font-size:18px">Analiza dawki — '+esc(c.dose.title)+'</h1><div style="font-size:12px;opacity:.8;margin-top:3px">'+c.szt+' szt · '+aMilk+' l/szt · cena mleka '+aPrice+' zł/l · '+new Date().toLocaleDateString('pl')+'</div></div>'
-    +'<div class="kpis">'+kpiHtml+'</div>'
-    +'<table><thead><tr><th>Surowiec</th><th style="text-align:right">kg/szt</th><th style="text-align:right">ekw.88%</th><th style="text-align:right">zł/t</th><th style="text-align:right">zł/szt</th></tr></thead><tbody>'+rows+'</tbody></table>'
-    +'</body></html>';
-}
-function pdfAnaliza(){
-  var c=calcData();if(!c)return;
-  var effT=aMilk>0?c.kgT/aMilk:0,costPerL=aMilk>0?c.costT/aMilk:0,costTotalPerL=aMilk>0?c.costTotal/aMilk:0;
-  var przychod=aMilk*aPrice,iofc=przychod-c.costTotal;
-  var html=buildAnalizaPreviewHTML(c,effT,costPerL,costTotalPerL,przychod,iofc);
-  showPdfPreview(html,function(){
-    closePdfPreview();
-  var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
-  var W=210,H=297,M=14;
-  // Naglowek
-  doc.setFillColor(12,68,124);doc.rect(0,0,W,24,'F');
-  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);
-  doc.text(plchars('Analiza dawki - '+c.dose.title),M,13);
-  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(181,212,244);
-  doc.text(plchars(c.szt+' szt  |  '+aMilk+' l/szt  |  cena mleka '+aPrice+' zl/l  |  '+new Date().toLocaleDateString('pl')),M,19.5);
-  // KPI - 2 kolumny x kilka wierszy
-  var kpis=[
-    ['kg tresciwej / litr mleka',effT.toFixed(3),[15,110,86]],
-    ['koszt tresciwej / litr (zl)',costPerL.toFixed(2),[153,60,29]],
-    ['kg SM tresciwej / szt',c.kgT.toFixed(2),[24,95,165]],
-    ['koszt calej dawki (zl/szt)',c.costTotal.toFixed(2),[30,30,30]],
-    ['przychod z mleka (zl/szt)',przychod.toFixed(2),[24,95,165]],
-    ['przychod - koszt dawki (zl/szt)',iofc.toFixed(2),iofc>=0?[15,110,86]:[163,45,45]]
-  ];
-  var ky=32,kw=(W-2*M)/2,kh=18;
-  kpis.forEach(function(k,i){
-    var col=i%2,row=Math.floor(i/2);
-    var kx=M+col*kw,kyy=ky+row*kh;
-    doc.setFillColor(245,245,247);doc.roundedRect(kx,kyy,kw-3,kh-3,2,2,'F');
-    doc.setTextColor(k[2][0],k[2][1],k[2][2]);doc.setFont('helvetica','bold');doc.setFontSize(17);
-    doc.text(k[1],kx+4,kyy+8);
-    doc.setTextColor(110,110,110);doc.setFont('helvetica','normal');doc.setFontSize(8);
-    doc.text(plchars(k[0]),kx+4,kyy+13.5);
-  });
-  // Tabela surowcow
-  var ty=ky+3*kh+4;
-  doc.setFillColor(240,240,240);doc.rect(M,ty,W-2*M,7,'F');
-  doc.setTextColor(80,80,80);doc.setFont('helvetica','bold');doc.setFontSize(8);
-  doc.text('SUROWIEC',M+2,ty+4.7);
-  doc.text('kg/szt',M+88,ty+4.7,{align:'right'});
-  doc.text('TYP',M+92,ty+4.7);
-  doc.text('ekw.88%',M+150,ty+4.7,{align:'right'});
-  doc.text('zl/t',M+168,ty+4.7,{align:'right'});
-  doc.text('zl/szt',W-M-1,ty+4.7,{align:'right'});
-  var ry=ty+7;
-  var n=c.dose.ings.length;
-  var rowH=Math.min(8,(H-ry-24)/n);if(rowH<5)rowH=5;
-  doc.setFont('helvetica','normal');
-  c.dose.ings.forEach(function(s,i){
-    var pr=getPrice(s.name),cost=(s.kg*pr/1000).toFixed(2);
-    var cat=getCat(s.name,s.cat);
-    var tag=cat==='tm'?'tr.mokra':(cat==='t'?'tresciwa':'objet.');
-    var kgEq='-';if(cat==='t')kgEq=s.kg.toFixed(2);else if(cat==='tm'){kgEq=(s.kg*getSM(s)/88).toFixed(2)}
-    var yy=ry+i*rowH;
-    if(yy>H-26)return;
-    doc.setDrawColor(238,238,238);doc.line(M,yy+rowH,W-M,yy+rowH);
-    doc.setTextColor(25,25,25);doc.setFontSize(Math.min(9,rowH*0.95));
-    doc.text(plchars((i+1)+'. '+s.name).substring(0,32),M+2,yy+rowH*0.65);
-    doc.text(''+s.kg,M+88,yy+rowH*0.65,{align:'right'});
-    doc.setTextColor(120,120,120);doc.setFontSize(Math.min(7.5,rowH*0.8));
-    doc.text(tag,M+92,yy+rowH*0.65);
-    doc.setTextColor(25,25,25);doc.setFontSize(Math.min(9,rowH*0.95));
-    doc.text(kgEq,M+150,yy+rowH*0.65,{align:'right'});
-    doc.text(pr>0?''+pr:'-',M+168,yy+rowH*0.65,{align:'right'});
-    doc.text(cost,W-M-1,yy+rowH*0.65,{align:'right'});
-  });
-  // Stopka
-  doc.setFillColor(245,245,245);doc.rect(0,H-20,W,20,'F');
-  doc.setDrawColor(210,210,210);doc.line(0,H-20,W,H-20);
-  doc.setTextColor(70,70,70);doc.setFont('helvetica','normal');doc.setFontSize(8.5);
-  doc.text(plchars('Koszt tresciwych: '+c.costT.toFixed(2)+' zl/szt   |   Koszt calej dawki: '+c.costTotal.toFixed(2)+' zl/szt ('+costTotalPerL.toFixed(2)+' zl/l)'),M,H-12);
-  doc.setFont('helvetica','bold');doc.setTextColor(15,110,86);
-  doc.text(plchars('Przychod z mleka: '+przychod.toFixed(2)+' zl/szt   |   Zysk nad pasza: '+iofc.toFixed(2)+' zl/szt'),M,H-6);
-  doc.save(sanitize('Analiza_'+c.dose.title)+'.pdf');
-  toast('PDF zapisany w Pobranych');
-  });
-}
-
 // ===== MENEDŻER WŁASNYCH SUROWCÓW =====
 function openIngManager(){show('scr-ingmgr');renderIngManager()}
 function catLabel(c){return c==='tm'?'treściwa mokra':(c==='t'?'treściwa sucha':'objętościowa')}
 function renderIngManager(){
   var el=document.getElementById('scr-ingmgr');
   var h='<div class="topbar"><button class="ib" onclick="show(\'scr-main\')" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button><div class="topbar-t">Moje surowce</div></div>';
-  h+='<div class="hn" style="margin-top:12px"><i class="ti ti-info-circle"></i><div>Własne surowce i mieszanki dodane do bazy. Bez ceny i suchej masy surowiec nie zostanie poprawnie policzony w Mieszance i Analizie.</div></div>';
+  h+='<div class="hn" style="margin-top:12px"><i class="ti ti-info-circle"></i><div>Własne surowce i mieszanki dodane do bazy. Bez ceny i suchej masy surowiec nie zostanie poprawnie policzony w Mieszance treściwej.</div></div>';
   if(customIngs.length){
     h+='<div class="sec-top">Własne surowce</div>';
     h+=customIngs.map(function(c,i){
@@ -1717,7 +1406,7 @@ function openIngForm(idx,preset,onSaved){
 // Po zmianie nazwy surowca popraw ją w zapisanych dawkach, mieszankach i analizach
 function renameIngEverywhere(from,to){
   function fix(list,key){list.forEach(function(d){[d.ings,d.extraIngs].forEach(function(arr){(arr||[]).forEach(function(s){if(s[key||'name']===from)s[key||'name']=to})});if(d.prices&&d.prices[from]!==undefined){d.prices[to]=d.prices[from];delete d.prices[from]}})}
-  fix(wDoses);fix(dDoses);fix(mDoses);fix(aDoses);
+  fix(wDoses);fix(dDoses);fix(mDoses);
   var i=ipkFavs.indexOf(from);if(i>=0){ipkFavs[i]=to;saveFavs()}
 }
 function closeIngModal(){var m=document.getElementById('ing-modal');if(m)m.remove()}
@@ -2066,740 +1755,9 @@ function saveSitaClients(){try{localStorage.setItem('tmr_sita_clients',JSON.stri
 
 
 // ===== KONWERTER FE (laboratorium → FeedExpert) =====
-function renderFEKonwerter(){
-  var el=document.getElementById('tab-fe');
-  el.innerHTML='<div class="hn"><i class="ti ti-transform"></i><div>Wczytaj sprawozdanie z laboratorium (.xls / .xlsx). Aplikacja przeliczy wartości do wpisania w FeedExpert. Plik jest czytany tylko na tym urządzeniu.</div></div>'
-    +'<div id="fe-drop" role="button" tabindex="0" onclick="document.getElementById(\'fe-file-input\').click()">'
-    +'<div style="font-size:34px;margin-bottom:8px;color:var(--fe)"><i class="ti ti-file-spreadsheet"></i></div>'
-    +'<div style="font-size:16px;font-weight:650;margin-bottom:6px">Wybierz sprawozdanie</div>'
-    +'<div style="font-size:13px;color:var(--tx2);line-height:1.5">Dotknij, aby wybrać plik, albo przeciągnij go tutaj.<br>Biofeed, LODR, OHZ — trawa, lucerna, kukurydza</div>'
-    +'<input type="file" id="fe-file-input" accept=".xls,.xlsx" style="display:none" onchange="feHandleFile(this.files[0])">'
-    +'</div>'
-    +'<div id="fe-loading" style="display:none;text-align:center;padding:30px;color:var(--tx2);font-size:15px">Wczytuję i przeliczam…</div>'
-    +'<div id="fe-error" style="display:none"></div>'
-    +'<div id="fe-result" style="display:none;margin-top:4px"></div>';
-  var dropEl=document.getElementById('fe-drop');
-  dropEl.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();dropEl.click()}});
-  dropEl.addEventListener('dragover',function(e){e.preventDefault();dropEl.style.borderColor='var(--g)'});
-  dropEl.addEventListener('dragleave',function(){dropEl.style.borderColor=''});
-  dropEl.addEventListener('drop',function(e){e.preventDefault();dropEl.style.borderColor='';if(e.dataTransfer.files[0])feHandleFile(e.dataTransfer.files[0])});
-}
-// Biblioteka do Excela jest duża — wczytujemy ją dopiero przy pierwszym pliku
-function loadScriptOnce(src){
-  return new Promise(function(res,rej){
-    if(document.querySelector('script[data-src="'+src+'"]')){var t=setInterval(function(){if(window.XLSX){clearInterval(t);res()}},50);setTimeout(function(){clearInterval(t);if(!window.XLSX)rej(new Error('timeout'))},20000);return}
-    var sc=document.createElement('script');sc.src=src;sc.dataset.src=src;sc.onload=function(){res()};sc.onerror=function(){sc.remove();rej(new Error('load'))};document.head.appendChild(sc);
-  });
-}
-
-function feHandleFile(file){
-  if(!file)return;
-  if(!/\.xlsx?$/i.test(file.name)){feShowErr('To nie jest plik Excel (.xls / .xlsx).');return}
-  document.getElementById('fe-loading').style.display='block';document.getElementById('fe-drop').style.display='none';document.getElementById('fe-error').style.display='none';document.getElementById('fe-result').style.display='none';
-  var ready=window.XLSX?Promise.resolve():loadScriptOnce('vendor/xlsx.full.min.js');
-  ready.then(function(){
-    var r=new FileReader();
-    r.onload=function(e){
-      document.getElementById('fe-loading').style.display='none';
-      try{
-        var wb=XLSX.read(e.target.result,{type:'array'});
-        var ws=wb.Sheets[wb.SheetNames[0]];
-        var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
-        render(convert(parse(rows)),file.name);
-      }catch(err){feShowErr('Nie udało się odczytać pliku. Sprawdź, czy to sprawozdanie z laboratorium w formacie Excel.')}
-    };
-    r.onerror=function(){document.getElementById('fe-loading').style.display='none';feShowErr('Nie udało się odczytać pliku.')};
-    r.readAsArrayBuffer(file);
-  }).catch(function(){
-    document.getElementById('fe-loading').style.display='none';
-    feShowErr('Nie udało się wczytać modułu Excel. Sprawdź połączenie z internetem i spróbuj ponownie.');
-  });
-}
-function num(v){
-  if(v==null||v==='')return null;
-  const n=parseFloat(String(v).replace(',','.'));
-  return isNaN(n)?null:n;
-}
-
-function parse(rows){
-  let bC=null,sC=null;
-  for(const row of rows){
-    for(let c=0;c<row.length;c++){
-      const t=String(row[c]||'').toLowerCase();
-      if(t.includes('brutto'))bC=c;
-      if(t.includes('s.m'))sC=c;
-    }
-    if(bC!==null&&sC!==null)break;
-  }
-
-  let desc='';
-  for(let i=0;i<Math.min(15,rows.length);i++){
-    const line=rows[i].filter(v=>v!=null).map(v=>String(v)).join(' ');
-    if(/kiszonk|lucern|kukurydz|trawa|koniczyn/i.test(line)&&line.length>5){desc=line.substring(0,100);break}
-  }
-
-  const MAP=[
-    [['sm','sucha masa'],'SM'],
-    [['adf'],'ADF'],[['adl'],'ADL'],
-    [['białko','białko surowe','cp'],'CP'],
-    [['ndf'],'NDF'],[['ph'],'pH'],
-    [['popiół','popiół surowy','ash'],'ASH'],
-    [['tłuszcz surowy','crude fat','ee'],'EE'],
-    [['n-nh3','nh3'],'NH3'],
-    [['włókno surowe','crude fibre','cf'],'CF'],
-    [['skrobia','starch'],'SKR'],
-    [['nel mj/kg','nel'],'NEL'],
-    [['udp g/kg','udp'],'UDP'],
-    [['nxp g/kg','nxp'],'nXP'],
-    [['rnb g/kg','rnb'],'RNB'],
-  ];
-
-  const D={_desc:desc};
-
-  for(const row of rows){
-    let name=null;
-    for(let c=0;c<Math.min(6,row.length);c++){
-      const t=String(row[c]||'').trim();
-      if(t&&isNaN(parseFloat(t))&&t.length>1&&!/^\[/.test(t)){name=t;break}
-    }
-    if(!name)continue;
-    const low=name.toLowerCase().trim();
-
-    for(const[pats,key]of MAP){
-      if(!pats.some(p=>low===p||low.startsWith(p+' ')||low.startsWith(p+'\n')))continue;
-      if(D[key])break;
-
-      let bv=null;
-      if(bC!==null){
-        for(let d=Math.max(1,bC-2);d<=Math.min(row.length-1,bC+2);d++){
-          const x=num(row[d]);if(x!==null){bv=x;break}
-        }
-      }
-      let sv=null;
-      if(sC!==null){
-        for(let d=Math.max(1,sC-1);d<=Math.min(row.length-1,sC+2);d++){
-          const x=num(row[d]);if(x!==null&&x!==bv){sv=x;break}
-        }
-      }
-      if(bv===null){for(let d=1;d<row.length;d++){const x=num(row[d]);if(x!==null){bv=x;break}}}
-      if(sv===null){
-        let found=false;
-        for(let d=1;d<row.length;d++){const x=num(row[d]);if(x!==null){if(!found)found=true;else{sv=x;break}}}
-      }
-      D[key]={b:bv,s:sv};
-      break;
-    }
-  }
-  return D;
-}
-
-function convert(D){
-  const smPct=D.SM?D.SM.b:null;
-  if(!smPct)return{error:'Nie znaleziono SM% w pliku.'};
-
-  const warns=[];
-  const sections=[];
-
-  /*
-   * REGUŁY v8 — zweryfikowane na 17 realnych sprawozdaniach:
-   *
-   * WPISYWANE RĘCZNIE DO FeedExpert (konwerter podaje):
-   *   SM       = brutto% × 10  →  /kg
-   *   VEM      = NEL_SM ÷ 0,00697
-   *   BO cał.  = Białko %SM × 10  →  g/kg SM
-   *   NH3      = N-NH3 SM_col wprost  →  %
-   *   WS       = Włókno %SM × 10  →  g/kg SM
-   *   Popiół   = Popiół %SM × 10  →  g/kg SM
-   *   NDF      = NDF %SM × 10  →  g/kg SM
-   *   ADF      = ADF %SM × 10  →  g/kg SM
-   *   ADL      = ADL %SM × 10  →  g/kg SM
-   *   Tłuszcz  = Tłuszcz %SM × 10  →  g/kg SM
-   *   Skrobia  = Skrobia %SM × 10  →  g/kg SM (jeśli badana)
-   *   pH       = brutto wprost
-   *
-   * FEEDEXPERT LICZY SAM (nie podajemy):
-   *   DVE, OEB  — z formuł CVB (współczynniki tabelaryczne per typ paszy)
-   *   BO        — BO_cał × (1 − NH3/100)
-   *   VOS, FOS, VCOS, StV — z formuł CVB
-   *
-   * INFORMACYJNIE (nie do wpisywania):
-   *   nXP, RNB  — system niemiecki GfE, ≠ DVE/OEB
-   */
-
-  function sm(key){
-    if(!D[key])return null;
-    if(D[key].s!==null)return D[key].s;
-    if(D[key].b!==null&&smPct)return D[key].b/(smPct/100);
-    return null;
-  }
-  function anal(key){const v=sm(key);return v!==null?Math.round(v*10):null}
-  function analPct(key){return sm(key)}
-  function calc(key){return sm(key)}
-
-  // ── Baza — lewa kolumna (wpisywane ręcznie)
-  const sL={title:'Wpisz w FeedExpert — lewa kolumna',rows:[]};
-  sL.rows.push({name:'SM',val:Math.round(smPct*10),unit:'/kg',calc:smPct+'% × 10'});
-
-  const nelSM=calc('NEL');
-  if(nelSM!==null){
-    sL.rows.push({name:'VEM',val:Math.round(nelSM/0.00697),unit:'/kg SM',calc:'NEL '+nelSM.toFixed(3)+' MJ ÷ 0,00697'});
-  }else warns.push('Brak NEL — VEM nie wyliczono. Zostaw z wzorca.');
-
-  const cpPct=analPct('CP');
-  let boCal=null;
-  if(cpPct!==null){boCal=Math.round(cpPct*10);sL.rows.push({name:'BO cał.',val:boCal,unit:'g/kg SM',calc:cpPct.toFixed(2)+'% SM × 10'})}
-
-  // NH3
-  let nh3=null;
-  if(D.NH3&&D.NH3.s!==null){
-    nh3=Math.floor(D.NH3.s*10)/10;
-    sL.rows.push({name:'NH3',val:nh3.toFixed(1),unit:'%',calc:'N-NH3 SM_col wprost'});
-  }else warns.push('Brak N-NH3 — wpisz NH3 = 0 lub zostaw z wzorca.');
-
-  // BO — informacyjnie (FeedExpert liczy sam)
-  if(boCal!==null&&nh3!==null){
-    const bo=Math.round(boCal*(1-nh3/100));
-    sL.rows.push({name:'BO',val:bo,unit:'g/kg SM',calc:'FeedExpert liczy: '+boCal+'×(1−'+nh3+'/100)', auto:true});
-  }
-
-  const cfPct=analPct('CF');
-  if(cfPct!==null)sL.rows.push({name:'WS',val:Math.round(cfPct*10),unit:'g/kg SM',calc:cfPct.toFixed(2)+'% SM × 10'});
-  const ashPct=analPct('ASH');
-  if(ashPct!==null)sL.rows.push({name:'Popiół',val:Math.round(ashPct*10),unit:'g/kg SM',calc:ashPct.toFixed(2)+'% SM × 10'});
-  sections.push(sL);
-
-  // ── Baza — prawa kolumna
-  const sR={title:'Wpisz w FeedExpert — prawa kolumna',rows:[]};
-  const ndfPct=analPct('NDF');
-  if(ndfPct!==null)sR.rows.push({name:'NDF',val:Math.round(ndfPct*10),unit:'g/kg SM',calc:ndfPct.toFixed(2)+'% SM × 10'});
-  const adfPct=analPct('ADF');
-  if(adfPct!==null)sR.rows.push({name:'ADF',val:Math.round(adfPct*10),unit:'g/kg SM',calc:adfPct.toFixed(2)+'% SM × 10'});
-  const adlPct=analPct('ADL');
-  if(adlPct!==null)sR.rows.push({name:'ADL',val:Math.round(adlPct*10),unit:'g/kg SM',calc:adlPct.toFixed(2)+'% SM × 10'});
-  const eePct=analPct('EE');
-  if(eePct!==null)sR.rows.push({name:'Tłuszcz sur.',val:Math.round(eePct*10),unit:'g/kg SM',calc:eePct.toFixed(2)+'% SM × 10'});
-  sections.push(sR);
-
-  // ── Inne
-  const sX={title:'Wpisz w FeedExpert — inne pola',rows:[]};
-  const skrPct=analPct('SKR');
-  if(skrPct!==null)sX.rows.push({name:'Skrobia',val:Math.round(skrPct*10),unit:'g/kg SM',calc:skrPct.toFixed(2)+'% SM × 10'});
-  const phVal=D.pH?D.pH.b:null;
-  if(phVal!==null)sX.rows.push({name:'pH',val:phVal.toFixed(1),unit:'',calc:'bezpośrednio'});
-  if(sX.rows.length)sections.push(sX);
-
-  // ── Referencja GfE (nie do wpisywania)
-  const sRef={title:'Referencja — system niemiecki GfE (nie wpisuj do FeedExpert)',rows:[]};
-  const nxpSM=calc('nXP');
-  if(nxpSM!==null)sRef.rows.push({name:'nXP',val:Math.round(nxpSM),unit:'g/kg SM',calc:'≠ DVE! System GfE',ref:true});
-  const rnbSM=calc('RNB');
-  if(rnbSM!==null)sRef.rows.push({name:'RNB',val:Math.round(rnbSM),unit:'g/kg SM',calc:'≠ OEB! System GfE',ref:true});
-  const udpSM=calc('UDP');
-  if(udpSM!==null)sRef.rows.push({name:'UDP',val:Math.round(udpSM),unit:'g/kg SM',calc:'bypass protein GfE',ref:true});
-  if(sRef.rows.length)sections.push(sRef);
-
-  return{smPct,sections,warns,desc:D._desc};
-}
-
-function render(result,fname){
-  const rw=document.getElementById('fe-result');
-  if(result.error){feShowErr(result.error==='Nie znaleziono SM% w pliku.'?'Nie znaleziono suchej masy (SM) w pliku — to chyba nie jest sprawozdanie z analizy kiszonki.':result.error);return}
-  const{sections,warns,desc,smPct}=result;
-  window._rows=sections.flatMap(s=>s.rows.filter(r=>!r.ref&&!r.auto));
-  window._fname=fname;
-
-  let tbl='<table class="params">';
-  for(const sec of sections){
-    if(!sec.rows.length)continue;
-    const isRef=sec.rows[0]&&sec.rows[0].ref;
-    tbl+='<tr class="sr"><td colspan="4">'+sec.title+'</td></tr>';
-    for(const r of sec.rows){
-      const vs=typeof r.val==='number'?String(Math.round(r.val)):r.val;
-      const style=r.ref?' style="opacity:0.5;font-style:italic"':(r.auto?' style="opacity:0.7"':'');
-      const valStyle=r.ref?' style="font-size:14px;font-weight:500;color:var(--tx2)"':'';
-      tbl+='<tr class="pr"'+style+'><td class="cn">'+escapeHtml(r.name)+'</td><td class="cv"'+valStyle+'>'+escapeHtml(vs)+'</td><td class="cu">'+escapeHtml(r.unit)+'</td><td class="cc">'+escapeHtml(r.calc)+'</td></tr>';
-    }
-  }
-  tbl+='</table>';
-
-  let notes='';
-  if(warns.length)notes+='<div class="note w">⚠ '+warns.join('<br>⚠ ')+'</div>';
-  notes+='<div class="note i"><strong>DVE, OEB, VOS, FOS, VCOS, StV</strong> — FeedExpert liczy automatycznie z formuł CVB po wpisaniu powyższych parametrów. Nie wpisuj nXP jako DVE ani RNB jako OEB — to inne systemy!</div>';
-  notes+='<div class="note i">VOS, FOS, VCOS, minerały (Na, K, Mg, Ca, P), Cukier — zostaw z wybranego wzorca kiszonki.</div>';
-
-  rw.innerHTML='<div class="rc"><div class="ch"><div class="ch-l"><h3>Wartości do wpisania w FeedExpert</h3><p>'+escapeHtml(desc||fname)+' · SM = '+smPct+'%</p></div><div class="ca"><button class="btn" id="fe-copy-btn" onclick="copyAll()"><i class="ti ti-copy"></i> Kopiuj</button><button class="btn" onclick="window.print()" aria-label="Drukuj"><i class="ti ti-printer"></i></button></div></div>'+tbl+'<div class="notes">'+notes+'</div></div><div class="nfr"><button class="nfb" onclick="newFile()"><i class="ti ti-file-spreadsheet"></i> Wczytaj kolejny plik</button></div>';
-  rw.style.display='block';
-  document.getElementById('fe-drop').style.display='none';
-  rw.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function copyAll(){
-  const rows=window._rows;if(!rows)return;
-  const lines=['=== FeedExpert — '+(window._fname||'')+' ===',''];
-  for(const r of rows){
-    const vs=typeof r.val==='number'?String(Math.round(r.val)):r.val;
-    lines.push(r.name+': '+vs+(r.unit?' '+r.unit:''));
-  }
-  lines.push('','DVE, OEB → FeedExpert liczy sam (formuły CVB)');
-  const text=lines.join('\n');
-  const btn=document.getElementById('fe-copy-btn');
-
-  function ok(){ toast('Skopiowano wartości do schowka'); if(btn){btn.innerHTML='<i class="ti ti-check"></i> Skopiowano';setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy"></i> Kopiuj'},1800);} }
-  function fail(){ showCopyFallback(text); }
-
-  // Try modern Clipboard API (requires https:// or localhost)
-  if(navigator.clipboard && window.isSecureContext){
-    navigator.clipboard.writeText(text).then(ok).catch(()=>legacyCopy(text,ok,fail));
-  } else {
-    legacyCopy(text,ok,fail);
-  }
-}
-
-function legacyCopy(text,ok,fail){
-  // Fallback for file:// or non-secure context: hidden textarea + execCommand
-  try{
-    const ta=document.createElement('textarea');
-    ta.value=text;
-    ta.style.position='fixed';
-    ta.style.left='-9999px';
-    ta.style.top='0';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    const success=document.execCommand('copy');
-    document.body.removeChild(ta);
-    if(success) ok(); else fail();
-  }catch(e){ fail(); }
-}
-
-function showCopyFallback(text){
-  // Last resort: show a selectable textarea in a modal so user can copy manually (Ctrl+C)
-  const overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.onclick=e=>{ if(e.target===overlay) overlay.remove(); };
-  const box=document.createElement('div');
-  box.style.cssText='background:#fff;border-radius:10px;padding:20px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)';
-  box.innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#192e1d">Kopiowanie automatyczne niedostępne (plik otwarty lokalnie)</div>'+
-    '<div style="font-size:12px;color:#6a8a72;margin-bottom:10px">Zaznacz poniższy tekst i skopiuj ręcznie (Ctrl+C / Cmd+C):</div>';
-  const ta=document.createElement('textarea');
-  ta.value=text;
-  ta.style.cssText='width:100%;height:220px;font-family:Consolas,monospace;font-size:12px;padding:10px;border:1px solid #c5deca;border-radius:6px;resize:vertical';
-  box.appendChild(ta);
-  const closeBtn=document.createElement('button');
-  closeBtn.textContent='Zamknij';
-  closeBtn.style.cssText='margin-top:10px;font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #c5deca;background:#eaf4ed;color:#2a7a42;cursor:pointer';
-  closeBtn.onclick=()=>overlay.remove();
-  box.appendChild(closeBtn);
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  ta.focus();
-  ta.select();
-}
-function newFile(){
-  document.getElementById('fe-result').style.display='none';
-  document.getElementById('fe-error').style.display='none';
-  document.getElementById('fe-drop').style.display='block';
-  var fi=document.getElementById('fe-file-input');if(fi)fi.value='';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function feShowErr(msg){
-  var el=document.getElementById('fe-error');if(!el){toast(msg,true);return}
-  el.innerHTML='<i class="ti ti-alert-circle"></i> '+escapeHtml(msg);el.style.display='block';
-  document.getElementById('fe-drop').style.display='block';
-  var fi=document.getElementById('fe-file-input');if(fi)fi.value='';
-}
-function renderSita(){
-  var el = document.getElementById('tab-s');
-  if(!sitaType){
-    el.innerHTML = renderSitaTypeSelect();
-    return;
-  }
-  el.innerHTML = renderSitaList();
-}
-
-function renderSitaTypeSelect(){
-  return '<div class="hn"><i class="ti ti-info-circle"></i><div>Wybierz typ sit, których używasz. Ustawienie zostanie zapamiętane — zmienisz je w Ustawieniach.</div></div>'
-    +'<div class="em"><div class="em-i" style="color:#C47B0A"><i class="ti ti-stack-2"></i></div><div class="em-t">Wybierz typ sit</div></div>'
-    +'<div style="padding:0 16px;display:flex;flex-direction:column;gap:10px">'
-    +Object.entries(SITA_TYPES).map(function(e){
-      var key=e[0],val=e[1];
-      return '<button class="btn" style="padding:14px;font-size:14px;flex-direction:column;align-items:flex-start;text-align:left" onclick="setSitaType(\''+key+'\')"><div style="font-weight:650">'+val.name+'</div><div style="font-size:12px;color:var(--tx2);font-weight:400">'+val.sieves.map(function(x){return x.label}).join(' · ')+'</div></button>';
-    }).join('')
-    +'</div>';
-}
-
-function setSitaType(type){
-  sitaType = type;
-  localStorage.setItem('tmr_sita_type', type);
-  toast('Typ sit zapisany: '+SITA_TYPES[type].name);
-  renderSita();
-}
-
-function renderSitaList(){
-  var st = SITA_TYPES[sitaType];
-  var h = '<div class="hn"><i class="ti ti-stack-2" style="color:var(--o)"></i><div style="flex:1">Typ sit: <strong>'+st.name+'</strong></div><button class="btn" style="flex:none;min-height:32px;padding:4px 10px;font-size:12px" onclick="changeSitaType()">Zmień</button></div>';
-  if(!sitaClients.length){
-    h += '<div class="em"><div class="em-i" style="color:#C47B0A"><i class="ti ti-users"></i></div><div class="em-t">Brak klientów</div><div class="em-s">Dodaj pierwszego klienta aby prowadzić badania sit</div></div>';
-  } else {
-    h += sitaClients.map(function(c){
-      var last = c.tests&&c.tests.length ? c.tests[0] : null;
-      var nProb = last ? (last.samples ? last.samples.length : 1) : 0;
-      var sub = last ? fmtDate(last.ts)+' · '+nProb+' próbk'+(nProb===1?'a':nProb<5?'i':'') : 'brak badań';
-      return '<div class="dc" data-sid="'+c.id+'" onclick="openSitaClient(this.dataset.sid)" style="cursor:pointer">'
-        +'<div class="dch" style="display:flex;align-items:center;gap:10px"><i class="ti ti-user" style="color:var(--o);font-size:22px"></i><div style="flex:1;min-width:0"><div class="dct">'+escapeHtml(c.name)+'</div>'
-        +'<div class="dcm">'+(last?escapeHtml(last.title||'Badanie')+' · ':'')+sub+'</div></div><i class="ti ti-chevron-right" style="color:var(--tx3)"></i></div></div>';
-    }).join('');
-  }
-  h += '<button class="fab" style="background:#C47B0A" onclick="newSitaClient()"><i class="ti ti-plus"></i> Nowy klient</button>';
-  return h;
-}
-
-function newSitaClient(){
-  inputModal({title:'Nowy klient (Sita)',placeholder:'Nazwa / imię klienta',okLabel:'Utwórz',onOk:function(name){
-    if(!name)return;
-    var id='sc'+Date.now();
-    sitaClients.push({id:id,name:name,tests:[]});
-    saveSitaClients();curSitaClientId=id;openSitaClient(id);
-  }});
-}
-
-function openSitaClient(id){curSitaClientId=id;show('scr-sita-client');renderSitaClient()}
-
-// Liczba próbek w aktywnym formularzu
-var sitaSampleCount = 1;
-
-function renderSitaClient(){
-  var c = sitaClients.find(function(x){return x.id===curSitaClientId});
-  if(!c)return;
-  var st = SITA_TYPES[sitaType];
-  var el = document.getElementById('scr-sita-client');
-  var h = '<div class="topbar"><button class="ib" onclick="backSita()" aria-label="Wróć"><i class="ti ti-arrow-left"></i></button>'
-    +'<div class="topbar-t">'+escapeHtml(c.name)+'</div>'
-    +'<button class="ib" onclick="actionSheet(\''+jsArg(c.name)+'\',[{icon:\'ti-edit\',label:\'Zmień nazwę\',fn:renameSitaClient},\'sep\',{icon:\'ti-trash\',label:\'Usuń klienta\',danger:true,fn:delSitaClient}])" aria-label="Więcej"><i class="ti ti-dots-vertical"></i></button></div>';
-
-  sitaSampleCount = sitaSampleCount || 1;
-
-  // Formularz nowego badania
-  h += '<div class="ac" style="margin-top:10px"><div class="at2"><i class="ti ti-plus"></i> Nowe badanie</div>';
-  // Tytuł badania
-  h += '<div class="fl-l" style="margin-bottom:4px">Tytuł badania</div>';
-  h += '<input type="text" id="sita-title" placeholder="np. Kontrola ranna, Po zmianie dawki..." style="margin-bottom:10px">';
-
-  // Tabela próbek
-  h += buildSitaForm(st, sitaSampleCount);
-
-  // Przycisk dodaj próbkę
-  h += '<button class="btn" style="width:100%;margin-bottom:8px;border-color:#C47B0A;color:#C47B0A" onclick="addSitaSample()"><i class="ti ti-plus"></i> Dodaj próbkę</button>';
-
-  // Notatka
-  h += '<div class="fl-l" style="margin-bottom:4px">Zalecenia / uwagi</div>';
-  h += '<textarea id="sita-note" placeholder="Wpisz zalecenia lub obserwacje..." style="width:100%;min-height:60px;padding:9px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-size:13px;font-family:inherit;resize:vertical;margin-bottom:8px"></textarea>';
-  h += '<div class="br"><button class="btn bp" style="background:#C47B0A;width:100%" onclick="saveSitaTest()"><i class="ti ti-device-floppy"></i> Zapisz badanie</button></div></div>';
-
-  // Historia
-  if(c.tests&&c.tests.length){
-    h += '<div class="sec-top">Historia badań</div><div class="spacer"></div>';
-    h += c.tests.map(function(t,i){
-      var nP = t.samples ? t.samples.length : 1;
-      var titleStr = escapeHtml(t.title||'Badanie');
-      var rows = buildSitaHistoryRows(t, st);
-      return '<div class="dc"><div style="padding:11px 12px">'
-        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'
-        +'<i class="ti ti-stack-2" style="color:#C47B0A;font-size:13px"></i>'
-        +'<div style="flex:1"><div style="font-size:14px;font-weight:600">'+titleStr+'</div>'
-        +'<div style="font-size:11px;color:#C47B0A">'+fmtDate(t.ts)+' · '+nP+' próbk'+(nP===1?'a':nP<5?'i':'')+'</div></div>'
-        +'<button class="dl" onclick="pdfSitaTest('+i+')" aria-label="Eksport PDF"><i class="ti ti-file-type-pdf"></i></button>'
-        +'<button class="dl" onclick="delSitaTest('+i+')" aria-label="Usuń badanie"><i class="ti ti-trash"></i></button>'
-        +'</div>'+rows
-        +(t.note?'<div style="margin-top:8px;font-size:12px;color:var(--tx2);font-style:italic">'+escapeHtml(t.note)+'</div>':'')
-        +'</div></div>';
-    }).join('');
-  }
-  el.innerHTML = h;
-}
-
-function buildSitaForm(st, nSamples){
-  // Buduje responsywną tabelę z nSamples kolumnami próbek
-  var cols = ['1fr']; // kolumna nazwy sita
-  for(var s=0;s<nSamples;s++) cols.push('70px');
-  if(nSamples>1) cols.push('65px'); // kolumna różnicy
-  var grid = cols.join(' ');
-
-  var h = '<div id="sita-form-table" style="background:var(--bg);border-radius:var(--r);border:0.5px solid var(--bd);overflow-x:auto;margin-bottom:8px"><div style="min-width:'+(160+nSamples*75+(nSamples>1?70:0))+'px">';
-
-  // Nagłówek
-  h += '<div style="display:grid;grid-template-columns:'+grid+';background:var(--bg2);padding:7px 10px;font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase">';
-  h += '<div>Sito (norma %)</div>';
-  for(var s=0;s<nSamples;s++) h += '<div style="text-align:right">P'+(s+1)+' g&nbsp;/&nbsp;%</div>';
-  if(nSamples>1) h += '<div style="text-align:right;color:#C47B0A">Różnica</div>';
-  h += '</div>';
-
-  // Wiersze sit
-  st.sieves.forEach(function(sv,i){
-    var norm = sv.min===0?'<'+sv.max:sv.min+'-'+sv.max;
-    h += '<div style="display:grid;grid-template-columns:'+grid+';align-items:center;padding:8px 10px;border-top:0.5px solid var(--bd)">';
-    h += '<div><div style="font-size:13px;font-weight:600">'+sv.label+'</div><div style="font-size:10px;color:var(--tx2)">'+norm+'%</div></div>';
-    for(var s=0;s<nSamples;s++){
-      h += '<div style="text-align:right">'
-        +'<input type="number" id="sw-'+i+'-'+s+'" min="0" step="0.1" placeholder="g" inputmode="decimal" style="width:62px;text-align:right;font-size:13px;padding:5px 4px" oninput="calcSitaLive()">'
-        +'<div id="sp-'+i+'-'+s+'" style="font-size:12px;font-weight:600;color:var(--tx2)">—</div>'
-        +'</div>';
-    }
-    if(nSamples>1) h += '<div id="sd-'+i+'" style="text-align:right;font-size:13px;font-weight:700;color:#C47B0A">—</div>';
-    h += '</div>';
-  });
-
-  // Suma
-  h += '<div style="display:grid;grid-template-columns:'+grid+';align-items:center;padding:8px 10px;border-top:2px solid var(--bd);background:var(--bg2)">';
-  h += '<div style="font-size:12px;font-weight:600">SUMA</div>';
-  for(var s=0;s<nSamples;s++) h += '<div id="ss-'+s+'" style="text-align:right;font-size:12px;font-weight:600">0 g</div>';
-  if(nSamples>1) h += '<div></div>';
-  h += '</div>';
-
-  h += '</div></div>';
-  return h;
-}
-
-function buildSitaHistoryRows(t, st){
-  // Wyświetl wyniki historycznego badania
-  var samples = t.samples || [{results: t.results}]; // obsługa starych testów
-  var nP = samples.length;
-  var cols = ['1fr'];
-  for(var s=0;s<nP;s++) cols.push('60px');
-  if(nP>1) cols.push('60px');
-  var grid = cols.join(' ');
-
-  var sieves = t.sieves || (st ? st.sieves : []);
-  if(!sieves.length && samples[0].results) sieves = samples[0].results.map(function(r){return {label:r.label,min:r.min,max:r.max}});
-
-  var h = '<div style="overflow-x:auto"><div style="min-width:'+(120+nP*65+(nP>1?65:0))+'px">';
-  // Header
-  h += '<div style="display:grid;grid-template-columns:'+grid+';padding:4px 0;font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;border-bottom:1px solid var(--bd)">';
-  h += '<div>Sito</div>';
-  for(var s=0;s<nP;s++) h += '<div style="text-align:right">P'+(s+1)+'</div>';
-  if(nP>1) h += '<div style="text-align:right;color:#C47B0A">Δ</div>';
-  h += '</div>';
-  // Rows
-  sieves.forEach(function(sv,i){
-    var pcts = samples.map(function(sp){
-      var r = sp.results ? sp.results[i] : null;
-      return r ? r.pct : 0;
-    });
-    var diff = nP>1 ? (Math.max.apply(null,pcts)-Math.min.apply(null,pcts)) : 0;
-    h += '<div style="display:grid;grid-template-columns:'+grid+';padding:5px 0;border-bottom:0.5px solid var(--bd);font-size:12px">';
-    h += '<div style="font-weight:600">'+sv.label+'</div>';
-    pcts.forEach(function(pct){
-      var inN=pct>=sv.min&&pct<=sv.max;
-      h += '<div style="text-align:right;color:'+(inN?'#0F6E56':'#A32D2D')+';font-weight:600">'+pct.toFixed(1)+'%</div>';
-    });
-    if(nP>1) h += '<div style="text-align:right;color:#C47B0A;font-weight:700">'+diff.toFixed(1)+'pp</div>';
-    h += '</div>';
-  });
-  h += '</div></div>';
-  return h;
-}
-
-function addSitaSample(){
-  // Zachowaj wpisane wartości PRZED zmianą liczby
-  var saved = saveSitaFormValues();
-  sitaSampleCount++;
-  var st = SITA_TYPES[sitaType];
-  // Zastąp tabelę przez id
-  var formDiv = document.getElementById('sita-form-table');
-  if(formDiv){
-    var newDiv = document.createElement('div');
-    newDiv.innerHTML = buildSitaForm(st, sitaSampleCount);
-    formDiv.parentNode.replaceChild(newDiv.firstChild, formDiv);
-  }
-  // Przywróć wartości i przelicz
-  restoreSitaFormValues(saved);
-  calcSitaLive();
-}
-
-function saveSitaFormValues(){
-  var st=SITA_TYPES[sitaType]; var saved={};
-  st.sieves.forEach(function(sv,i){
-    for(var s=0;s<sitaSampleCount;s++){
-      var el=document.getElementById('sw-'+i+'-'+s);
-      if(el) saved['sw-'+i+'-'+s]=el.value;
-    }
-  });
-  return saved;
-}
-
-function restoreSitaFormValues(saved){
-  Object.keys(saved).forEach(function(k){
-    var el=document.getElementById(k);
-    if(el)el.value=saved[k];
-  });
-}
-
-function calcSitaLive(){
-  var st=SITA_TYPES[sitaType];
-  for(var s=0;s<sitaSampleCount;s++){
-    var vals=st.sieves.map(function(sv,i){return parseFloat(document.getElementById('sw-'+i+'-'+s)&&document.getElementById('sw-'+i+'-'+s).value)||0});
-    var total=vals.reduce(function(a,b){return a+b},0);
-    var sumEl=document.getElementById('ss-'+s);
-    if(sumEl)sumEl.textContent=total.toFixed(1)+' g';
-    st.sieves.forEach(function(sv,i){
-      var pct=total>0?vals[i]/total*100:0;
-      var pEl=document.getElementById('sp-'+i+'-'+s);
-      if(pEl){pEl.textContent=total>0?pct.toFixed(1)+'%':'—';pEl.style.color=total>0?(pct>=sv.min&&pct<=sv.max?'#0F6E56':'#A32D2D'):'var(--tx2)'}
-    });
-  }
-  // Różnice
-  if(sitaSampleCount>1){
-    st.sieves.forEach(function(sv,i){
-      var pcts=[];
-      for(var s=0;s<sitaSampleCount;s++){
-        var vals=st.sieves.map(function(sv2,j){return parseFloat(document.getElementById('sw-'+j+'-'+s)&&document.getElementById('sw-'+j+'-'+s).value)||0});
-        var total=vals.reduce(function(a,b){return a+b},0);
-        pcts.push(total>0?vals[i]/total*100:0);
-      }
-      var diff=Math.max.apply(null,pcts)-Math.min.apply(null,pcts);
-      var dEl=document.getElementById('sd-'+i);
-      if(dEl)dEl.textContent=diff.toFixed(1)+' pp';
-    });
-  }
-}
-
-function saveSitaTest(){
-  var c=sitaClients.find(function(x){return x.id===curSitaClientId});if(!c)return;
-  var st=SITA_TYPES[sitaType];
-  var title=document.getElementById('sita-title').value.trim()||'Badanie';
-  var samples=[];
-  for(var s=0;s<sitaSampleCount;s++){
-    var vals=st.sieves.map(function(sv,i){return parseFloat(document.getElementById('sw-'+i+'-'+s)&&document.getElementById('sw-'+i+'-'+s).value)||0});
-    var total=vals.reduce(function(a,b){return a+b},0);
-    if(total>0){
-      samples.push({
-        total:total,
-        results:st.sieves.map(function(sv,i){return {label:sv.label,weight:vals[i],pct:Math.round(vals[i]/total*1000)/10,min:sv.min,max:sv.max}})
-      });
-    }
-  }
-  if(!samples.length){toast('Wpisz wagi przynajmniej jednej próbki',true);return}
-  var note=document.getElementById('sita-note').value.trim();
-  c.tests.unshift({ts:Date.now(),title:title,samples:samples,sieves:st.sieves.map(function(sv){return {label:sv.label,min:sv.min,max:sv.max}}),note:note,sitaType:sitaType});
-  sitaSampleCount=1;
-  saveSitaClients();toast('Badanie zapisane');renderSitaClient();
-}
-
-function delSitaTest(i){
-  var c=sitaClients.find(function(x){return x.id===curSitaClientId});if(!c)return;
-  ask({title:'Usunąć badanie?',msg:'Badanie „'+(c.tests[i].title||'Badanie')+'” z '+fmtDate(c.tests[i].ts)+' zostanie usunięte.',ok:'Usuń',danger:true,onOk:function(){
-    c.tests.splice(i,1);saveSitaClients();toast('Badanie usunięte');renderSitaClient();
-  }});
-}
-
-function renameSitaClient(){
-  var c=sitaClients.find(function(x){return x.id===curSitaClientId});if(!c)return;
-  inputModal({title:'Nazwa klienta',value:c.name,okLabel:'Zapisz',onOk:function(nv){
-    if(!nv)return;c.name=nv;saveSitaClients();renderSitaClient();
-  }});
-}
-
-function delSitaClient(){
-  var c=sitaClients.find(function(x){return x.id===curSitaClientId});if(!c)return;
-  ask({title:'Usunąć klienta?',msg:'„'+c.name+'” zostanie usunięty razem ze wszystkimi badaniami sit ('+(c.tests?c.tests.length:0)+').',ok:'Usuń',danger:true,onOk:function(){
-    sitaClients=sitaClients.filter(function(x){return x.id!==curSitaClientId});
-    saveSitaClients();toast('Klient usunięty');backSita();
-  }});
-}
-
-function backSita(){sitaSampleCount=1;show('scr-main');showTab('s')}
-
-function pdfSitaTest(idx){
-  var c=sitaClients.find(function(x){return x.id===curSitaClientId});if(!c)return;
-  var t=c.tests[idx];if(!t)return;
-  var stType=t.sitaType||sitaType;
-  var st=SITA_TYPES[stType];
-  var samples=t.samples||[{results:t.results}];
-  var nP=samples.length;
-  var sieves=t.sieves||(st?st.sieves.map(function(sv){return {label:sv.label,min:sv.min,max:sv.max}}):[]);
-
-  // Build preview HTML
-  var thCols='<th>Sito (norma %)</th>';
-  for(var s=0;s<nP;s++) thCols+='<th style="text-align:right">Próbka '+(s+1)+'</th>';
-  if(nP>1) thCols+='<th style="text-align:right;color:#C47B0A">Różnica</th>';
-
-  var rows=sieves.map(function(sv,i){
-    var pcts=samples.map(function(sp){return sp.results&&sp.results[i]?sp.results[i].pct:0});
-    var diff=nP>1?Math.max.apply(null,pcts)-Math.min.apply(null,pcts):0;
-    var tds=pcts.map(function(pct){
-      var inN=pct>=sv.min&&pct<=sv.max;
-      return '<td style="text-align:right;color:'+(inN?'#0F6E56':'#A32D2D')+';font-weight:700">'+pct.toFixed(1)+'%</td>';
-    }).join('');
-    return '<tr><td><strong>'+sv.label+'</strong><br><small style="color:#888">'+sv.min+'-'+sv.max+'%</small></td>'+tds+(nP>1?'<td style="text-align:right;color:#C47B0A;font-weight:700">'+diff.toFixed(1)+' pp</td>':'')+'</tr>';
-  }).join('');
-
-  var previewHtml='<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    +'<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Arial,sans-serif;color:#111}'
-    +'.hdr{background:#C47B0A;color:#fff;padding:14px 16px}.meta{padding:10px 16px;background:#FFF8E1;font-size:13px}'
-    +'table{width:100%;border-collapse:collapse;font-size:13px}tr{border-bottom:1px solid #eee}th{padding:8px 12px;background:#f5f5f5;font-size:11px;text-transform:uppercase}'
-    +'td{padding:8px 12px}.foot{padding:12px 16px;background:#f5f5f5;font-size:12px;color:#666}</style></head><body>'
-    +'<div class="hdr"><h1 style="font-size:18px">'+escapeHtml(t.title||'Badanie')+'</h1><div style="font-size:12px;opacity:.8;margin-top:2px">'+st.name+'</div></div>'
-    +'<div class="meta"><strong>'+escapeHtml(c.name)+'</strong> &nbsp;·&nbsp; '+fmtDate(t.ts)+'&nbsp;·&nbsp;'+nP+' próbki</div>'
-    +'<table><thead><tr>'+thCols+'</tr></thead><tbody>'+rows+'</tbody></table>'
-    +(t.note?'<div class="foot"><strong>Zalecenia:</strong> '+escapeHtml(t.note)+'</div>':'')
-    +'<div style="padding:16px;font-size:12px;color:#888">Konsultant: ________________________________ &nbsp; Data: ________</div>'
-    +'</body></html>';
-
-  showPdfPreview(previewHtml,function(){
-    closePdfPreview();
-    var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({unit:'mm',format:'a4'});
-    var W=210,M=12,y=0;
-    // Header
-    doc.setFillColor(196,123,10);doc.rect(0,0,W,22,'F');
-    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(15);
-    doc.text(plchars(t.title||'Badanie'),M,12);
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(255,235,180);
-    doc.text(plchars(st.name),M,18);y=24;
-    // Meta
-    doc.setFillColor(255,248,225);doc.rect(0,y,W,10,'F');
-    doc.setTextColor(80,60,0);doc.setFontSize(9);
-    doc.text(plchars(c.name+' · '+fmtDate(t.ts)+' · '+nP+' probk'+(nP===1?'a':nP<5?'i':'')),M,y+6.5);y+=14;
-    // Column widths
-    var nameW=40,sampW=nP>1?Math.min(30,(W-2*M-nameW-22)/nP):Math.min(35,(W-2*M-nameW)/nP),diffW=nP>1?22:0;
-    // Table header
-    doc.setFillColor(240,240,240);doc.rect(M,y,W-2*M,8,'F');
-    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(80,80,80);
-    doc.text('SITO',M+2,y+5.5);
-    for(var s=0;s<nP;s++) doc.text('P'+(s+1),M+nameW+s*sampW+sampW-2,y+5.5,{align:'right'});
-    if(nP>1) doc.text('DELTA',W-M-2,y+5.5,{align:'right'});
-    y+=8;
-    // Data rows
-    sieves.forEach(function(sv,i){
-      var pcts=samples.map(function(sp){return sp.results&&sp.results[i]?sp.results[i].pct:0});
-      var diff2=nP>1?Math.max.apply(null,pcts)-Math.min.apply(null,pcts):0;
-      doc.setDrawColor(230,230,230);doc.line(M,y+9,W-M,y+9);
-      doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(20,20,20);
-      doc.text(plchars(sv.label),M+2,y+5.5);
-      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(150,150,150);
-      doc.text(sv.min+'-'+sv.max+'%',M+2,y+8.5);
-      pcts.forEach(function(pct,s){
-        var inN=pct>=sv.min&&pct<=sv.max;
-        doc.setFont('helvetica','bold');doc.setFontSize(11);
-        doc.setTextColor(inN?15:163,inN?110:45,inN?86:45);
-        doc.text(pct.toFixed(1)+'%',M+nameW+s*sampW+sampW-2,y+6.5,{align:'right'});
-      });
-      if(nP>1){
-        doc.setTextColor(196,123,10);doc.setFont('helvetica','bold');doc.setFontSize(10);
-        doc.text(diff2.toFixed(1)+'pp',W-M-2,y+6.5,{align:'right'});
-      }
-      y+=9;if(y>270){doc.addPage();y=14;}
-    });
-    y+=6;
-    if(t.note){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(80,80,80);doc.text(plchars('Zalecenia: '+t.note),M,y,{maxWidth:W-2*M});y+=14;}
-    doc.setTextColor(160,160,160);doc.setFontSize(9);
-    doc.text('Konsultant: ________________________________',M,y+6);
-    doc.save(sanitize('Sita_'+c.name+'_'+(t.title||'badanie')+'_'+new Date(t.ts).toLocaleDateString('pl').replace(/\./g,'-'))+'.pdf');
-    toast('PDF zapisany w Pobranych');
-  });
-}
 
 // ===== KOPIA DANYCH (Import/Export) =====
-var BACKUP_KEYS=[['tmr_wd','Dawki (Obliczanie wozu)'],['tmr_dd','Dawki (Ustalanie dawki)'],['tmr_wf','Foldery (Obliczanie wozu)'],['tmr_df','Foldery (Ustalanie dawki)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie surowców'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza dawki'],['tmr_notes','Notatki'],['tmr_sita_clients','Sita TMR — klienci'],['tmr_sita_type','Typ sit'],['tmr_favs','Ulubione surowce']];
+var BACKUP_KEYS=[['tmr_wd','Dawki (Obliczanie wozu)'],['tmr_dd','Dawki (Ustalanie dawki)'],['tmr_wf','Foldery (Obliczanie wozu)'],['tmr_df','Foldery (Ustalanie dawki)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie surowców'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza dawki (archiwum)'],['tmr_notes','Notatki'],['tmr_sita_clients','Sita TMR — klienci'],['tmr_sita_type','Typ sit'],['tmr_favs','Ulubione surowce']];
 function openBackupModal(){
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='backup-modal';
   ov.innerHTML='<div class="modal-bx">'
@@ -2868,10 +1826,10 @@ function openSettings(){
   }).filter(Boolean).join('');
   ov.innerHTML='<div class="modal-bx">'
     +'<div class="modal-t"><i class="ti ti-settings"></i> Ustawienia</div>'
-    +'<div style="padding:4px 0 14px;border-bottom:1px solid var(--bd)">'
+    +(ACC.loaded.sita?'<div style="padding:4px 0 14px;border-bottom:1px solid var(--bd)">'
     +'<div style="font-size:14px;font-weight:650;margin-bottom:2px">Typ sit</div>'
     +'<div style="font-size:13px;color:var(--tx2);margin-bottom:8px">Aktualnie: '+sitaInfo+'</div>'
-    +'<button class="btn" style="width:100%" onclick="changeSitaType()"><i class="ti ti-stack-2"></i> Zmień typ sit</button></div>'
+    +'<button class="btn" style="width:100%" onclick="changeSitaType()"><i class="ti ti-stack-2"></i> Zmień typ sit</button></div>':'')
     +'<div style="padding:14px 0;border-bottom:1px solid var(--bd)">'
     +'<div style="font-size:14px;font-weight:650;margin-bottom:6px">Dane na tym urządzeniu</div>'
     +(diagRows||'<div style="font-size:13px;color:var(--tx3)">Brak zapisanych danych.</div>')
@@ -2901,6 +1859,7 @@ function changeSitaType(){
 // ===== START =====
 // Sprzątanie po dawnym mechanizmie haseł (już niepotrzebne)
 try{['tmr_unlocked','tmr_fe_unlocked','tmr_seen'].forEach(function(k){localStorage.removeItem(k)})}catch(e){}
+accStart();
 (function(){var t='w';try{t=localStorage.getItem('tmr_tab')||'w'}catch(e){}showTab(t)})();
 checkShareUrl();
 window.addEventListener('hashchange',function(){if(/share=/.test(location.hash))checkShareUrl()});
