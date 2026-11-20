@@ -516,6 +516,11 @@ function getBackend(){
       return {
         init:function(){return first},
         signIn:function(e,p){return auth.signInWithEmailAndPassword(e,p).then(function(c){return c.user})},
+        signUp:function(e,p){return auth.createUserWithEmailAndPassword(e,p).then(function(c){return c.user.sendEmailVerification().then(function(){return c.user})})},
+        sendVerification:function(){var u=auth.currentUser;return u?u.sendEmailVerification():Promise.reject(new Error('no-user'))},
+        reload:function(){var u=auth.currentUser;return u?u.reload().then(function(){return auth.currentUser}):Promise.resolve(null)},
+        current:function(){return auth.currentUser},
+        domainFeatures:function(){return withTimeout(db.collection('config').doc('domeny').get(),9000).then(function(s){return s.exists?s.data():{}})},
         signOut:function(){return auth.signOut()},
         resetPassword:function(e){return auth.sendPasswordResetEmail(e)},
         profile:function(){var u=auth.currentUser;if(!u)return Promise.resolve(null);return withTimeout(db.collection('users').doc(u.uid).get(),9000).then(function(s){return s.exists?s.data():null})},
@@ -543,10 +548,18 @@ function allowedFeatures(profile){
 function accSync(user,opts){
   opts=opts||{};
   return getBackend().then(function(b){
-    return b.profile().then(function(profile){
-      var feats=allowedFeatures(profile);
+    if(!user.emailVerified){
+      ACC.user=null;ACC.features=[];accSetHint(null);updateTabLocks();
+      var ne=new Error('not-verified');ne.code='auth/not-verified';throw ne;
+    }
+    return Promise.all([b.profile(),b.domainFeatures().catch(function(){return {}})]).then(function(r){
+      var profile=r[0],dom=r[1]||{};
+      var own=allowedFeatures(profile);
+      var dm=(user.email||'').split('@')[1]||'';
+      var domFeats=(profile&&profile.active===false)?[]:(Array.isArray(dom[dm])?dom[dm]:[]);
+      var feats=own.slice();
+      domFeats.forEach(function(f){if(FEATURES[f]&&feats.indexOf(f)<0)feats.push(f)});
       ACC.user={email:user.email,uid:user.uid};ACC.features=feats;
-      // funkcje odebrane od ostatniego razu: usuń z urządzenia i przeładuj
       var revoked=Object.keys(ACC.loaded).filter(function(k){return feats.indexOf(k)<0});
       Object.keys(FEATURES).forEach(function(k){if(feats.indexOf(k)<0)modCacheSet(k,null)});
       accSetHint({email:user.email,features:feats});
@@ -612,47 +625,117 @@ function loginErr(e){
   if(/invalid-credential|wrong-password|user-not-found|invalid-login|invalid-email/.test(c))return 'Nieprawidłowy e-mail lub hasło.';
   if(/too-many-requests/.test(c))return 'Za dużo prób logowania. Spróbuj ponownie za kilka minut.';
   if(/user-disabled/.test(c))return 'To konto jest zablokowane.';
+  if(/email-already-in-use/.test(c))return 'Ten adres ma już konto. Zaloguj się albo wybierz „Nie pamiętasz hasła?”.';
+  if(/weak-password/.test(c))return 'Hasło musi mieć co najmniej 8 znaków.';
+  if(/invalid-email/.test(c))return 'Wpisz poprawny adres e-mail.';
+  if(/not-verified/.test(c))return 'Najpierw potwierdź adres e-mail — kliknij link w wiadomości.';
   if(/network|timeout|load /.test(c))return 'Brak połączenia z internetem. Logowanie wymaga internetu.';
   return 'Nie udało się zalogować. Spróbuj ponownie.';
 }
-function openLogin(){
-  var ov=document.createElement('div');ov.className='modal-ov';ov.id='login-modal';
-  ov.innerHTML='<div class="modal-bx" role="dialog" aria-modal="true" aria-labelledby="lg-t">'
-    +'<div class="modal-t" id="lg-t"><i class="ti ti-login"></i> Zaloguj się</div>'
-    +'<div class="modal-m">Konto daje dostęp do dodatkowych funkcji: '+Object.keys(FEATURES).map(featureName).join(', ')+'.</div>'
-    +'<form id="lg-form" autocomplete="on" novalidate>'
-    +'<div class="fl" style="margin-top:12px"><label class="fl-l" for="lg-email">E-mail</label><input type="email" id="lg-email" autocomplete="username" inputmode="email" required></div>'
-    +'<div class="fl"><label class="fl-l" for="lg-pass">Hasło</label><div class="pw-wrap"><input type="password" id="lg-pass" autocomplete="current-password" required><button type="button" class="pw-show" id="lg-show">Pokaż</button></div></div>'
-    +'<div class="lg-err" id="lg-err" role="alert"></div>'
-    +'<div class="modal-btns"><button type="button" class="btn" id="lg-cancel">Anuluj</button><button type="submit" class="btn bp bpg" id="lg-go"><i class="ti ti-login"></i> Zaloguj</button></div>'
-    +'</form>'
-    +'<button type="button" class="lock-link" id="lg-reset" style="margin-top:12px">Nie pamiętasz hasła?</button>'
-    +'</div>';
-  document.body.appendChild(ov);
-  var em=document.getElementById('lg-email'),pw=document.getElementById('lg-pass'),err=document.getElementById('lg-err'),go=document.getElementById('lg-go');
-  var h=accHint();if(h&&h.email)em.value=h.email;
+function openLogin(){ authModal('login'); }
+function authModal(mode,email){
+  var ov=document.getElementById('login-modal');
+  if(!ov){ov=document.createElement('div');ov.className='modal-ov';ov.id='login-modal';document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.remove()})}
+  var box=ov.querySelector('.modal-bx');
+  if(!box){box=document.createElement('div');box.className='modal-bx';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');ov.appendChild(box)}
+  var all=Object.keys(FEATURES).map(featureName).join(', ');
+  if(mode==='login'){
+    var last=accHint();
+    box.innerHTML='<div class="modal-t" id="lg-t"><i class="ti ti-login"></i> Zaloguj się</div>'
+      +'<div class="modal-m">Konto daje dostęp do dodatkowych funkcji: '+all+'.</div>'
+      +'<form id="lg-form" novalidate><div class="fl" style="margin-top:12px"><label class="fl-l" for="lg-email">E-mail</label><input type="email" id="lg-email" autocomplete="username" inputmode="email" required value="'+esc(last&&last.email||'')+'"></div>'
+      +'<div class="fl"><label class="fl-l" for="lg-pass">Hasło</label><div class="pw-wrap"><input type="password" id="lg-pass" autocomplete="current-password" required><button type="button" class="pw-show" id="lg-show">Pokaż</button></div></div>'
+      +'<div class="lg-err" id="lg-err" role="alert"></div>'
+      +'<div class="modal-btns"><button type="button" class="btn" id="lg-cancel">Anuluj</button><button type="submit" class="btn bp bpg" id="lg-go"><i class="ti ti-login"></i> Zaloguj</button></div></form>'
+      +'<button type="button" class="lock-link" id="lg-reset">Nie pamiętasz hasła?</button>'
+      +'<button type="button" class="lock-link" id="lg-to-signup">Nie masz konta? Załóż konto</button>';
+    wireLogin(box);
+  } else if(mode==='signup'){
+    box.innerHTML='<div class="modal-t"><i class="ti ti-user-plus"></i> Załóż konto</div>'
+      +'<div class="modal-m">Po rejestracji wyślemy link potwierdzający na Twój adres. Dostęp do funkcji dostają tylko potwierdzone adresy, którym przypisano dostęp.</div>'
+      +'<form id="su-form" novalidate><div class="fl" style="margin-top:12px"><label class="fl-l" for="su-email">E-mail</label><input type="email" id="su-email" autocomplete="username" inputmode="email" required></div>'
+      +'<div class="fl"><label class="fl-l" for="su-pass">Hasło (min. 8 znaków)</label><div class="pw-wrap"><input type="password" id="su-pass" autocomplete="new-password" required><button type="button" class="pw-show" id="su-show">Pokaż</button></div></div>'
+      +'<div class="fl"><label class="fl-l" for="su-pass2">Powtórz hasło</label><input type="password" id="su-pass2" autocomplete="new-password" required></div>'
+      +'<div class="lg-err" id="su-err" role="alert"></div>'
+      +'<div class="modal-btns"><button type="button" class="btn" id="su-cancel">Anuluj</button><button type="submit" class="btn bp bpg" id="su-go"><i class="ti ti-user-plus"></i> Załóż konto</button></div></form>'
+      +'<button type="button" class="lock-link" id="su-to-login">Mam już konto — zaloguj się</button>';
+    wireSignup(box);
+  } else {
+    box.innerHTML='<div class="modal-t"><i class="ti ti-mail"></i> Potwierdź adres e-mail</div>'
+      +'<div class="modal-m">Wysłaliśmy link potwierdzający na adres <strong>'+esc(email||'')+'</strong>. Kliknij go, a potem wróć tutaj i wybierz „Sprawdziłem — zaloguj”.</div>'
+      +'<div class="lg-err" id="vf-err" role="alert"></div>'
+      +'<div class="modal-btns" style="flex-direction:column;gap:8px"><button type="button" class="btn bp bpg" id="vf-check"><i class="ti ti-check"></i> Sprawdziłem — zaloguj</button><button type="button" class="btn" id="vf-resend"><i class="ti ti-send"></i> Wyślij link ponownie</button><button type="button" class="btn" id="vf-close">Zamknij</button></div>';
+    wireVerify(box,email);
+  }
+}
+function setBusy(btn,busy,txt){btn.disabled=busy;btn.innerHTML=busy?'<i class="ti ti-loader"></i> '+txt:btn.getAttribute('data-label')}
+function wireLogin(box){
+  var em=box.querySelector('#lg-email'),pw=box.querySelector('#lg-pass'),err=box.querySelector('#lg-err'),go=box.querySelector('#lg-go');
+  go.setAttribute('data-label',go.innerHTML);
   setTimeout(function(){(em.value?pw:em).focus()},60);
-  function close(){ov.remove()}
-  ov.addEventListener('click',function(e){if(e.target===ov)close()});
-  document.getElementById('lg-cancel').onclick=close;
-  document.getElementById('lg-show').onclick=function(){pw.type=pw.type==='password'?'text':'password';this.textContent=pw.type==='password'?'Pokaż':'Ukryj'};
-  document.getElementById('lg-reset').onclick=function(){
+  box.querySelector('#lg-cancel').onclick=function(){box.parentNode.remove()};
+  box.querySelector('#lg-show').onclick=function(){pw.type=pw.type==='password'?'text':'password';this.textContent=pw.type==='password'?'Pokaż':'Ukryj'};
+  box.querySelector('#lg-to-signup').onclick=function(){authModal('signup')};
+  box.querySelector('#lg-reset').onclick=function(){
     var e=em.value.trim();if(!e){err.textContent='Wpisz e-mail, a wyślemy link do ustawienia nowego hasła.';em.focus();return}
     getBackend().then(function(b){return b.resetPassword(e)}).then(function(){err.textContent='';toast('Jeśli konto istnieje, wysłaliśmy e-mail z linkiem do nowego hasła')}).catch(function(x){err.textContent=loginErr(x)});
   };
-  document.getElementById('lg-form').onsubmit=function(ev){
+  box.querySelector('#lg-form').onsubmit=function(ev){
     ev.preventDefault();
     var e=em.value.trim(),p=pw.value;
     if(!e||!p){err.textContent='Wpisz e-mail i hasło.';return}
-    err.textContent='';go.disabled=true;go.innerHTML='<i class="ti ti-loader"></i> Loguję…';
+    err.textContent='';setBusy(go,true,'Loguję…');
     getBackend().then(function(b){return b.signIn(e,p)}).then(function(u){
+      if(!u.emailVerified){authModal('verify',u.email);return}
       return accSync(u).then(function(feats){
-        close();
+        box.parentNode.remove();
         if(feats.length)toast('Zalogowano. Dostępne: '+feats.map(featureName).join(', '));
         else toast('Zalogowano, ale konto nie ma jeszcze przypisanych funkcji',true);
         rerenderLockedTab();
       });
-    }).catch(function(x){err.textContent=loginErr(x);go.disabled=false;go.innerHTML='<i class="ti ti-login"></i> Zaloguj';pw.select()});
+    }).catch(function(x){err.textContent=loginErr(x);setBusy(go,false)});
+  };
+}
+function wireSignup(box){
+  var em=box.querySelector('#su-email'),p1=box.querySelector('#su-pass'),p2=box.querySelector('#su-pass2'),err=box.querySelector('#su-err'),go=box.querySelector('#su-go');
+  go.setAttribute('data-label',go.innerHTML);
+  setTimeout(function(){em.focus()},60);
+  box.querySelector('#su-cancel').onclick=function(){box.parentNode.remove()};
+  box.querySelector('#su-to-login').onclick=function(){authModal('login')};
+  box.querySelector('#su-show').onclick=function(){p1.type=p1.type==='password'?'text':'password';p2.type=p1.type;this.textContent=p1.type==='password'?'Pokaż':'Ukryj'};
+  box.querySelector('#su-form').onsubmit=function(ev){
+    ev.preventDefault();
+    var e=em.value.trim();
+    if(!e||e.indexOf('@')<1){err.textContent='Wpisz poprawny adres e-mail.';em.focus();return}
+    if(p1.value.length<8){err.textContent='Hasło musi mieć co najmniej 8 znaków.';p1.focus();return}
+    if(p1.value!==p2.value){err.textContent='Hasła nie są takie same.';p2.focus();return}
+    err.textContent='';setBusy(go,true,'Zakładam konto…');
+    getBackend().then(function(b){return b.signUp(e,p1.value)}).then(function(){authModal('verify',e)})
+      .catch(function(x){err.textContent=loginErr(x);setBusy(go,false)});
+  };
+}
+function wireVerify(box,email){
+  var err=box.querySelector('#vf-err'),chk=box.querySelector('#vf-check'),rs=box.querySelector('#vf-resend');
+  chk.setAttribute('data-label',chk.innerHTML);rs.setAttribute('data-label',rs.innerHTML);
+  box.querySelector('#vf-close').onclick=function(){box.parentNode.remove()};
+  rs.onclick=function(){
+    err.textContent='';setBusy(rs,true,'Wysyłam…');
+    getBackend().then(function(b){return b.sendVerification()}).then(function(){setBusy(rs,false);toast('Wysłano ponownie. Sprawdź też folder spam.')})
+      .catch(function(x){err.textContent=loginErr(x);setBusy(rs,false)});
+  };
+  chk.onclick=function(){
+    err.textContent='';setBusy(chk,true,'Sprawdzam…');
+    getBackend().then(function(b){return b.reload()}).then(function(u){
+      if(!u){authModal('login');return}
+      if(!u.emailVerified){err.textContent='Adres nie jest jeszcze potwierdzony. Kliknij link w wiadomości i spróbuj ponownie.';setBusy(chk,false);return}
+      return accSync(u).then(function(feats){
+        box.parentNode.remove();
+        if(feats.length)toast('Adres potwierdzony. Dostępne: '+feats.map(featureName).join(', '));
+        else toast('Adres potwierdzony, ale konto nie ma jeszcze przypisanych funkcji',true);
+        rerenderLockedTab();
+      });
+    }).catch(function(x){err.textContent=loginErr(x);setBusy(chk,false)});
   };
 }
 function openAccount(){
