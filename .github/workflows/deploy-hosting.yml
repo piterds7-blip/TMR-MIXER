@@ -43,8 +43,15 @@ jobs:
 
       # Moduły funkcji dodatkowych są w PRYWATNYM repozytorium (sekret MODULY_TOKEN).
       # Bez sekretu krok jest pominięty — moduły zostają w Firestore takie, jakie były.
+      - name: Sprawdź, czy jest sekret MODULY_TOKEN
+        id: sekret
+        env:
+          MODULY_TOKEN: ${{ secrets.MODULY_TOKEN }}
+        run: |
+          if [ -n "$MODULY_TOKEN" ]; then echo "jest=true" >> "$GITHUB_OUTPUT"; else echo "jest=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Pobierz moduły z prywatnego repozytorium
-        if: ${{ secrets.MODULY_TOKEN != '' }}
+        if: ${{ steps.sekret.outputs.jest == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: piterds7-blip/tmr-mixer-moduly
@@ -52,7 +59,7 @@ jobs:
           path: moduly
 
       - name: Wgraj chronione moduły do Firestore
-        if: ${{ secrets.MODULY_TOKEN != '' }}
+        if: ${{ steps.sekret.outputs.jest == 'true' }}
         run: |
           npm install --no-save --no-package-lock firebase-admin@12.7.0
           MODULY_DIR="$GITHUB_WORKSPACE/moduly/protected" node tools/upload-modules.js
