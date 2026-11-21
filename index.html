@@ -544,6 +544,16 @@ function allowedFeatures(profile){
   if(!profile||profile.active===false||!Array.isArray(profile.features))return [];
   return profile.features.filter(function(f){return !!FEATURES[f]});
 }
+// Token ID niesie claim email_verified. Po potwierdzeniu adresu (np. na telefonie) stary token
+// w tej przeglądarce nadal ma false, a reguły Firestore wtedy odrzucają odczyt uprawnień.
+// Jeśli claim jest nieaktualny, wymuś odświeżenie tokena.
+function freshToken(u){
+  if(!u||!u.getIdTokenResult)return Promise.resolve();
+  return u.getIdTokenResult().then(function(res){
+    if(res&&res.claims&&res.claims.email_verified===true)return;
+    return u.getIdToken(true);
+  });
+}
 // Po zalogowaniu (albo przy starcie, gdy sesja istnieje): pobierz uprawnienia i moduły
 function accSync(user,opts){
   opts=opts||{};
@@ -552,7 +562,9 @@ function accSync(user,opts){
       ACC.user=null;ACC.features=[];accSetHint(null);updateTabLocks();
       var ne=new Error('not-verified');ne.code='auth/not-verified';throw ne;
     }
-    return Promise.all([b.profile(),b.domainFeatures().catch(function(){return {}})]).then(function(r){
+    return freshToken(user).then(function(){
+      return Promise.all([b.profile(),b.domainFeatures().catch(function(){return {}})]);
+    }).then(function(r){
       var profile=r[0],dom=r[1]||{};
       var own=allowedFeatures(profile);
       var dm=(user.email||'').split('@')[1]||'';
