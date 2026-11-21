@@ -1,8 +1,10 @@
 // TMR Mixer — service worker: aplikacja działa offline.
 // Wszystkie pliki są w repozytorium; nic nie jest pobierane z zewnętrznych serwerów.
-var CACHE = 'tmr-v9';
+var CACHE = 'tmr-v10';
 var ASSETS = [
-  './', './index.html', './privacy.html', './manifest.json', './icon-192.png', './icon-512.png',
+  './', './index.html', './privacy.html', './manifest.json', './firebase-config.js',
+  './icon-192.png', './icon-512.png', './icon-192-maskable.png', './icon-512-maskable.png',
+  './apple-touch-icon.png', './favicon-32.png', './favicon-64.png',
   './vendor/icons.css', './vendor/jspdf.umd.min.js', './vendor/qrcode.min.js', './vendor/xlsx.full.min.js'
 ];
 self.addEventListener('install', function(e) {
@@ -39,12 +41,13 @@ self.addEventListener('fetch', function(e) {
       });
     }));
   } else {
-    // Pozostałe pliki: najpierw pamięć, potem sieć
+    // Pozostałe pliki: od razu z pamięci, a w tle pobierz świeżą wersję na następny raz
     e.respondWith(caches.match(req).then(function(cached) {
-      return cached || fetch(req).then(function(r) {
+      var net = fetch(req).then(function(r) {
         if (r && r.status === 200) { var c = r.clone(); caches.open(CACHE).then(function(cache) { cache.put(req, c); }); }
         return r;
-      });
+      }).catch(function() { return cached; });
+      return cached || net;
     }));
   }
 });

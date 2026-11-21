@@ -12,11 +12,18 @@ concurrency:
   group: firebase-hosting
   cancel-in-progress: true
 
+env:
+  FIREBASE_PROJECT_ID: fermapps-tmrmixer
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Zapisz klucz konta serwisowego
         env:
@@ -29,13 +36,35 @@ jobs:
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> "$GITHUB_ENV"
 
+      # Najpierw baza (reguły + moduły). Jeśli Firestore nie jest jeszcze utworzony, workflow zatrzyma się tutaj
+      # i strona zostanie w poprzedniej wersji — nic się nie zepsuje.
+      - name: Wdróż reguły Firestore
+        run: npx --yes firebase-tools@13.29.1 deploy --only firestore:rules --project "$FIREBASE_PROJECT_ID" --non-interactive
+
+      # Moduły funkcji dodatkowych są w PRYWATNYM repozytorium (sekret MODULY_TOKEN).
+      # Bez sekretu krok jest pominięty — moduły zostają w Firestore takie, jakie były.
+      - name: Pobierz moduły z prywatnego repozytorium
+        if: ${{ secrets.MODULY_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: piterds7-blip/tmr-mixer-moduly
+          token: ${{ secrets.MODULY_TOKEN }}
+          path: moduly
+
+      - name: Wgraj chronione moduły do Firestore
+        if: ${{ secrets.MODULY_TOKEN != '' }}
+        run: |
+          npm install --no-save --no-package-lock firebase-admin@12.7.0
+          MODULY_DIR="$GITHUB_WORKSPACE/moduly/protected" node tools/upload-modules.js
+
       - name: Utwórz witrynę hostingową (jeśli nie istnieje)
         run: |
-          npx --yes firebase-tools@13.29.1 hosting:sites:create fermapps-tmrmixer --project fermapps-tmrmixer --non-interactive || echo "Witryna już istnieje — pomijam."
+          npx --yes firebase-tools@13.29.1 hosting:sites:create fermapps-tmrmixer --project "$FIREBASE_PROJECT_ID" --non-interactive || echo "Witryna już istnieje — pomijam."
 
       - name: Wdróż na Firebase Hosting
         run: |
-          npx --yes firebase-tools@13.29.1 deploy --only hosting:fermapps-tmrmixer --project fermapps-tmrmixer --non-interactive
+          rm -rf node_modules moduly
+          npx --yes firebase-tools@13.29.1 deploy --only hosting:fermapps-tmrmixer --project "$FIREBASE_PROJECT_ID" --non-interactive
 
       - name: Usuń klucz z maszyny
         if: always()
