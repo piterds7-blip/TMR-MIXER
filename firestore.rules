@@ -1,0 +1,54 @@
+rules_version = '2';
+// Reguły bazy TMR Mixer.
+// config/domeny        — funkcje przypisane całej domenie firmowej, np. { "biofeed.pl": ["sita","fe","mieszalnik"] }.
+//                        Czytać mogą tylko zalogowani z POTWIERDZONYM adresem e-mail. Zmienia tylko właściciel w konsoli.
+// users/{uid}          — profil konta (funkcje indywidualne, active). Zmienia tylko właściciel w konsoli.
+// users/{uid}/pasze/{id} — własne pasze z Mieszalnika (tylko właściciel, z dostępem do Mieszalnika).
+// modules/{id}         — kod funkcji. Wgrywa workflow (konto serwisowe omija reguły).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function domenaFeatures() {
+      return get(/databases/$(database)/documents/config/domeny).data;
+    }
+    function domain() {
+      return request.auth.token.email.split('@')[1];
+    }
+    function hasFeature(f) {
+      return verified()
+        && (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+            && profile().get('active', true) == true
+            && profile().get('features', []) is list
+            && f in profile().get('features', []))
+          ||
+          (exists(/databases/$(database)/documents/config/domeny)
+            && domenaFeatures()[domain()] is list
+            && f in domenaFeatures()[domain()])
+        );
+    }
+    match /config/{id} {
+      allow read: if verified();
+      allow write: if false;
+    }
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /users/{uid}/pasze/{doc} {
+      allow read, write: if request.auth != null && request.auth.uid == uid && hasFeature('mieszalnik');
+    }
+    match /modules/{id} {
+      allow read: if hasFeature(id);
+      allow write: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
