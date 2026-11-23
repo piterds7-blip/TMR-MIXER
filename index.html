@@ -226,7 +226,13 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
 .ld-fin-t{font-size:20px;font-weight:800;color:var(--gd)}.ld-fin-s{font-size:14px;color:var(--tx2);margin-top:4px}
 @media(prefers-color-scheme:dark){.ld-fin-t{color:var(--gm)}}
 .ld-act{display:flex;gap:8px;padding:4px 12px 16px}
-.tab .tab-lock{position:absolute;top:8px;left:9px;font-size:14px;color:var(--tx3)}.tab.tg .tab-lock,.tab.tp .tab-lock,.tab.tm .tab-lock,.tab.ts .tab-lock,.tab.tfe .tab-lock{color:rgba(255,255,255,.85)}
+.tab .tab-lock{position:absolute;top:8px;left:9px;font-size:14px;color:var(--tx3)}
+.tab.tl{background:#3F4A56;border-color:#3F4A56;color:#fff}.tab.tl i,.tab.tl .tab-sub{color:rgba(255,255,255,.88)}
+@keyframes tabNew{0%{opacity:0;transform:scale(.85)}60%{opacity:1;transform:scale(1.04)}100%{transform:none}}.tab.tab-new{animation:tabNew .5s ease-out}
+.xf-list{text-align:left;margin:16px 0 4px;display:grid;gap:8px}
+.xf-i{display:flex;gap:12px;align-items:flex-start;background:var(--bg2);border-radius:var(--rs);padding:10px 12px}
+.xf-i>i{font-size:22px;color:var(--gd);margin-top:1px;flex-shrink:0}.xf-i b{display:block;font-size:14px;color:var(--tx)}.xf-i span{display:block;font-size:12.5px;color:var(--tx2);line-height:1.4;margin-top:2px}
+@media(prefers-color-scheme:dark){.xf-i>i{color:var(--gm)}}.tab.tg .tab-lock,.tab.tp .tab-lock,.tab.tm .tab-lock,.tab.ts .tab-lock,.tab.tfe .tab-lock{color:rgba(255,255,255,.85)}
 .lock-card{margin:8px 16px 16px;background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:26px 20px 22px;text-align:center}
 .lock-ic{position:relative;display:inline-flex;width:72px;height:72px;border-radius:22px;background:var(--gl);color:var(--gd);font-size:36px;align-items:center;justify-content:center;margin-bottom:12px}
 .lock-badge{position:absolute;right:-6px;bottom:-6px;font-size:18px;background:var(--bg);color:var(--tx2);border-radius:50%;padding:5px;box-shadow:var(--sh)}
@@ -249,10 +255,11 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
     <button class="tab tg" id="t-w" role="tab" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">kg/szt → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-d" role="tab" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → kg/szt</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-m" role="tab" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">własne mieszanki</span></button>
-    <button class="tab" id="t-s" role="tab" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub">struktura fizyczna</span></button>
-    <button class="tab" id="t-fe" role="tab" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub">laboratorium → FeedExpert</span></button>
-    <button class="tab" id="t-mx" role="tab" onclick="showTab('mx')"><i class="ti ti-scale"></i><span>Mieszalnik</span><span class="tab-sub">surowce kontra gotowe</span></button>
+    <button class="tab" id="t-s" role="tab" style="display:none" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub">struktura fizyczna</span></button>
+    <button class="tab" id="t-fe" role="tab" style="display:none" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub">laboratorium → FeedExpert</span></button>
+    <button class="tab" id="t-mx" role="tab" style="display:none" onclick="showTab('mx')"><i class="ti ti-scale"></i><span>Mieszalnik</span><span class="tab-sub">surowce kontra gotowe</span></button>
     <button class="tab" id="t-g" role="tab" onclick="showTab('g')"><i class="ti ti-git-branch"></i><span>Wóz na grupy</span><span class="tab-sub">rozładunek i dosypki</span></button>
+    <button class="tab" id="t-x" role="tab" onclick="showTab('x')" style="display:none"><i class="ti ti-lock"></i><span>Funkcje dodatkowe</span><span class="tab-sub" id="t-x-sub">po zalogowaniu</span></button>
   </div>
   <div id="tab-w" style="padding:12px 0"></div>
   <div id="tab-d" style="display:none;padding:12px 0"></div>
@@ -261,6 +268,7 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
   <div id="tab-fe" style="display:none;padding:12px 0"></div>
   <div id="tab-mx" style="display:none;padding:12px 0"></div>
   <div id="tab-g" style="display:none;padding:12px 0"></div>
+  <div id="tab-x" style="display:none;padding:12px 0"></div>
 </div>
 
 <div id="scr-d-edit" class="screen">
@@ -482,17 +490,20 @@ new MutationObserver(function(muts){
   else if(removed&&curScreen()==='scr-main'&&!topOverlay())dropNavState();
 }).observe(document.body,{childList:true});
 
-var TAB_CLASS={w:'tg',d:'tp',m:'tm',s:'ts',fe:'tfe',mx:'ta',g:'tq'};
+var TAB_CLASS={w:'tg',d:'tp',m:'tm',s:'ts',fe:'tfe',mx:'ta',g:'tq',x:'tl'};
 var curTab='w';
 function showTab(t){
   if(!TAB_CLASS[t])t='w';
+  // Zablokowana funkcja: zamiast niej panel „Funkcje dodatkowe”. Gdy nic nie jest zablokowane, panel znika.
+  var fk0=TAB_FEATURE[t];
+  if(fk0&&!ACC.loaded[fk0])t='x';
+  if(t==='x'){var lk=lockedFeatures();if(!lk.length){var on=featureKeys().filter(function(k){return ACC.loaded[k]});t=on.length?FEATURES[on[0]].tab:'w'}}
   curTab=t;try{localStorage.setItem('tmr_tab',t)}catch(e){}
   Object.keys(TAB_CLASS).forEach(function(k){
     var b=document.getElementById('t-'+k);if(b){b.className=k===t?'tab '+TAB_CLASS[k]:'tab';b.setAttribute('aria-selected',k===t?'true':'false')}
     var c=document.getElementById('tab-'+k);if(c)c.style.display=k===t?'block':'none';
   });
-  var fk=TAB_FEATURE[t];
-  if(fk&&!ACC.loaded[fk]){renderLockedTab(t);return}
+  if(t==='x'){renderExtras();return}
   if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='m')renderMieszanka();else if(t==='s')renderSita();else if(t==='fe')renderFEKonwerter();else if(t==='mx')renderMieszalnik();else if(t==='g')renderWG();
 }
 
@@ -844,33 +855,48 @@ function accStart(){
     return accSync(u);
   }).catch(function(){/* brak internetu: zostają zapamiętane moduły */}).then(function(){ACC.checking=false;rerenderLockedTab()});
 }
-function rerenderLockedTab(){if(curScreen()==='scr-main'&&TAB_FEATURE[curTab])showTab(curTab)}
+function rerenderLockedTab(){if(curScreen()==='scr-main'&&(TAB_FEATURE[curTab]||curTab==='x'))showTab(curTab)}
+// Kolejność jak kafelki na ekranie: Sita TMR, Konwerter FE, Mieszalnik
+function featureKeys(){var o=['sita','fe','mieszalnik'].filter(function(k){return FEATURES[k]});Object.keys(FEATURES).forEach(function(k){if(o.indexOf(k)<0)o.push(k)});return o}
+function lockedFeatures(){return featureKeys().filter(function(k){return !ACC.loaded[k]})}
+// Kafelki funkcji dodatkowych: odblokowane pokazują się osobno, zablokowane chowają się
+// w jednym kafelku „Funkcje dodatkowe”. Kafelek, który właśnie się odblokował, wjeżdża z animacją.
 function updateTabLocks(){
   Object.keys(FEATURES).forEach(function(k){
     var b=document.getElementById('t-'+FEATURES[k].tab);if(!b)return;
-    var lock=b.querySelector('.tab-lock');
-    if(ACC.loaded[k]){if(lock)lock.remove()}
-    else if(!lock){lock=document.createElement('i');lock.className='ti ti-lock tab-lock';lock.setAttribute('aria-label','wymaga logowania');b.appendChild(lock)}
+    var on=!!ACC.loaded[k];
+    if(on&&b.dataset.st==='off'){b.classList.remove('tab-new');void b.offsetWidth;b.classList.add('tab-new');setTimeout(function(){b.classList.remove('tab-new')},700)}
+    b.dataset.st=on?'on':'off';
+    b.style.display=on?'':'none';
   });
+  var lk=lockedFeatures(),x=document.getElementById('t-x');
+  if(x){
+    x.style.display=lk.length?'':'none';
+    var sub=document.getElementById('t-x-sub');
+    if(sub)sub.textContent=lk.length===Object.keys(FEATURES).length?'po zalogowaniu':lk.map(featureName).join(', ');
+  }
 }
-// Ekran w zakładce, gdy funkcja nie jest dostępna
-function renderLockedTab(t){
-  var k=TAB_FEATURE[t],f=FEATURES[k],el=document.getElementById('tab-'+t);
-  var logged=!!ACC.user,has=logged&&ACC.features.indexOf(k)>=0;
-  var h='<div class="lock-card"><div class="lock-ic"><i class="ti '+f.icon+'"></i><i class="ti ti-lock lock-badge"></i></div>'
-    +'<div class="lock-t">'+f.name+'</div><div class="lock-d">'+f.desc+'</div>';
-  if(has&&ACC.checking){
-    h+='<div class="lock-note"><i class="ti ti-loader"></i> Wczytuję funkcję…</div>';
-  } else if(has){
-    h+='<div class="lock-note">Nie udało się wczytać tej funkcji. Sprawdź połączenie z internetem.</div>'
+// Panel „Funkcje dodatkowe”: opis zablokowanych funkcji i to, co zrobić, żeby je odblokować
+function renderExtras(){
+  var el=document.getElementById('tab-x');if(!el)return;
+  var lk=lockedFeatures(),logged=!!ACC.user;
+  var mine=lk.filter(function(k){return logged&&ACC.features.indexOf(k)>=0});
+  var h='<div class="lock-card"><div class="lock-ic"><i class="ti ti-lock"></i></div>'
+    +'<div class="lock-t">Funkcje dodatkowe</div>'
+    +'<div class="lock-d">Dostępne dla kont z przyznanym dostępem. Po odblokowaniu każda funkcja pojawi się jako osobny kafelek.</div>'
+    +'<div class="xf-list">'+lk.map(function(k){var f=FEATURES[k];return '<div class="xf-i"><i class="ti '+f.icon+'"></i><div><b>'+f.name+'</b><span>'+f.desc+'</span></div></div>'}).join('')+'</div>';
+  if(mine.length&&ACC.checking){
+    h+='<div class="lock-note"><i class="ti ti-loader"></i> Wczytuję funkcje…</div>';
+  } else if(mine.length){
+    h+='<div class="lock-note">Nie udało się wczytać funkcji. Sprawdź połączenie z internetem.</div>'
       +'<button class="btn bp bpg lock-btn" onclick="accRetry()"><i class="ti ti-refresh"></i> Spróbuj ponownie</button>';
   } else if(logged){
-    h+='<div class="lock-note">Twoje konto (<strong>'+esc(ACC.user.email)+'</strong>) nie ma dostępu do tej funkcji.</div>'
-      +'<a class="btn bp bpg lock-btn" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — dostęp do funkcji: '+f.name)+'"><i class="ti ti-mail"></i> Poproś o dostęp</a>';
+    h+='<div class="lock-note">Twoje konto (<strong>'+esc(ACC.user.email)+'</strong>) nie ma jeszcze dostępu do tych funkcji.</div>'
+      +'<a class="btn bp bpg lock-btn" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — dostęp do funkcji: '+lk.map(featureName).join(', '))+'"><i class="ti ti-mail"></i> Poproś o dostęp</a>';
   } else {
-    h+='<div class="lock-note">Funkcja dla użytkowników z kontem. Konta zakłada administrator aplikacji.</div>'
+    h+='<div class="lock-note">Zaloguj się albo załóż konto. Osoby z firmowym adresem dostają funkcje od razu po potwierdzeniu adresu, pozostałym dostęp przyznaje administrator.</div>'
       +'<button class="btn bp bpg lock-btn" onclick="openLogin()"><i class="ti ti-login"></i> Zaloguj się</button>'
-      +'<a class="lock-link" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — prośba o konto')+'">Nie masz konta? Napisz do nas</a>';
+      +'<button class="lock-link" onclick="authModal(\'signup\')">Nie masz konta? Załóż je</button>';
   }
   el.innerHTML=h+'</div>';
 }
