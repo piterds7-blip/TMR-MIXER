@@ -1,6 +1,6 @@
 // TMR Mixer — service worker: aplikacja działa offline.
 // Wszystkie pliki są w repozytorium; nic nie jest pobierane z zewnętrznych serwerów.
-var CACHE = 'tmr-v10';
+var CACHE = 'tmr-v11';
 var ASSETS = [
   './', './index.html', './privacy.html', './manifest.json', './firebase-config.js',
   './icon-192.png', './icon-512.png', './icon-192-maskable.png', './icon-512-maskable.png',
