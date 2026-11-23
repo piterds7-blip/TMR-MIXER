@@ -38,6 +38,32 @@ button{font-family:inherit}
 .tab.tg{background:var(--g);border-color:var(--g)}.tab.tp{background:var(--p);border-color:var(--p)}.tab.tm{background:var(--b);border-color:var(--b)}.tab.ta{background:#0C447C;border-color:#0C447C}.tab.ts{background:var(--o);border-color:var(--o)}.tab.tfe{background:var(--fe);border-color:var(--fe)}
 .tab-cnt{position:absolute;top:6px;right:6px;background:var(--bg3);color:var(--tx2);font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;min-width:18px;text-align:center}
 .tab.tg .tab-cnt,.tab.tp .tab-cnt{background:rgba(255,255,255,.25);color:#fff}
+.tab.tq{background:#0E7490;border-color:#0E7490;color:#fff}.tab.tq i,.tab.tq .tab-sub{color:rgba(255,255,255,.88)}
+/* Wóz na grupy */
+.wg-row{padding:10px 12px;border-bottom:1px solid var(--bd)}.wg-row:last-child{border-bottom:none}
+.wg-rn{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}.wg-rn span{flex:1;min-width:0;word-break:break-word}.wg-rn .dl{padding:2px}
+.wg-in3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px;margin-top:6px}
+.wg-f{font-size:11px;color:var(--tx3);font-weight:600;display:flex;flex-direction:column;gap:3px;min-width:0}
+.wg-in3 input,.wg-sh input{padding:8px;font-size:15px;text-align:right}.wg-sh input.wg-tx{text-align:left}
+.wg-st{margin:0 16px 12px;background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.wg-sh{display:grid;grid-template-columns:24px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1.2fr) 32px;gap:6px;align-items:end;padding:10px 12px}
+.wg-num{width:24px;height:24px;border-radius:50%;background:var(--tx);color:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:700;margin-bottom:8px}
+.wg-rest{font-size:12px;color:var(--tx2);font-weight:600;padding-bottom:10px}
+.wg-add{background:var(--ol);border-bottom:1px solid var(--bd)}.wg-add .wg-row{border-bottom-color:rgba(196,123,10,.2)}
+.wg-add-t{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.04em;padding:10px 12px 2px}
+.wg-steps{list-style:none;display:grid;gap:6px;margin-top:8px}
+.wg-step{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:var(--rs);cursor:pointer;background:var(--bg2)}
+.wg-chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--bd2);display:grid;place-items:center;flex-shrink:0;font-size:14px;color:transparent}
+.wg-step.ad .wg-chk{border-color:var(--o)}.wg-step.un .wg-chk{border-color:var(--g)}
+.wg-step.done{opacity:.6}.wg-step.done .wg-what{text-decoration:line-through}.wg-step.done .wg-chk{background:var(--g);border-color:var(--g);color:#fff}
+.wg-what{font-size:14px;font-weight:650;color:var(--tx)}.wg-det{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.35}
+.wg-sum{font-size:16px;font-weight:700;color:var(--tx)}
+.wg-tb{width:100%;border-collapse:collapse;font-size:13px}
+.wg-tb th{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);text-align:right;padding:7px 8px;border-bottom:1px solid var(--bd);font-weight:700;white-space:nowrap}
+.wg-tb td{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wg-tb th:first-child,.wg-tb td:first-child{text-align:left;white-space:normal}
+.wg-tb tr.tot td{font-weight:700;border-bottom:none;border-top:2px solid var(--bd2)}
+.wg-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--o);margin-left:5px;vertical-align:1px}
 .tab-title{padding:14px 16px 2px;font-size:20px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
 .toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(8px);background:#123B30;color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;font-weight:500;z-index:6000;box-shadow:var(--sh2);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%)}
@@ -200,7 +226,13 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
 .ld-fin-t{font-size:20px;font-weight:800;color:var(--gd)}.ld-fin-s{font-size:14px;color:var(--tx2);margin-top:4px}
 @media(prefers-color-scheme:dark){.ld-fin-t{color:var(--gm)}}
 .ld-act{display:flex;gap:8px;padding:4px 12px 16px}
-.tab .tab-lock{position:absolute;top:8px;left:9px;font-size:14px;color:var(--tx3)}.tab.tg .tab-lock,.tab.tp .tab-lock,.tab.tm .tab-lock,.tab.ts .tab-lock,.tab.tfe .tab-lock{color:rgba(255,255,255,.85)}
+.tab .tab-lock{position:absolute;top:8px;left:9px;font-size:14px;color:var(--tx3)}
+.tab.tl{background:#3F4A56;border-color:#3F4A56;color:#fff}.tab.tl i,.tab.tl .tab-sub{color:rgba(255,255,255,.88)}
+@keyframes tabNew{0%{opacity:0;transform:scale(.85)}60%{opacity:1;transform:scale(1.04)}100%{transform:none}}.tab.tab-new{animation:tabNew .5s ease-out}
+.xf-list{text-align:left;margin:16px 0 4px;display:grid;gap:8px}
+.xf-i{display:flex;gap:12px;align-items:flex-start;background:var(--bg2);border-radius:var(--rs);padding:10px 12px}
+.xf-i>i{font-size:22px;color:var(--gd);margin-top:1px;flex-shrink:0}.xf-i b{display:block;font-size:14px;color:var(--tx)}.xf-i span{display:block;font-size:12.5px;color:var(--tx2);line-height:1.4;margin-top:2px}
+@media(prefers-color-scheme:dark){.xf-i>i{color:var(--gm)}}.tab.tg .tab-lock,.tab.tp .tab-lock,.tab.tm .tab-lock,.tab.ts .tab-lock,.tab.tfe .tab-lock{color:rgba(255,255,255,.85)}
 .lock-card{margin:8px 16px 16px;background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:26px 20px 22px;text-align:center}
 .lock-ic{position:relative;display:inline-flex;width:72px;height:72px;border-radius:22px;background:var(--gl);color:var(--gd);font-size:36px;align-items:center;justify-content:center;margin-bottom:12px}
 .lock-badge{position:absolute;right:-6px;bottom:-6px;font-size:18px;background:var(--bg);color:var(--tx2);border-radius:50%;padding:5px;box-shadow:var(--sh)}
@@ -223,9 +255,11 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
     <button class="tab tg" id="t-w" role="tab" onclick="showTab('w')"><i class="ti ti-truck"></i><span>Obliczanie wozu</span><span class="tab-sub">kg/szt → kg w wozie</span><span class="tab-cnt" id="tab-w-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-d" role="tab" onclick="showTab('d')"><i class="ti ti-adjustments"></i><span>Ustalanie dawki</span><span class="tab-sub">kg w wozie → kg/szt</span><span class="tab-cnt" id="tab-d-cnt" style="display:none">0</span></button>
     <button class="tab" id="t-m" role="tab" onclick="showTab('m')"><i class="ti ti-blender"></i><span>Mieszanka treściwa</span><span class="tab-sub">własne mieszanki</span></button>
-    <button class="tab" id="t-s" role="tab" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub">struktura fizyczna</span></button>
-    <button class="tab" id="t-fe" role="tab" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub">laboratorium → FeedExpert</span></button>
-    <button class="tab" id="t-mx" role="tab" onclick="showTab('mx')"><i class="ti ti-scale"></i><span>Mieszalnik</span><span class="tab-sub">surowce kontra gotowe</span></button>
+    <button class="tab" id="t-s" role="tab" style="display:none" onclick="showTab('s')"><i class="ti ti-stack-2"></i><span>Sita TMR</span><span class="tab-sub">struktura fizyczna</span></button>
+    <button class="tab" id="t-fe" role="tab" style="display:none" onclick="showTab('fe')"><i class="ti ti-transform"></i><span>Konwerter FE</span><span class="tab-sub">laboratorium → FeedExpert</span></button>
+    <button class="tab" id="t-mx" role="tab" style="display:none" onclick="showTab('mx')"><i class="ti ti-scale"></i><span>Mieszalnik</span><span class="tab-sub">surowce kontra gotowe</span></button>
+    <button class="tab" id="t-g" role="tab" onclick="showTab('g')"><i class="ti ti-git-branch"></i><span>Wóz na grupy</span><span class="tab-sub">rozładunek i dosypki</span></button>
+    <button class="tab" id="t-x" role="tab" onclick="showTab('x')" style="display:none"><i class="ti ti-lock"></i><span>Funkcje dodatkowe</span><span class="tab-sub" id="t-x-sub">po zalogowaniu</span></button>
   </div>
   <div id="tab-w" style="padding:12px 0"></div>
   <div id="tab-d" style="display:none;padding:12px 0"></div>
@@ -233,6 +267,8 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g);flex-shrink:0}
   <div id="tab-s" style="display:none;padding:12px 0"></div>
   <div id="tab-fe" style="display:none;padding:12px 0"></div>
   <div id="tab-mx" style="display:none;padding:12px 0"></div>
+  <div id="tab-g" style="display:none;padding:12px 0"></div>
+  <div id="tab-x" style="display:none;padding:12px 0"></div>
 </div>
 
 <div id="scr-d-edit" class="screen">
@@ -454,18 +490,236 @@ new MutationObserver(function(muts){
   else if(removed&&curScreen()==='scr-main'&&!topOverlay())dropNavState();
 }).observe(document.body,{childList:true});
 
-var TAB_CLASS={w:'tg',d:'tp',m:'tm',s:'ts',fe:'tfe',mx:'ta'};
+var TAB_CLASS={w:'tg',d:'tp',m:'tm',s:'ts',fe:'tfe',mx:'ta',g:'tq',x:'tl'};
 var curTab='w';
 function showTab(t){
   if(!TAB_CLASS[t])t='w';
+  // Zablokowana funkcja: zamiast niej panel „Funkcje dodatkowe”. Gdy nic nie jest zablokowane, panel znika.
+  var fk0=TAB_FEATURE[t];
+  if(fk0&&!ACC.loaded[fk0])t='x';
+  if(t==='x'){var lk=lockedFeatures();if(!lk.length){var on=featureKeys().filter(function(k){return ACC.loaded[k]});t=on.length?FEATURES[on[0]].tab:'w'}}
   curTab=t;try{localStorage.setItem('tmr_tab',t)}catch(e){}
   Object.keys(TAB_CLASS).forEach(function(k){
     var b=document.getElementById('t-'+k);if(b){b.className=k===t?'tab '+TAB_CLASS[k]:'tab';b.setAttribute('aria-selected',k===t?'true':'false')}
     var c=document.getElementById('tab-'+k);if(c)c.style.display=k===t?'block':'none';
   });
-  var fk=TAB_FEATURE[t];
-  if(fk&&!ACC.loaded[fk]){renderLockedTab(t);return}
-  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='m')renderMieszanka();else if(t==='s')renderSita();else if(t==='fe')renderFEKonwerter();else if(t==='mx')renderMieszalnik();
+  if(t==='x'){renderExtras();return}
+  if(t==='d')renderDList();else if(t==='w')renderWList();else if(t==='m')renderMieszanka();else if(t==='s')renderSita();else if(t==='fe')renderFEKonwerter();else if(t==='mx')renderMieszalnik();else if(t==='g')renderWG();
+}
+
+// ===== WÓZ NA GRUPY =====
+// Jeden wóz rozładowywany na kilka grup, z dosypkami przed kolejnymi grupami.
+// Założenie: po każdej dosypce wóz jest dobrze wymieszany, więc każda grupa dostaje
+// proporcjonalny wycinek tego, co w danej chwili jest w wozie. Ostatnia grupa dostaje resztę.
+var WG_KEY='tmr_wg';
+function wgBlank(){return {base:[],stages:[{name:'Grupa 1',head:'',unload:'',adds:[]},{name:'Grupa 2',head:'',unload:'',adds:[]}]}}
+var WG=null;try{WG=JSON.parse(localStorage.getItem(WG_KEY)||'null')}catch(e){}
+if(!WG||!Array.isArray(WG.base)||!Array.isArray(WG.stages)||WG.stages.length<1)WG=wgBlank();
+WG.stages.forEach(function(s){if(!Array.isArray(s.adds))s.adds=[]});
+var wgDone={};
+function wgSave(){try{localStorage.setItem(WG_KEY,JSON.stringify(WG))}catch(e){}}
+function wgNum(v){if(v===''||v==null)return 0;var x=parseFloat(String(v).replace(/\s/g,'').replace(',','.'));return isFinite(x)?x:0}
+function wgF(v,d){if(!isFinite(v))return '—';return v.toLocaleString('pl-PL',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function wgKey(n){return String(n||'').trim().toLowerCase()||'(bez nazwy)'}
+function wgItem(name){var all=getAllItems(false);for(var i=0;i<all.length;i++)if(all[i].name===name)return all[i];return null}
+function wgGet(path){var p=path.split('.'),o=WG;for(var i=0;i<p.length;i++)o=o[isNaN(p[i])?p[i]:+p[i]];return o}
+function wgSet(path,val){
+  var p=path.split('.'),o=WG;for(var i=0;i<p.length-1;i++)o=o[isNaN(p[i])?p[i]:+p[i]];o[p[p.length-1]]=val;
+  var m=path.match(/^stages\.(\d+)\.name$/);
+  if(m){var e=document.getElementById('wg-addt-'+m[1]);if(e)e.textContent=String(val).trim()||('Grupa '+(+m[1]+1))}
+  wgSave();renderWGOut();
+}
+function wgDel(path){var p=path.split('.'),i=+p.pop(),list=wgGet(p.join('.'));list.splice(i,1);wgSave();renderWG()}
+
+function wgCompute(){
+  var comps={},order=[],missing={};
+  function put(n,kg,sm,p){
+    var k=wgKey(n);
+    if(!comps[k]){comps[k]={n:String(n||'').trim()||'(bez nazwy)',kg:0,dm:0,cost:0};order.push(k)}
+    var c=comps[k];c.kg+=kg;c.dm+=kg*sm/100;c.cost+=kg*(p||0)/1000;
+    if(kg>0&&!(p>0))missing[c.n]=1;
+  }
+  var baseKg=0,baseList=[];
+  WG.base.forEach(function(r){var kg=wgNum(r.kg);if(kg>0){put(r.n,kg,wgNum(r.sm),wgNum(r.c));baseKg+=kg;baseList.push({n:r.n,kg:kg})}});
+  var added={},groups=[],steps=[{t:'load',kg:baseKg,list:baseList}],addTot=0,L=WG.stages.length;
+  WG.stages.forEach(function(s,i){
+    var last=i===L-1,add=0,list=[],name=String(s.name||'').trim()||('Grupa '+(i+1));
+    if(i>0)s.adds.forEach(function(a){var kg=wgNum(a.kg);if(kg>0){put(a.n,kg,wgNum(a.sm),wgNum(a.c));added[wgKey(a.n)]=1;add+=kg;list.push({n:a.n,kg:kg})}});
+    if(add>0)steps.push({t:'add',kg:add,list:list,before:name});
+    addTot+=add;
+    var inW=0;order.forEach(function(k){inW+=comps[k].kg});
+    var warns=[],un=last?inW:wgNum(s.unload);
+    if(!last&&un>inW+1e-6){warns.push('Wysypane '+wgF(un,0)+' kg to więcej, niż jest w wozie ('+wgF(inW,0)+' kg). Liczę cały wóz.');un=inW}
+    if(!last&&!(un>0)&&inW>0)warns.push('Wpisz, ile kg wysypujesz tej grupie.');
+    var fr=inW>0?un/inW:0,rows=[];
+    order.forEach(function(k){
+      var c=comps[k],kg=c.kg*fr,dm=c.dm*fr,cost=c.cost*fr;
+      c.kg-=kg;c.dm-=dm;c.cost-=cost;
+      if(kg>1e-6)rows.push({n:c.n,kg:kg,dm:dm,cost:cost,dos:!!added[k]});
+    });
+    var head=wgNum(s.head),kg=0,dm=0,cost=0;
+    rows.forEach(function(r){kg+=r.kg;dm+=r.dm;cost+=r.cost});
+    if(kg>0){
+      if(head<=0)warns.push('Wpisz liczbę sztuk, żeby policzyć ilości na sztukę.');
+      else{
+        var fm=kg/head,d=dm/head;
+        if(d>30||fm>80)warns.push(wgF(fm,1)+' kg ś.m. i '+wgF(d,1)+' kg SM na sztukę to więcej, niż krowa pobierze. Sprawdź wpisane kilogramy.');
+        else if(d>0&&d<14)warns.push(wgF(d,1)+' kg SM na sztukę to mało. Sprawdź liczbę sztuk i wysypane kg.');
+      }
+    }
+    if(rows.some(function(r){return r.dm===0&&r.kg>0}))warns.push('Część pasz nie ma wpisanej SM, więc sucha masa jest zaniżona.');
+    groups.push({name:name,head:head,kg:kg,dm:dm,cost:cost,rows:rows,warns:warns,last:last});
+    steps.push({t:'unload',name:name,kg:un,head:head,last:last});
+  });
+  var tc=0;groups.forEach(function(g){tc+=g.cost});
+  return {groups:groups,steps:steps,baseKg:baseKg,addTot:addTot,missing:Object.keys(missing),totCost:tc};
+}
+
+function wgInput(path,val,label,cls){
+  return '<label class="wg-f"><span>'+label+'</span><input type="text" inputmode="'+(cls==='wg-tx'?'text':'decimal')+'"'+(cls?' class="'+cls+'"':'')
+    +' data-p="'+path+'" value="'+escapeHtml(val==null?'':val)+'" oninput="wgSet(\''+path+'\',this.value)"></label>';
+}
+function wgRow(path,r){
+  return '<div class="wg-row"><div class="wg-rn"><span>'+escapeHtml(r.n)+'</span><button class="dl" aria-label="Usuń" onclick="wgDel(\''+path+'\')"><i class="ti ti-x"></i></button></div>'
+    +'<div class="wg-in3">'+wgInput(path+'.kg',r.kg,'kg/wóz')+wgInput(path+'.sm',r.sm,'SM %')+wgInput(path+'.c',r.c,'zł/t')+'</div></div>';
+}
+function renderWG(){
+  var el=document.getElementById('tab-g');if(!el)return;
+  var L=WG.stages.length;
+  var h='<div class="tab-title"><i class="ti ti-git-branch" style="color:#0E7490"></i> Wóz na grupy</div>'
+    +'<div class="hn"><i class="ti ti-info-circle"></i><div>Wpisz, co ładujesz do wozu, ile kg wysypujesz każdej grupie i co dosypujesz przed kolejną. Ostatnia grupa dostaje resztę wozu. Kalkulator zakłada, że po każdej dosypce wóz jest dobrze wymieszany. Ceny w zł za tonę świeżej masy.</div></div>';
+  h+='<div class="sec-top">Wóz bazowy</div><div class="ls">'
+    +(WG.base.length?WG.base.map(function(r,i){return wgRow('base.'+i,r)}).join(''):'<div class="wg-det" style="padding:14px">Dodaj pasze ładowane do wozu na wszystkie grupy.</div>')
+    +'</div>';
+  h+='<div class="br"><button class="btn" onclick="wgPick(\'base\')"><i class="ti ti-plus"></i> Pasza</button>'
+    +(wDoses.length?'<button class="btn" onclick="wgFromDose()"><i class="ti ti-database-import"></i> Z dawki</button>':'')+'</div>';
+  h+='<div class="sec-top">Rozładunek i dosypki</div>';
+  WG.stages.forEach(function(s,i){
+    var last=i===L-1,b='<div class="wg-st">';
+    if(i>0){
+      b+='<div class="wg-add"><div class="wg-add-t">Dosypka przed: <span id="wg-addt-'+i+'">'+escapeHtml(String(s.name||'').trim()||('Grupa '+(i+1)))+'</span></div>'
+        +(s.adds.length?s.adds.map(function(a,j){return wgRow('stages.'+i+'.adds.'+j,a)}).join(''):'<div class="wg-det" style="padding:4px 12px 0">Bez dosypki.</div>')
+        +'<div style="padding:8px 12px 10px"><button class="btn" style="min-height:38px;padding:7px 10px;width:100%" onclick="wgPick(\'stages.'+i+'.adds\')"><i class="ti ti-plus"></i> Dosypka</button></div></div>';
+    }
+    b+='<div class="wg-sh"><div class="wg-num">'+(i+1)+'</div>'
+      +wgInput('stages.'+i+'.name',s.name,'Grupa','wg-tx')
+      +wgInput('stages.'+i+'.head',s.head,'Sztuk')
+      +(last?'<div class="wg-rest">reszta wozu</div>':wgInput('stages.'+i+'.unload',s.unload,'Wysypane kg'))
+      +(L>2?'<button class="dl" aria-label="Usuń grupę" onclick="wgDelStage('+i+')"><i class="ti ti-trash"></i></button>':'<span></span>')
+      +'</div></div>';
+    h+=b;
+  });
+  h+='<div class="br"><button class="btn" onclick="wgAddStage()"><i class="ti ti-plus"></i> Grupa</button></div>';
+  h+='<div id="wg-out"></div>';
+  h+='<div class="br"><button class="btn" onclick="wgCopy()"><i class="ti ti-copy"></i> Kopiuj wynik</button><button class="btn bdd" onclick="wgClear()"><i class="ti ti-trash"></i> Wyczyść</button></div>';
+  el.innerHTML=h;
+  renderWGOut();
+}
+function renderWGOut(){
+  var el=document.getElementById('wg-out');if(!el)return;
+  var R=wgCompute();window.__WG=R;
+  if(!(R.baseKg>0)){
+    el.innerHTML='<div class="em"><div class="em-i"><i class="ti ti-git-branch"></i></div><div class="em-t">Brak wyniku</div><div class="em-s">Dodaj pasze do wozu bazowego i wpisz kilogramy.</div></div>';
+    return;
+  }
+  var totHead=0;R.groups.forEach(function(g){totHead+=g.head});
+  var st=R.steps.map(function(s,i){
+    var cls,what,det;
+    if(s.t==='load'){cls='ld';what='Załaduj wóz: '+wgF(s.kg,0)+' kg';det=s.list.map(function(a){return escapeHtml(a.n)+' '+wgF(a.kg,0)}).join(' · ')}
+    else if(s.t==='add'){cls='ad';what='Dosyp '+wgF(s.kg,0)+' kg przed: '+escapeHtml(s.before);det=s.list.map(function(a){return escapeHtml(a.n)+' '+wgF(a.kg,0)}).join(' · ')}
+    else{cls='un';what='Wysyp '+escapeHtml(s.name)+': '+wgF(s.kg,0)+' kg'+(s.last?' (reszta wozu)':'');det=s.head>0?wgF(s.head,0)+' szt. · '+wgF(s.kg/s.head,1)+' kg/szt.':'brak liczby sztuk'}
+    return '<li class="wg-step '+cls+(wgDone[i]?' done':'')+'" onclick="wgTick('+i+')"><span class="wg-chk"><i class="ti ti-check"></i></span><div><div class="wg-what">'+what+'</div><div class="wg-det">'+det+'</div></div></li>';
+  }).join('');
+  var h='<div class="sec-top">Karta załadunku</div><div class="ac"><div class="wg-sum">Wóz: '+wgF(R.baseKg+R.addTot,0)+' kg'+(totHead>0?' · '+wgF(totHead,0)+' szt.':'')+(R.totCost>0?' · '+wgF(R.totCost,0)+' zł':'')+'</div>'
+    +'<div class="wg-det">Dotknij kroku, żeby go odhaczyć.</div><ol class="wg-steps">'+st+'</ol></div>';
+  if(R.totCost>0&&R.missing.length)h+='<div class="hn warn"><i class="ti ti-alert-triangle"></i><div>Brak ceny: '+escapeHtml(R.missing.join(', '))+'. Koszt jest zaniżony.</div></div>';
+  h+='<div class="sec-top">Wynik na grupy</div>';
+  R.groups.forEach(function(g){
+    var ph=g.head>0;
+    var meta=[];
+    if(ph)meta.push(wgF(g.head,0)+' szt.');
+    meta.push(wgF(g.kg,0)+' kg na grupę');
+    if(g.kg>0)meta.push('SM dawki '+wgF(g.dm/g.kg*100,1)+'%');
+    if(g.cost>0)meta.push(wgF(g.cost,0)+' zł/dzień');
+    if(g.cost>0&&g.dm>0)meta.push(wgF(g.cost/g.dm,2)+' zł/kg SM');
+    var rows=g.rows.map(function(r){
+      return '<tr><td>'+escapeHtml(r.n)+(r.dos?'<span class="wg-dot" title="zawiera dosypkę"></span>':'')+'</td><td>'+wgF(r.kg,1)+'</td><td>'+(ph?wgF(r.kg/g.head,2):'—')+'</td><td>'+(ph?wgF(r.dm/g.head,2):'—')+'</td></tr>';
+    }).join('');
+    h+='<div class="dc"><div class="dch"><div class="dct">'+escapeHtml(g.name)+'</div><div class="dcm">'+meta.join(' · ')+'</div></div>'
+      +'<div class="dcs"><div class="dss"><div class="dsv">'+(ph?wgF(g.kg/g.head,1):'—')+'</div><div class="dsl">kg ś.m./szt.</div></div>'
+      +'<div class="dss"><div class="dsv">'+(ph?wgF(g.dm/g.head,2):'—')+'</div><div class="dsl">kg SM/szt.</div></div>'
+      +'<div class="dss"><div class="dsv">'+(ph&&g.cost>0?wgF(g.cost/g.head,2):'—')+'</div><div class="dsl">zł/szt./dzień</div></div></div>'
+      +'<div style="overflow-x:auto;border-top:1px solid var(--bd)"><table class="wg-tb"><thead><tr><th>Pasza</th><th>kg/grupę</th><th>kg/szt.</th><th>kg SM/szt.</th></tr></thead><tbody>'
+      +rows+'<tr class="tot"><td>Razem</td><td>'+wgF(g.kg,1)+'</td><td>'+(ph?wgF(g.kg/g.head,2):'—')+'</td><td>'+(ph?wgF(g.dm/g.head,2):'—')+'</td></tr></tbody></table></div>'
+      +g.warns.map(function(w){return '<div class="hn warn" style="margin:10px 12px"><i class="ti ti-alert-triangle"></i><div>'+escapeHtml(w)+'</div></div>'}).join('')
+      +'</div>';
+  });
+  if(R.addTot>0)h+='<div class="wg-det" style="padding:0 16px 10px"><span class="wg-dot" style="margin:0 6px 0 0"></span>pasza, która była dosypywana</div>';
+  el.innerHTML=h;
+}
+function wgTick(i){wgDone[i]=!wgDone[i];renderWGOut()}
+function wgPick(listPath){
+  openPickerCb(function(name,cat,sm){
+    var it=wgItem(name),list=wgGet(listPath);
+    list.push({n:name,sm:sm,c:it&&it.price?it.price:'',kg:''});
+    wgSave();renderWG();
+    var inp=document.querySelector('#tab-g input[data-p="'+listPath+'.'+(list.length-1)+'.kg"]');
+    if(inp){inp.focus();inp.scrollIntoView({block:'center'})}
+  });
+}
+function wgAddStage(){WG.stages.push({name:'Grupa '+(WG.stages.length+1),head:'',unload:'',adds:[]});wgDone={};wgSave();renderWG()}
+function wgDelStage(i){
+  var s=WG.stages[i];
+  ask({title:'Usunąć grupę?',msg:'Grupa „'+(String(s.name||'').trim()||('Grupa '+(i+1)))+'” i jej dosypka zostaną usunięte.',ok:'Usuń',cancel:'Anuluj',danger:true,onOk:function(){
+    WG.stages.splice(i,1);if(WG.stages[0])WG.stages[0].adds=[];wgDone={};wgSave();renderWG();
+  }});
+}
+function wgFromDose(){
+  var list=wDoses.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0)});
+  actionSheet('Wczytaj pasze z dawki (Obliczanie wozu)',list.map(function(d){
+    var szt=+d.szt||0;
+    return {icon:'ti-truck',label:d.title||'Bez nazwy',sub:szt+' szt. · '+((d.ings||[]).length)+' pasz',fn:function(){wgLoadDose(d)}};
+  }));
+}
+function wgLoadDose(d){
+  var szt=+d.szt||0;
+  var go=function(){
+    WG.base=(d.ings||[]).map(function(g){
+      var it=wgItem(g.name);
+      return {n:g.name,sm:g.sm!=null&&g.sm!==''?g.sm:(it?it.sm:''),c:it&&it.price?it.price:'',kg:Math.round((+g.kg||0)*szt*10)/10};
+    });
+    wgDone={};wgSave();renderWG();toast('Wczytano pasze z dawki „'+(d.title||'Bez nazwy')+'” ('+szt+' szt.)');
+  };
+  if(WG.base.length)ask({title:'Zastąpić wóz bazowy?',msg:'Obecna lista pasz w wozie zostanie zastąpiona paszami z dawki.',ok:'Zastąp',cancel:'Anuluj',onOk:go});
+  else go();
+}
+function wgClear(){
+  ask({title:'Wyczyścić kalkulator?',msg:'Pasze, grupy i dosypki zostaną usunięte.',ok:'Wyczyść',cancel:'Anuluj',danger:true,onOk:function(){WG=wgBlank();wgDone={};wgSave();renderWG()}});
+}
+function wgText(){
+  var R=wgCompute();if(!(R.baseKg>0))return '';
+  var L=['KARTA ZAŁADUNKU'];
+  R.steps.forEach(function(s,i){
+    if(s.t==='load')L.push((i+1)+'. Załaduj wóz '+wgF(s.kg,0)+' kg: '+s.list.map(function(a){return a.n+' '+wgF(a.kg,0)}).join(', '));
+    else if(s.t==='add')L.push((i+1)+'. Dosyp '+wgF(s.kg,0)+' kg przed '+s.before+': '+s.list.map(function(a){return a.n+' '+wgF(a.kg,0)}).join(', '));
+    else L.push((i+1)+'. Wysyp '+s.name+': '+wgF(s.kg,0)+' kg'+(s.last?' (reszta)':''));
+  });
+  R.groups.forEach(function(g){
+    var ph=g.head>0;
+    L.push('');
+    L.push(g.name+' – '+wgF(g.head,0)+' szt. – '+wgF(g.kg,0)+' kg – '+(ph?wgF(g.kg/g.head,1):'—')+' kg ś.m./szt. – '+(ph?wgF(g.dm/g.head,2):'—')+' kg SM/szt.'+(g.cost>0&&ph?' – '+wgF(g.cost/g.head,2)+' zł/szt./dzień':''));
+    g.rows.forEach(function(r){L.push('  '+r.n+': '+wgF(r.kg,1)+' kg/grupę | '+(ph?wgF(r.kg/g.head,2):'—')+' kg/szt. | '+(ph?wgF(r.dm/g.head,2):'—')+' kg SM/szt.')});
+  });
+  return L.join('\n');
+}
+function wgCopy(){
+  var t=wgText();if(!t){toast('Najpierw dodaj pasze do wozu',true);return}
+  var fb=function(){
+    var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+    document.body.removeChild(ta);toast(ok?'Skopiowano wynik':'Nie udało się skopiować',!ok);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){toast('Skopiowano wynik')}).catch(fb);else fb();
 }
 
 // ===== KONTO I DOSTĘP DO DODATKOWYCH FUNKCJI =====
@@ -601,33 +855,48 @@ function accStart(){
     return accSync(u);
   }).catch(function(){/* brak internetu: zostają zapamiętane moduły */}).then(function(){ACC.checking=false;rerenderLockedTab()});
 }
-function rerenderLockedTab(){if(curScreen()==='scr-main'&&TAB_FEATURE[curTab])showTab(curTab)}
+function rerenderLockedTab(){if(curScreen()==='scr-main'&&(TAB_FEATURE[curTab]||curTab==='x'))showTab(curTab)}
+// Kolejność jak kafelki na ekranie: Sita TMR, Konwerter FE, Mieszalnik
+function featureKeys(){var o=['sita','fe','mieszalnik'].filter(function(k){return FEATURES[k]});Object.keys(FEATURES).forEach(function(k){if(o.indexOf(k)<0)o.push(k)});return o}
+function lockedFeatures(){return featureKeys().filter(function(k){return !ACC.loaded[k]})}
+// Kafelki funkcji dodatkowych: odblokowane pokazują się osobno, zablokowane chowają się
+// w jednym kafelku „Funkcje dodatkowe”. Kafelek, który właśnie się odblokował, wjeżdża z animacją.
 function updateTabLocks(){
   Object.keys(FEATURES).forEach(function(k){
     var b=document.getElementById('t-'+FEATURES[k].tab);if(!b)return;
-    var lock=b.querySelector('.tab-lock');
-    if(ACC.loaded[k]){if(lock)lock.remove()}
-    else if(!lock){lock=document.createElement('i');lock.className='ti ti-lock tab-lock';lock.setAttribute('aria-label','wymaga logowania');b.appendChild(lock)}
+    var on=!!ACC.loaded[k];
+    if(on&&b.dataset.st==='off'){b.classList.remove('tab-new');void b.offsetWidth;b.classList.add('tab-new');setTimeout(function(){b.classList.remove('tab-new')},700)}
+    b.dataset.st=on?'on':'off';
+    b.style.display=on?'':'none';
   });
+  var lk=lockedFeatures(),x=document.getElementById('t-x');
+  if(x){
+    x.style.display=lk.length?'':'none';
+    var sub=document.getElementById('t-x-sub');
+    if(sub)sub.textContent=lk.length===Object.keys(FEATURES).length?'po zalogowaniu':lk.map(featureName).join(', ');
+  }
 }
-// Ekran w zakładce, gdy funkcja nie jest dostępna
-function renderLockedTab(t){
-  var k=TAB_FEATURE[t],f=FEATURES[k],el=document.getElementById('tab-'+t);
-  var logged=!!ACC.user,has=logged&&ACC.features.indexOf(k)>=0;
-  var h='<div class="lock-card"><div class="lock-ic"><i class="ti '+f.icon+'"></i><i class="ti ti-lock lock-badge"></i></div>'
-    +'<div class="lock-t">'+f.name+'</div><div class="lock-d">'+f.desc+'</div>';
-  if(has&&ACC.checking){
-    h+='<div class="lock-note"><i class="ti ti-loader"></i> Wczytuję funkcję…</div>';
-  } else if(has){
-    h+='<div class="lock-note">Nie udało się wczytać tej funkcji. Sprawdź połączenie z internetem.</div>'
+// Panel „Funkcje dodatkowe”: opis zablokowanych funkcji i to, co zrobić, żeby je odblokować
+function renderExtras(){
+  var el=document.getElementById('tab-x');if(!el)return;
+  var lk=lockedFeatures(),logged=!!ACC.user;
+  var mine=lk.filter(function(k){return logged&&ACC.features.indexOf(k)>=0});
+  var h='<div class="lock-card"><div class="lock-ic"><i class="ti ti-lock"></i></div>'
+    +'<div class="lock-t">Funkcje dodatkowe</div>'
+    +'<div class="lock-d">Dostępne dla kont z przyznanym dostępem. Po odblokowaniu każda funkcja pojawi się jako osobny kafelek.</div>'
+    +'<div class="xf-list">'+lk.map(function(k){var f=FEATURES[k];return '<div class="xf-i"><i class="ti '+f.icon+'"></i><div><b>'+f.name+'</b><span>'+f.desc+'</span></div></div>'}).join('')+'</div>';
+  if(mine.length&&ACC.checking){
+    h+='<div class="lock-note"><i class="ti ti-loader"></i> Wczytuję funkcje…</div>';
+  } else if(mine.length){
+    h+='<div class="lock-note">Nie udało się wczytać funkcji. Sprawdź połączenie z internetem.</div>'
       +'<button class="btn bp bpg lock-btn" onclick="accRetry()"><i class="ti ti-refresh"></i> Spróbuj ponownie</button>';
   } else if(logged){
-    h+='<div class="lock-note">Twoje konto (<strong>'+esc(ACC.user.email)+'</strong>) nie ma dostępu do tej funkcji.</div>'
-      +'<a class="btn bp bpg lock-btn" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — dostęp do funkcji: '+f.name)+'"><i class="ti ti-mail"></i> Poproś o dostęp</a>';
+    h+='<div class="lock-note">Twoje konto (<strong>'+esc(ACC.user.email)+'</strong>) nie ma jeszcze dostępu do tych funkcji.</div>'
+      +'<a class="btn bp bpg lock-btn" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — dostęp do funkcji: '+lk.map(featureName).join(', '))+'"><i class="ti ti-mail"></i> Poproś o dostęp</a>';
   } else {
-    h+='<div class="lock-note">Funkcja dla użytkowników z kontem. Konta zakłada administrator aplikacji.</div>'
+    h+='<div class="lock-note">Zaloguj się albo załóż konto. Osoby z firmowym adresem dostają funkcje od razu po potwierdzeniu adresu, pozostałym dostęp przyznaje administrator.</div>'
       +'<button class="btn bp bpg lock-btn" onclick="openLogin()"><i class="ti ti-login"></i> Zaloguj się</button>'
-      +'<a class="lock-link" href="mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('TMR Mixer — prośba o konto')+'">Nie masz konta? Napisz do nas</a>';
+      +'<button class="lock-link" onclick="authModal(\'signup\')">Nie masz konta? Załóż je</button>';
   }
   el.innerHTML=h+'</div>';
 }
@@ -797,7 +1066,11 @@ function catBadge(c){
   if(c==='tm')return '<span class="ipk-i-badge tm">mokra</span>';
   return '<span class="ipk-i-badge obj">objęt.</span>';
 }
+// Wybór surowca z wywołaniem zwrotnym (np. Wóz na grupy): cb(nazwa, kategoria, sm)
+var _ipkCb=null;
+function openPickerCb(cb){openPicker('wgx',false);_ipkCb=cb}
 function openPicker(target,forM){
+  _ipkCb=null;
   _ipkTarget=target;_ipkFilter='';_ipkCat='all';_ipkForM=!!forM;
   var ov=document.getElementById('ipk-overlay');
   if(!ov){
@@ -831,13 +1104,14 @@ function pickItem(name,cat,sm){
     document.getElementById('m-pick-label').textContent=name;
   }
   closePicker();
+  if(_ipkCb){var cb=_ipkCb;_ipkCb=null;cb(name,cat,sm)}
 }
 function pickCustom(){
-  var target=_ipkTarget,forM=_ipkForM;
+  var target=_ipkTarget,forM=_ipkForM,cb=_ipkCb;
   var q=(document.getElementById('ipk-q')||{}).value||'';
   closePicker();
   openIngForm(null,{name:q.trim(),cat:forM?'t':undefined},function(c){
-    _ipkTarget=target;_ipkForM=forM;
+    _ipkTarget=target;_ipkForM=forM;_ipkCb=cb;
     pickItem(c[0],c[1],c[2]);
   });
 }
@@ -2243,7 +2517,7 @@ function saveSitaClients(){try{localStorage.setItem('tmr_sita_clients',JSON.stri
 // ===== KONWERTER FE (laboratorium → FeedExpert) =====
 
 // ===== KOPIA DANYCH (Import/Export) =====
-var BACKUP_KEYS=[['tmr_wd','Dawki (Obliczanie wozu)'],['tmr_dd','Dawki (Ustalanie dawki)'],['tmr_wf','Foldery (Obliczanie wozu)'],['tmr_df','Foldery (Ustalanie dawki)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie surowców'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza dawki (archiwum)'],['tmr_notes','Notatki'],['tmr_sita_clients','Sita TMR — klienci'],['tmr_sita_type','Typ sit'],['tmr_favs','Ulubione surowce'],['mieszalnik.v1','Mieszalnik']];
+var BACKUP_KEYS=[['tmr_wd','Dawki (Obliczanie wozu)'],['tmr_dd','Dawki (Ustalanie dawki)'],['tmr_wf','Foldery (Obliczanie wozu)'],['tmr_df','Foldery (Ustalanie dawki)'],['tmr_md','Mieszanki treściwe'],['tmr_mixbase','Mieszanki w bazie surowców'],['tmr_custom','Własne surowce'],['tmr_ad','Analiza dawki (archiwum)'],['tmr_notes','Notatki'],['tmr_sita_clients','Sita TMR — klienci'],['tmr_sita_type','Typ sit'],['tmr_favs','Ulubione surowce'],['mieszalnik.v1','Mieszalnik'],['tmr_wg','Wóz na grupy']];
 function openBackupModal(){
   var ov=document.createElement('div');ov.className='modal-ov';ov.id='backup-modal';
   ov.innerHTML='<div class="modal-bx">'
